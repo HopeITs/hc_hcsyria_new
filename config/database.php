@@ -84,6 +84,27 @@ return [
             ]) : [],
         ],
 
+        /*
+        | Read-only connection to the legacy hcsyria_db (Laravel 11 app).
+        | Used to reverse-engineer the schema and to backfill data during the
+        | migration. The application itself must never write through this.
+        */
+        'legacy' => [
+            'driver' => 'mariadb',
+            'host' => env('DB_LEGACY_HOST', '127.0.0.1'),
+            'port' => env('DB_LEGACY_PORT', '3306'),
+            'database' => env('DB_LEGACY_DATABASE', 'hcsyria_db'),
+            'username' => env('DB_LEGACY_USERNAME', 'root'),
+            'password' => env('DB_LEGACY_PASSWORD', ''),
+            'unix_socket' => env('DB_SOCKET', ''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => null,
+        ],
+
         'pgsql' => [
             'driver' => 'pgsql',
             'url' => env('DB_URL'),
