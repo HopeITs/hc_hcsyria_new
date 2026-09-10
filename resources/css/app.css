@@ -5,7 +5,149 @@
 @source '../**/*.blade.php';
 @source '../**/*.js';
 
+/*
+ * Design tokens taken from the live site rather than invented: #BC1818 is the
+ * brand red used across home_page.css, footer.css, initiative.css,
+ * micro_page_new.css and four others; #616262 is the body grey. The typefaces
+ * are the ones the live pages load, Lato for text and Martel for display.
+ */
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-sans: 'Lato', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
+        'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-display: 'Martel', Georgia, 'Times New Roman', serif;
+
+    /* Brand red, with a scale built around the one value the site actually uses. */
+    --color-brand-50: #fdf3f3;
+    --color-brand-100: #fbe5e5;
+    --color-brand-200: #f7cfcf;
+    --color-brand-300: #f0adad;
+    --color-brand-400: #e57d7d;
+    --color-brand-500: #d64f4f;
+    --color-brand-600: #bc1818;
+    --color-brand-700: #9e1515;
+    --color-brand-800: #831616;
+    --color-brand-900: #6d1818;
+    --color-brand-950: #3b0808;
+
+    /* Neutrals, anchored on the greys already in use. */
+    --color-ink-50: #f7f7f7;
+    --color-ink-100: #ededed;
+    --color-ink-200: #cdcdcd;
+    --color-ink-300: #bebebe;
+    --color-ink-400: #9a9a9a;
+    --color-ink-500: #7b7b7b;
+    --color-ink-600: #616262;
+    --color-ink-700: #4a4a4a;
+    --color-ink-800: #333333;
+    --color-ink-900: #1c1c1c;
+}
+
+/*
+ * Fluid type: the site has to hold up from a 320px phone to a wide desktop, so
+ * the display sizes interpolate rather than jumping at breakpoints.
+ */
+@layer base {
+    :root {
+        --step-display: clamp(1.875rem, 1.2rem + 3.4vw, 3.5rem);
+        --step-heading: clamp(1.5rem, 1.1rem + 2vw, 2.25rem);
+        --step-subheading: clamp(1.125rem, 1rem + 0.6vw, 1.5rem);
+    }
+
+    /*
+     * Required for x-cloak to do anything. Without it, every element Alpine
+     * is about to hide renders expanded until Alpine boots — which showed the
+     * mobile menu open on first paint.
+     */
+    [x-cloak] {
+        display: none !important;
+    }
+
+    html {
+        scroll-behavior: smooth;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        html {
+            scroll-behavior: auto;
+        }
+    }
+
+    body {
+        @apply bg-white text-ink-700 font-sans antialiased;
+    }
+
+    /* Visible keyboard focus everywhere, which the legacy CSS removed. */
+    :focus-visible {
+        @apply outline-2 outline-offset-2 outline-brand-600;
+    }
+}
+
+/*
+ * Navigation, ported from the legacy public/css/navbar.css.
+ *
+ * The legacy sizes were viewport units (1vw links, .9vw dropdown items), which
+ * become unreadable below about 900px and oversized on a wide monitor. These
+ * are the same visual sizes at a typical desktop width, expressed so they hold
+ * at every width. Colours are unchanged: #676766 links, #CF142B section
+ * headings, #bc1212 on the "new" badge.
+ */
+@utility nav-link {
+    @apply text-sm uppercase tracking-wide text-[#676766] hover:font-bold hover:text-[#676766];
+}
+
+@utility dropdown-link {
+    @apply block whitespace-normal py-1 text-sm leading-normal text-[#676766] hover:text-brand-600;
+}
+
+@utility section-heading {
+    @apply pb-1 text-base font-bold text-[#CF142B];
+}
+
+@utility newest {
+    @apply ml-1 inline-block rounded bg-[#bc1212] px-1 align-super text-[0.5rem] font-semibold leading-tight text-white;
+}
+
+/*
+ * Page furniture, ported from public/css/micro_page_new-test.css and
+ * main-new-test.css. Colours and weights are unchanged (#BC1818 titles and
+ * buttons, square corners, 900 weight); the viewport-unit sizes are expressed
+ * as fluid clamps so they stay readable on a phone and stop growing on a wide
+ * monitor.
+ */
+@utility section-title {
+    @apply bg-white font-black text-brand-600;
+    font-size: clamp(1.5rem, 0.9rem + 2.4vw, 2.25rem);
+    padding: clamp(1rem, 0.4rem + 2.3vw, 2.25rem);
+}
+
+@utility apply-btn {
+    @apply border-2 border-brand-600 bg-brand-600 text-white;
+    border-radius: 0;
+    font-size: clamp(0.8125rem, 0.75rem + 0.3vw, 0.9375rem);
+    padding: clamp(0.4rem, 0.3rem + 0.4vw, 0.6rem) clamp(0.75rem, 0.6rem + 0.6vw, 1.1rem);
+}
+
+@utility dropdown-item {
+    @apply block w-full px-4 py-2 text-left text-sm text-[#616262] hover:bg-ink-50 hover:text-brand-600;
+}
+
+@utility text-display {
+    font-size: var(--step-display);
+    line-height: 1.1;
+}
+
+@utility text-heading {
+    font-size: var(--step-heading);
+    line-height: 1.2;
+}
+
+@utility text-subheading {
+    font-size: var(--step-subheading);
+    line-height: 1.35;
+}
+
+/* Skip link: off-screen until focused. */
+@utility skip-link {
+    @apply absolute left-4 -top-20 z-50 rounded-md bg-brand-600 px-4 py-2 text-white;
+    @apply focus:top-4;
 }
