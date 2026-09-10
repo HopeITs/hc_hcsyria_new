@@ -16,8 +16,13 @@ $app = require __DIR__ . '/../bootstrap/app.php';
 $app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();
 
 use App\Models\Project;
+use App\Models\WhatCategory;
 use App\Queries\ActivityLogQuery;
+use App\Queries\AdminProjectListQuery;
 use App\Queries\CategoryQuery;
+use App\Queries\InitiativeTitleListQuery;
+use App\Queries\MicroProjectStatsQuery;
+use App\Queries\PartnerQuery;
 use App\Queries\ProjectSearch;
 use App\Queries\StudyZoneCenterQuery;
 use App\Queries\TeamMemberQuery;
@@ -209,6 +214,146 @@ $projects = $screen['projectsLog'];
 $ordered = $projects->pluck('created_at')->filter()->values();
 $isDescending = $ordered->toArray() === $ordered->sortDesc()->values()->toArray();
 check('projects log is ordered (legacy had no ORDER BY here)', $isDescending);
+
+/* ===================================================================== */
+echo "\nSlug lookups  vs  the interpolated whereRaw versions\n";
+/* ===================================================================== */
+
+$slug = 'school-to-school';
+$legacySlug = WhatCategory::whereRaw('replace(lower(name)," ","-") LIKE "' . $slug . '"')->first();
+check('legitimate slug resolves identically',
+    optional(CategoryQuery::what()->bySlug($slug))->id === optional($legacySlug)->id,
+    optional($legacySlug)->name ?? '(none)');
+
+/* The reason this was extracted: the legacy form is injectable. */
+$hostile = 'nothing-matches" OR "1"="1';
+$legacyHostile = WhatCategory::whereRaw('replace(lower(name)," ","-") LIKE "' . $hostile . '"')->first();
+$newHostile = CategoryQuery::what()->bySlug($hostile);
+
+printf("  %-58s legacy=%s  bound=%s\n", 'hostile slug (injection)',
+    $legacyHostile->name ?? '(none)', $newHostile->name ?? '(none)');
+check('  -> legacy form was exploitable', $legacyHostile !== null);
+check('  -> bound form returns nothing', $newHostile === null);
+
+check('place slug resolves', PartnerQuery::placeBySlug('homs') !== null);
+check('place slug injection returns nothing',
+    PartnerQuery::placeBySlug('nothing" OR "1"="1') === null);
+
+/* ===================================================================== */
+echo "\nMicroProjectStatsQuery  vs  micro_project_new_test() aggregates\n";
+/* ===================================================================== */
+
+$legacyCity = collect(DB::select(
+    "SELECT MPE_City, COUNT(*) as total FROM projects
+     WHERE MPE_City in (1,2,3,4,6,7,8) AND MPE_Done in (1,2) AND MPE_Published in (1,2)
+     GROUP BY MPE_City"
+))->mapWithKeys(fn($r) => [(int) $r->MPE_City => (int) $r->total])->sortKeys()->all();
+check('per-city project counts match',
+    MicroProjectStatsQuery::make()->countsByCity()
+        ->mapWithKeys(fn($v, $k) => [(int) $k => (int) $v])->sortKeys()->all() === $legacyCity);
+
+$legacyCategories = collect(DB::select(
+    "SELECT subcategory.Name, COUNT(projects.id) AS project_count FROM projects
+     LEFT JOIN subcategory on subcategory.ID = projects.SubCategory_ID
+     WHERE projects.MPE_Published in (1,2) AND projects.MPE_Done in (1)
+     AND projects.SubCategory_ID not in (1,2) GROUP BY subcategory.Name"
+))->mapWithKeys(fn($r) => [(string) $r->Name => (int) $r->project_count])->sortKeys()->all();
+check('per-category counts match',
+    MicroProjectStatsQuery::make()->countsByCategory()
+        ->mapWithKeys(fn($r) => [(string) $r->Name => (int) $r->project_count])->sortKeys()->all()
+    === $legacyCategories);
+
+$legacyAge = collect(DB::select(
+    "SELECT age.Name, COUNT(projects.id) AS project_count FROM projects
+     LEFT JOIN age ON (CASE WHEN YEAR(CURDATE()) - projects.DOB = 0 THEN 1
+        ELSE YEAR(CURDATE()) - projects.DOB END) BETWEEN age.Min AND age.Max
+     WHERE projects.MPE_Published in (1,2) AND projects.MPE_Done in (1)
+     GROUP BY age.Name HAVING age.Name is not null ORDER BY age.ID"
+))->mapWithKeys(fn($r) => [(string) $r->Name => (int) $r->project_count])->all();
+check('per-age-band counts match, in order',
+    MicroProjectStatsQuery::make()->countsByAgeRange()
+        ->mapWithKeys(fn($r) => [(string) $r->Name => (int) $r->project_count])->all() === $legacyAge);
+
+$legacyRate = (int) DB::select(
+    "SELECT ROUND(((SELECT COUNT(id) FROM `projects` WHERE MPE_Published = 1 and MPE_Done = 1
+       and MPE_FundedDate <= DATE_SUB(now(), INTERVAL 9 MONTH)) * 100)
+     / (SELECT COUNT(id) FROM `projects` WHERE MPE_Published <> 0), 0) as number"
+)[0]->number;
+check('sustainable rate matches',
+    MicroProjectStatsQuery::make()->sustainableRate() === $legacyRate, (string) $legacyRate);
+
+/* ===================================================================== */
+echo "\nInitiativeTitleListQuery  vs  four search_list_* methods\n";
+/* ===================================================================== */
+
+$mismatch = [];
+foreach ([
+    'children_uni' => InitiativeTitleListQuery::CHILDREN_UNI,
+    'study_zone'   => InitiativeTitleListQuery::STUDY_ZONE,
+    'leap'         => InitiativeTitleListQuery::LEAP,
+    'disc'         => InitiativeTitleListQuery::DISC,
+] as $label => $categoryId) {
+    $legacy = collect(DB::select(
+        'SELECT DISTINCT title FROM initiatives
+         inner join initiatives_english on initiatives_english.initiative_id = initiatives.id
+         where what_category_id = ?',
+        [$categoryId]
+    ))->pluck('title')->sort()->values()->all();
+
+    $new = InitiativeTitleListQuery::make()->forCategory($categoryId)->titles()->sort()->values()->all();
+
+    if ($legacy !== $new) $mismatch[] = "$label(" . count($legacy) . ' vs ' . count($new) . ')';
+}
+check('all 4 typeahead title lists match', $mismatch === [],
+    $mismatch ? implode(' ', $mismatch) : '');
+
+/* ===================================================================== */
+echo "\nAdminProjectListQuery  vs  three per-city admin queries\n";
+/* ===================================================================== */
+
+$mismatch = [];
+foreach ([3 => 'Aleppo', 1 => 'Homs', 2 => 'Damascus'] as $cityId => $label) {
+    $legacy = collect(DB::select(
+        'SELECT projects.id as NO, count(images.id) as images
+         FROM projects
+         LEFT JOIN projects_english on projects.id = projects_english.project_id
+         LEFT JOIN donors on donors.id = projects.MPE_Donor
+         LEFT JOIN projecttype on projects.projecttype_id = projecttype.id
+         LEFT JOIN images on projects.id = images.project_id
+         WHERE projects.MPE_City = ? AND `MPE_Published` = 1 GROUP BY projects.id',
+        [$cityId]
+    ))->mapWithKeys(fn($r) => [(int) $r->NO => (int) $r->images])->sortKeys()->all();
+
+    $new = AdminProjectListQuery::make()->inCity($cityId)->get()
+        ->mapWithKeys(fn($r) => [(int) $r->NO => (int) $r->images])->sortKeys()->all();
+
+    if ($legacy !== $new) $mismatch[] = "$label(" . count($legacy) . ' vs ' . count($new) . ')';
+}
+check('all 3 per-city admin tables match, with image counts', $mismatch === [],
+    $mismatch ? implode(' ', $mismatch) : '');
+
+check('cancelled and pending tabs return rows',
+    AdminProjectListQuery::cancelled() !== null && AdminProjectListQuery::pending() !== null);
+
+/* ===================================================================== */
+echo "\nPartnerQuery  vs  about_us() and family_to_family()\n";
+/* ===================================================================== */
+
+check('public donors match',
+    PartnerQuery::publicDonors()->pluck('id')->sort()->values()->all()
+    === DB::table('donors')->whereNotIn('id', [9, 10, 19])->pluck('id')
+        ->map(fn($i) => (int) $i)->sort()->values()->all());
+
+check('micro donors match',
+    PartnerQuery::microDonors()->pluck('id')->sort()->values()->all()
+    === DB::table('donors')->where('is_micro', '1')->whereNotIn('id', [9, 10])->pluck('id')
+        ->map(fn($i) => (int) $i)->sort()->values()->all());
+
+check('hope values match',
+    PartnerQuery::hopeValues()->count() === DB::table('hope_values')->count());
+
+check('family partners match',
+    PartnerQuery::familyPartners()->count() === DB::table('familypartners')->count());
 
 echo "\n";
 if ($failures !== []) {

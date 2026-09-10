@@ -116,6 +116,31 @@ class CategoryQuery
     }
 
     /**
+     * Resolves a URL slug back to its category — "school-to-school" finds
+     * "School to School".
+     *
+     * The legacy version interpolated the slug straight into raw SQL:
+     *
+     *     whereRaw('replace(lower(name)," ","-") LIKE "' . $type . '"')
+     *
+     * That is reachable from four public routes, and the slug comes from the
+     * URL, so `/projects/nothing-matches" OR "1"="1` returned a category that
+     * should not have matched. The value is bound here.
+     */
+    public function bySlug(string $slug): ?object
+    {
+        return $this->model::query()
+            ->whereRaw('replace(lower(name), " ", "-") LIKE ?', [$this->escapeLike($slug)])
+            ->first();
+    }
+
+    /** Escapes LIKE metacharacters so the slug is matched literally. */
+    private function escapeLike(string $value): string
+    {
+        return str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], $value);
+    }
+
+    /**
      * The category name attached to an initiative. Replaces a raw correlated
      * subquery that interpolated the initiative id directly into SQL.
      */

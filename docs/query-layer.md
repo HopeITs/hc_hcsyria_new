@@ -50,22 +50,42 @@ that only returns arrays cannot give them.
 
 ## What is done
 
-| Class | Replaces | Verified |
-|---|---|---|
-| `ProjectSearch` | `App\Livewire\MicroProjects::loadProjects()` | 384 input combinations |
+Every class is verified against the legacy query it replaces by running both
+against the real database and diffing the results:
 
 ```bash
 php scripts/verify-queries.php
 ```
 
-This runs the **live legacy query** and the new query class side by side against
-the real database and compares the results. Currently exact.
+| Class | Replaces | Legacy call sites |
+|---|---|---:|
+| `ProjectSearch` | `Livewire\MicroProjects::loadProjects()` | 1 |
+| `TeamMemberQuery` | the `profile` reads across the team pages | 10 |
+| `CategoryQuery` | what/who/sub-what lookups + slug resolution | 25 |
+| `StudyZoneCenterQuery` | six per-place centre queries | 6 |
+| `ActivityLogQuery` | six per-category log queries | 6 |
+| `MicroProjectStatsQuery` | the four `micro_project_new_test()` aggregates | 4 |
+| `InitiativeTitleListQuery` | the four `search_list_*` methods | 4 |
+| `PartnerQuery` | donors, values, partners, place lookups | 5 |
+| `AdminProjectListQuery` | three per-city admin tables | 3 |
 
-Extract only what a live route reaches — see `docs/controller-port-manifest.md`.
-`ProjectSearch` was first written against `PublicController::get_projects_IDs()`,
-which turned out to be dead code: its only caller was commented out of the
-routes, and the live micro-project search is the Livewire component. The two
-queries differ, so it has been rewritten against the live one.
+Writes go in `app/Actions` rather than `app/Queries`:
+
+| Class | Replaces |
+|---|---|
+| `DeleteProject` | `projectsController::delete()` |
+
+### Still to extract
+
+`PublicController::studyzone()` reads six aggregates from the **remote**
+`studyzone_db` over the `mysql_second` connection, against `hcsz_*` tables.
+That database does not resolve from this machine, so those queries cannot be
+run or verified here. Note this is a different system from the retired local
+student tracking — it needs a decision before it is worth building.
+
+`PublicController::disc()` and `homepage()` call the `get_statistics` stored
+procedure, which reads three other databases by hardcoded name and returns
+`NULL`s when they are missing. See `docs/schema-audit.md`.
 
 ## What the extraction fixed
 
@@ -103,15 +123,3 @@ Recorded so they are not mistaken for bugs:
   resolved that column against the outer query, so it worked by accident. It is
   written out explicitly now; the result is identical because every project has
   exactly one content row.
-
-## Still to extract
-
-`StudyController` holds 61 raw queries, the largest remaining concentration,
-including the reporting queries over `student_entries` (404,426 rows). Several
-are genuine multi-table reports that should stay as SQL inside a dedicated query
-class rather than being forced into Eloquent.
-
-`PublicController::homepage()` calls the `get_statistics` stored procedure,
-which reads three other databases by hardcoded name and returns `NULL`s when
-they are missing. That needs a decision about the wider database landscape
-before it can be extracted — see `docs/schema-audit.md`.
