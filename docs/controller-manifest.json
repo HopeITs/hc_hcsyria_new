@@ -1,0 +1,557 @@
+{
+    "generated_from": "E:/03-Website/hcsyria_website",
+    "route_entry_points": 307,
+    "totals": {
+        "controllers": 34,
+        "methods": 344,
+        "reachable": 311,
+        "dead": 33
+    },
+    "port": {
+        "PublicController": {
+            "framework_driven": false,
+            "live": [
+                "about",
+                "about_us",
+                "childrenUni",
+                "children_team",
+                "christian_youth",
+                "christian_youth_member",
+                "contact",
+                "disc",
+                "discByPlace",
+                "disc_team",
+                "family_to_family",
+                "get_cuactivities_IDs",
+                "get_discactivities_IDs",
+                "get_leapactivities_IDs",
+                "get_szactivities_IDs",
+                "homepage",
+                "homepage_lb",
+                "hometest",
+                "homeworkRoom",
+                "info_disc",
+                "initiative",
+                "initiativeOfProject",
+                "initiatives_by_type",
+                "leap",
+                "leap_team",
+                "micro_project_new_test",
+                "news_by_type",
+                "oneTypeOfproject",
+                "our_team",
+                "roots",
+                "school_to_school",
+                "search",
+                "search_list_DISC_activities",
+                "search_list_SZ_activities",
+                "search_list_cu_activities",
+                "search_list_leap_activities",
+                "set_locale",
+                "show_article",
+                "show_damascus_hope_team",
+                "show_homs_hope_team",
+                "show_latakia_hope_team",
+                "show_team",
+                "studyzone",
+                "studyzone_team",
+                "subscribe",
+                "test"
+            ],
+            "dead": [
+                "get_event_copy",
+                "get_initiatives_IDs",
+                "get_project_copy2",
+                "get_projects_IDs",
+                "get_study_copy",
+                "micro_project_new",
+                "news_by_edition",
+                "news_by_what",
+                "news_by_who",
+                "search_list_beneficiaries",
+                "search_list_initiatives",
+                "search_list_projects",
+                "studyzone_all"
+            ]
+        },
+        "StudyController": {
+            "framework_driven": false,
+            "live": [
+                "__construct",
+                "add_image",
+                "add_image_success",
+                "checkEmail",
+                "checkNational",
+                "create",
+                "delete",
+                "delete_images",
+                "delete_images_success",
+                "edit",
+                "filterEducation",
+                "filterEducationDegree",
+                "index",
+                "order_images",
+                "publish",
+                "show",
+                "store",
+                "store_image",
+                "store_image_success",
+                "studentsEntriesJSon",
+                "studentsJSon",
+                "students_create",
+                "students_destroy",
+                "students_edit",
+                "students_entries",
+                "students_store",
+                "students_update",
+                "students_visit",
+                "students_visit_create",
+                "studentsentry_destroy",
+                "success_Englishchecked",
+                "success_create",
+                "success_destroy",
+                "success_edit",
+                "success_index",
+                "success_offline",
+                "success_online",
+                "success_show",
+                "success_store",
+                "success_update",
+                "unpublish",
+                "update"
+            ],
+            "dead": []
+        },
+        "DiscController": {
+            "framework_driven": false,
+            "live": [
+                "add_image",
+                "create",
+                "delete",
+                "delete_images",
+                "edit",
+                "index",
+                "order_images",
+                "publish",
+                "show",
+                "store",
+                "store_image",
+                "success_Englishchecked",
+                "success_create",
+                "success_destroy",
+                "success_edit",
+                "success_index",
+                "success_offline",
+                "success_online",
+                "success_show",
+                "success_store",
+                "success_update",
+                "unpublish",
+                "update"
+            ],
+            "dead": []
+        },
+        "NewsController": {
+            "framework_driven": false,
+            "live": [
+                "Englishchecked",
+                "__construct",
+                "create",
+                "destroy",
+                "edit",
+                "edition",
+                "edition_destroy",
+                "edition_store",
+                "file_destroy",
+                "findByToken",
+                "index",
+                "mark_offline",
+                "mark_online",
+                "offline",
+                "online",
+                "sendEmail",
+                "sendEmailAll",
+                "show",
+                "store",
+                "subscriber_destroy",
+                "unsubscribe",
+                "update"
+            ],
+            "dead": []
+        },
+        "projectsController": {
+            "framework_driven": false,
+            "live": [
+                "Englishchecked",
+                "__construct",
+                "add_image",
+                "create",
+                "delete",
+                "delete_images",
+                "edit",
+                "index",
+                "indexjson",
+                "order_images",
+                "publish",
+                "show",
+                "store",
+                "store_image",
+                "unpublish",
+                "update"
+            ],
+            "dead": [
+                "show_projects"
+            ]
+        },
+        "SchoolController": {
+            "framework_driven": false,
+            "live": [
+                "__construct",
+                "add_image",
+                "create",
+                "delete",
+                "delete_images",
+                "edit",
+                "index",
+                "order_images",
+                "publish",
+                "show",
+                "store",
+                "store_image",
+                "unpublish",
+                "update"
+            ],
+            "dead": []
+        },
+        "ChildrenController": {
+            "framework_driven": false,
+            "live": [
+                "add_image",
+                "create",
+                "delete",
+                "delete_images",
+                "edit",
+                "index",
+                "order_images",
+                "publish",
+                "show",
+                "store",
+                "store_image",
+                "unpublish",
+                "update"
+            ],
+            "dead": []
+        },
+        "LeapController": {
+            "framework_driven": false,
+            "live": [
+                "add_image",
+                "create",
+                "delete",
+                "delete_images",
+                "edit",
+                "index",
+                "order_images",
+                "publish",
+                "show",
+                "store",
+                "store_image",
+                "unpublish",
+                "update"
+            ],
+            "dead": []
+        },
+        "InitiativesController": {
+            "framework_driven": false,
+            "live": [
+                "Englishchecked",
+                "__construct",
+                "create",
+                "destroy",
+                "edit",
+                "index",
+                "offline",
+                "online",
+                "show",
+                "store",
+                "update"
+            ],
+            "dead": []
+        },
+        "ContentController": {
+            "framework_driven": false,
+            "live": [
+                "ajaxForm",
+                "create_images",
+                "destroy",
+                "index",
+                "order_images",
+                "save_partners",
+                "show",
+                "show_partners",
+                "store_image",
+                "update"
+            ],
+            "dead": []
+        },
+        "frenchController": {
+            "framework_driven": false,
+            "live": [
+                "__construct",
+                "edit",
+                "index",
+                "make_paid",
+                "make_paid_all",
+                "show",
+                "store",
+                "translate",
+                "update"
+            ],
+            "dead": []
+        },
+        "UserController": {
+            "framework_driven": false,
+            "live": [
+                "__construct",
+                "activate",
+                "create",
+                "deactivate",
+                "delete",
+                "edit",
+                "index",
+                "store",
+                "update"
+            ],
+            "dead": []
+        },
+        "RootsController": {
+            "framework_driven": false,
+            "live": [
+                "create",
+                "destroy",
+                "edit",
+                "index",
+                "offline",
+                "online",
+                "store",
+                "update"
+            ],
+            "dead": []
+        },
+        "TeamController": {
+            "framework_driven": false,
+            "live": [
+                "__construct",
+                "create",
+                "destroy",
+                "edit",
+                "index",
+                "show",
+                "store",
+                "update"
+            ],
+            "dead": []
+        },
+        "InitiativesFrenchController": {
+            "framework_driven": false,
+            "live": [
+                "__construct",
+                "create",
+                "edit",
+                "paid",
+                "show",
+                "store",
+                "update"
+            ],
+            "dead": []
+        },
+        "NewsFrenchController": {
+            "framework_driven": false,
+            "live": [
+                "__construct",
+                "create",
+                "edit",
+                "paid",
+                "show",
+                "store",
+                "update"
+            ],
+            "dead": []
+        },
+        "SuccessFrenchController": {
+            "framework_driven": false,
+            "live": [
+                "__construct",
+                "create",
+                "edit",
+                "paid",
+                "show",
+                "store",
+                "update"
+            ],
+            "dead": []
+        },
+        "TestimoniesFrenchController": {
+            "framework_driven": false,
+            "live": [
+                "__construct",
+                "create",
+                "edit",
+                "paid",
+                "show",
+                "store",
+                "update"
+            ],
+            "dead": []
+        },
+        "LogController": {
+            "framework_driven": false,
+            "live": [
+                "__construct",
+                "clear_notifications",
+                "get_notifications",
+                "get_notifications_count",
+                "index",
+                "indexjson"
+            ],
+            "dead": []
+        },
+        "RegisterController": {
+            "framework_driven": true,
+            "live": [
+                "__construct",
+                "createAdmin",
+                "createTrainee",
+                "showAdminRegisterForm",
+                "showTraineeRegisterForm"
+            ],
+            "dead": []
+        },
+        "CoverController": {
+            "framework_driven": false,
+            "live": [
+                "create",
+                "destroy",
+                "order",
+                "show",
+                "store"
+            ],
+            "dead": []
+        },
+        "InitiativeImagesController": {
+            "framework_driven": false,
+            "live": [
+                "__construct",
+                "create",
+                "destroy",
+                "order_images",
+                "store"
+            ],
+            "dead": []
+        },
+        "NewsImagesController": {
+            "framework_driven": false,
+            "live": [
+                "__construct",
+                "create",
+                "destroy",
+                "order_images",
+                "store"
+            ],
+            "dead": []
+        },
+        "TestimoniesController": {
+            "framework_driven": false,
+            "live": [
+                "__construct",
+                "destroy",
+                "index",
+                "store",
+                "update"
+            ],
+            "dead": []
+        },
+        "LoginController": {
+            "framework_driven": true,
+            "live": [
+                "__construct",
+                "login",
+                "showLoginForm"
+            ],
+            "dead": []
+        },
+        "TrainingController": {
+            "framework_driven": false,
+            "live": [
+                "__construct",
+                "home",
+                "show_chat"
+            ],
+            "dead": [
+                "set_locale"
+            ]
+        },
+        "HomeController": {
+            "framework_driven": false,
+            "live": [
+                "__construct",
+                "home"
+            ],
+            "dead": []
+        },
+        "ForgotPasswordController": {
+            "framework_driven": true,
+            "live": [],
+            "dead": []
+        },
+        "ResetPasswordController": {
+            "framework_driven": true,
+            "live": [],
+            "dead": []
+        }
+    },
+    "skip": {
+        "InitiativeImagesRehabilitationController": {
+            "reason": "no reachable method",
+            "methods": [
+                "__construct",
+                "create",
+                "store",
+                "destroy"
+            ]
+        },
+        "MicroArController": {
+            "reason": "no reachable method",
+            "methods": [
+                "index"
+            ]
+        },
+        "StudentsController": {
+            "reason": "no reachable method",
+            "methods": [
+                "__construct",
+                "index"
+            ]
+        },
+        "SuccessController": {
+            "reason": "no reachable method",
+            "methods": [
+                "__construct",
+                "index",
+                "create",
+                "store",
+                "show",
+                "edit",
+                "update",
+                "destroy",
+                "online",
+                "offline",
+                "Englishchecked"
+            ]
+        },
+        "WebcamController": {
+            "reason": "no reachable method",
+            "methods": []
+        }
+    }
+}

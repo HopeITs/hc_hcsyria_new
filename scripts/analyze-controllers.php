@@ -1,0 +1,310 @@
+<?php
+
+/*
+ * Works out which legacy controller methods are actually reachable, so the
+ * rewrite ports live code only.
+ *
+ *   php scripts/analyze-controllers.php [path-to-legacy-project]
+ *
+ * Entry points are the route files. From there it follows $this->method()
+ * and self::method() calls inside each controller to find everything those
+ * routes can reach. Anything left over is dead.
+ *
+ * Uses PHP's tokenizer rather than regex, so commented-out routes and
+ * commented-out method bodies are excluded properly — the legacy code has a
+ * lot of both.
+ */
+
+/* Positional argument is the legacy project path; --flags are not. */
+$positional = array_values(array_filter(
+    array_slice($argv, 1),
+    fn($a) => ! str_starts_with($a, '--')
+));
+
+$legacy = $positional[0] ?? 'E:/03-Website/hcsyria_website';
+$controllerDir = $legacy . '/app/Http/Controllers';
+
+if (! is_dir($controllerDir)) {
+    exit("not a legacy project: $controllerDir\n");
+}
+
+/** Strips comments and whitespace, returning significant tokens only. */
+function significantTokens(string $php): array
+{
+    return array_values(array_filter(
+        token_get_all($php),
+        fn($t) => ! is_array($t) || ! in_array($t[0], [T_COMMENT, T_DOC_COMMENT, T_WHITESPACE], true)
+    ));
+}
+
+function tokenIs($token, int $type): bool
+{
+    return is_array($token) && $token[0] === $type;
+}
+
+/**
+ * Method names declared in a class, and the methods each one calls.
+ *
+ * @return array{methods: array<string,int>, calls: array<string, string[]>}
+ */
+function parseController(string $file): array
+{
+    $tokens = significantTokens(file_get_contents($file));
+    $methods = [];
+    $calls = [];
+    $current = null;
+    $depth = 0;
+
+    foreach ($tokens as $i => $token) {
+        // Track brace depth so we know when a method body ends.
+        if ($token === '{') { $depth++; continue; }
+        if ($token === '}') {
+            $depth--;
+            if ($current !== null && $depth <= 1) $current = null;
+            continue;
+        }
+
+        // A named function at class level is a method. An anonymous function
+        // is followed by '(' instead of a name.
+        if (tokenIs($token, T_FUNCTION) && isset($tokens[$i + 1]) && tokenIs($tokens[$i + 1], T_STRING)) {
+            $current = $tokens[$i + 1][1];
+            $methods[$current] = $token[2]; // line number
+            $calls[$current] ??= [];
+            continue;
+        }
+
+        if ($current === null) {
+            continue;
+        }
+
+        // $this->name(  /  self::name(  /  static::name(
+        $isThisCall = tokenIs($token, T_VARIABLE) && $token[1] === '$this'
+            && isset($tokens[$i + 1]) && tokenIs($tokens[$i + 1], T_OBJECT_OPERATOR)
+            && isset($tokens[$i + 2]) && tokenIs($tokens[$i + 2], T_STRING)
+            && ($tokens[$i + 3] ?? null) === '(';
+
+        $isStaticCall = (tokenIs($token, T_STRING) && in_array(strtolower($token[1]), ['self', 'static'], true))
+            && ($tokens[$i + 1] ?? null) !== null && tokenIs($tokens[$i + 1], T_DOUBLE_COLON)
+            && isset($tokens[$i + 2]) && tokenIs($tokens[$i + 2], T_STRING)
+            && ($tokens[$i + 3] ?? null) === '(';
+
+        if ($isThisCall || $isStaticCall) {
+            $calls[$current][] = $tokens[$i + 2][1];
+        }
+    }
+
+    foreach ($calls as $k => $v) {
+        $calls[$k] = array_values(array_unique($v));
+    }
+
+    return ['methods' => $methods, 'calls' => $calls];
+}
+
+/* ---- 1. Parse every controller ---------------------------------------- */
+
+$controllers = [];
+foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($controllerDir)) as $f) {
+    if ($f->getExtension() !== 'php') continue;
+    $name = $f->getBasename('.php');
+    if ($name === 'Controller') continue; // base class
+    $controllers[$name] = parseController($f->getPathname()) + ['path' => $f->getPathname()];
+}
+
+/* ---- 2. Entry points from the route files ------------------------------ */
+
+$entry = [];            // controller => [method, ...]
+$frameworkDriven = [];  // classes whose routes come from framework traits
+$routeCount = 0;
+
+foreach (glob($legacy . '/routes/*.php') as $routeFile) {
+    $tokens = significantTokens(file_get_contents($routeFile));
+
+    foreach ($tokens as $i => $token) {
+        // 'Controller@method' as a single string literal
+        if (tokenIs($token, T_CONSTANT_ENCAPSED_STRING)) {
+            $value = trim($token[1], "'\"");
+            if (str_contains($value, '@')) {
+                [$c, $m] = explode('@', $value, 2);
+                $c = basename(str_replace('\\', '/', $c));
+                if (isset($controllers[$c])) {
+                    $entry[$c][] = $m;
+                    $routeCount++;
+                }
+            }
+        }
+
+        // [Controller::class, 'method']
+        if (tokenIs($token, T_STRING) && isset($controllers[$token[1]])
+            && ($tokens[$i + 1] ?? null) !== null && tokenIs($tokens[$i + 1], T_DOUBLE_COLON)
+            && isset($tokens[$i + 2]) && tokenIs($tokens[$i + 2], T_CLASS)
+            && ($tokens[$i + 3] ?? null) === ','
+            && isset($tokens[$i + 4]) && tokenIs($tokens[$i + 4], T_CONSTANT_ENCAPSED_STRING)) {
+            $entry[$token[1]][] = trim($tokens[$i + 4][1], "'\"");
+            $routeCount++;
+        }
+
+        /*
+         * Auth::routes() registers the scaffolding auth controllers without
+         * naming them, so their methods are reachable even though no route
+         * line mentions them. Most of those methods come from framework
+         * traits rather than being declared in the class.
+         */
+        if (tokenIs($token, T_STRING) && $token[1] === 'Auth'
+            && ($tokens[$i + 1] ?? null) !== null && tokenIs($tokens[$i + 1], T_DOUBLE_COLON)
+            && isset($tokens[$i + 2]) && tokenIs($tokens[$i + 2], T_STRING)
+            && $tokens[$i + 2][1] === 'routes') {
+            foreach ([
+                'LoginController'          => ['showLoginForm', 'login', 'logout'],
+                'RegisterController'       => ['showRegistrationForm', 'register'],
+                'ForgotPasswordController' => ['showLinkRequestForm', 'sendResetLinkEmail'],
+                'ResetPasswordController'  => ['showResetForm', 'reset'],
+            ] as $controller => $methods) {
+                if (! isset($controllers[$controller])) continue;
+                foreach ($methods as $m) $entry[$controller][] = $m;
+
+                /*
+                 * These classes barely declare the methods the routes call —
+                 * those live in framework traits, which in turn call back into
+                 * the class (validator(), create(), redirectTo). Static call
+                 * following cannot see that, so treat every declared method as
+                 * live and flag the class for manual review instead.
+                 */
+                $frameworkDriven[$controller] = true;
+                foreach (array_keys($controllers[$controller]['methods']) as $m) {
+                    $entry[$controller][] = $m;
+                }
+                $routeCount++;
+            }
+        }
+    }
+}
+
+/* ---- 3. Follow internal calls from each entry point --------------------- */
+
+$reachable = [];
+foreach ($entry as $controller => $methods) {
+    $queue = array_unique($methods);
+    $seen = [];
+
+    while ($queue) {
+        $method = array_shift($queue);
+        if (isset($seen[$method])) continue;
+        $seen[$method] = true;
+
+        foreach ($controllers[$controller]['calls'][$method] ?? [] as $called) {
+            if (isset($controllers[$controller]['methods'][$called]) && ! isset($seen[$called])) {
+                $queue[] = $called;
+            }
+        }
+    }
+    $reachable[$controller] = $seen;
+}
+
+/* ---- 4. Report ---------------------------------------------------------- */
+
+$totalMethods = $totalLive = 0;
+$deadControllers = [];
+$rows = [];
+
+/*
+ * Magic methods are never called by name. __construct in particular runs on
+ * every request that hits the controller and is where the legacy code applies
+ * middleware, so it must not be reported as dead when the class is in use.
+ */
+$magic = ['__construct', '__invoke', '__get', '__set', '__call', '__callStatic'];
+
+foreach ($controllers as $name => $data) {
+    $all = array_keys($data['methods']);
+    $live = array_keys($reachable[$name] ?? []);
+    $live = array_values(array_intersect($live, $all));
+
+    if ($live !== []) {
+        $live = array_values(array_unique(array_merge(
+            $live,
+            array_intersect($magic, $all)
+        )));
+    }
+
+    $dead = array_values(array_diff($all, $live));
+
+    $totalMethods += count($all);
+    $totalLive += count($live);
+
+    if ($live === [] && ! isset($frameworkDriven[$name])) {
+        $deadControllers[] = $name;
+    }
+
+    $rows[$name] = ['all' => $all, 'live' => $live, 'dead' => $dead];
+}
+
+echo "ROUTE ENTRY POINTS: $routeCount\n";
+printf("CONTROLLERS: %d   METHODS: %d   REACHABLE: %d   DEAD: %d (%d%%)\n\n",
+    count($controllers), $totalMethods, $totalLive, $totalMethods - $totalLive,
+    $totalMethods ? round(($totalMethods - $totalLive) / $totalMethods * 100) : 0);
+
+echo "=== CONTROLLERS TO PORT ===\n";
+uasort($rows, fn($a, $b) => count($b['live']) <=> count($a['live']));
+foreach ($rows as $name => $r) {
+    if ($r['live'] === []) continue;
+    printf("\n%s  (%d of %d methods live)\n", $name, count($r['live']), count($r['all']));
+    sort($r['live']);
+    foreach ($r['live'] as $m) echo "    + $m\n";
+    if ($r['dead']) {
+        sort($r['dead']);
+        printf("    - dead (%d): %s\n", count($r['dead']), implode(', ', $r['dead']));
+    }
+}
+
+if ($deadControllers) {
+    echo "\n=== CONTROLLERS WITH NO REACHABLE METHOD (do not port) ===\n";
+    sort($deadControllers);
+    foreach ($deadControllers as $c) {
+        printf("    %-42s %d methods\n", $c, count($rows[$c]['all']));
+    }
+}
+
+/* ---- 5. Optional machine-readable manifest ------------------------------ */
+
+$manifestPath = null;
+foreach ($argv as $arg) {
+    if (str_starts_with($arg, '--manifest=')) {
+        $manifestPath = substr($arg, strlen('--manifest='));
+    }
+}
+
+if ($manifestPath !== null) {
+    $manifest = [
+        'generated_from' => $legacy,
+        'route_entry_points' => $routeCount,
+        'totals' => [
+            'controllers' => count($controllers),
+            'methods' => $totalMethods,
+            'reachable' => $totalLive,
+            'dead' => $totalMethods - $totalLive,
+        ],
+        'port' => [],
+        'skip' => [],
+    ];
+
+    foreach ($rows as $name => $r) {
+        sort($r['live']);
+        sort($r['dead']);
+
+        if ($r['live'] === [] && ! isset($frameworkDriven[$name])) {
+            $manifest['skip'][$name] = ['reason' => 'no reachable method', 'methods' => $r['all']];
+            continue;
+        }
+
+        $manifest['port'][$name] = [
+            'framework_driven' => isset($frameworkDriven[$name]),
+            'live' => $r['live'],
+            'dead' => $r['dead'],
+        ];
+    }
+
+    file_put_contents(
+        $manifestPath,
+        json_encode($manifest, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n"
+    );
+    echo "\nmanifest written to $manifestPath\n";
+}
