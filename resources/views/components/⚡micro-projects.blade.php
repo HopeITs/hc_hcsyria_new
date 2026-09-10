@@ -121,7 +121,8 @@ new class extends Component
 };
 ?>
 
-<div class="mx-auto max-w-[1400px] px-4 sm:px-6">
+{{-- Full-bleed container-fluid (fixed 12px padding), same as the legacy #projects-section > .container-fluid. --}}
+<div class="px-3">
     {{-- Filters --}}
     <div class="filters-section">
         <div class="flex flex-wrap items-center justify-center gap-4 sm:gap-10">
@@ -194,23 +195,29 @@ new class extends Component
         </p>
     </div>
 
-    {{-- Results --}}
-    <div class="mt-8 grid gap-6 {{ $activeView === 'grid' ? 'sm:grid-cols-3 lg:grid-cols-4' : 'sm:grid-cols-2 lg:grid-cols-3' }}">
-        @foreach ($this->projects as $project)
-            <x-project.card :$project wire:key="project-{{ $project->id }}"/>
-        @endforeach
-    </div>
-
-    @if ($this->projects->isEmpty())
-        <p class="result-line mt-10 text-center">No projects match these filters.</p>
-    @endif
-
-    @if ($this->hasMore)
-        <div class="mt-10 flex justify-center">
-            <button type="button" wire:click="loadMore" class="apply-btn loadmore">
-                <span wire:loading.remove wire:target="loadMore">Load More</span>
-                <span wire:loading wire:target="loadMore">Load More</span>
-            </button>
+    {{--
+        The legacy card row and Load More button sit inside three nested
+        .page-margin divs (see app.css for the measured-equivalent). The
+        filters bar above is NOT inset -- only this part is.
+    --}}
+    <div class="micro-page-margin">
+        <div class="mt-8 grid gap-6 {{ $activeView === 'grid' ? 'sm:grid-cols-3 lg:grid-cols-4' : 'sm:grid-cols-2 lg:grid-cols-3' }}">
+            @foreach ($this->projects as $project)
+                <x-project.card :$project wire:key="project-{{ $project->id }}"/>
+            @endforeach
         </div>
-    @endif
+
+        @if ($this->projects->isEmpty())
+            <p class="result-line mt-10 text-center">No projects match these filters.</p>
+        @endif
+
+        @if ($this->hasMore)
+            <div class="mt-10 flex justify-center">
+                <button type="button" wire:click="loadMore" class="apply-btn loadmore">
+                    <span wire:loading.remove wire:target="loadMore">Load More</span>
+                    <span wire:loading wire:target="loadMore">Load More</span>
+                </button>
+            </div>
+        @endif
+    </div>
 </div>

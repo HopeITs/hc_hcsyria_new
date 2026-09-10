@@ -39,9 +39,17 @@
     @keydown.escape.window="mobileOpen = false; openMenu = null"
     class="sticky top-0 z-40 bg-white"
 >
-    <div class="mx-auto flex max-w-[1400px] items-center gap-6 px-4 py-3 sm:px-6">
+    {{--
+        Legacy structure: <nav class="page-padding"><div class="container-fluid">...
+        page-padding gives 1vw/4.1vw; the nested container-fluid adds a further
+        fixed 12px each side. Two wrappers, not one, so the paddings add rather
+        than one overriding the other.
+    --}}
+    <div class="page-padding">
+    <div class="flex items-center gap-6 px-3">
         <a href="/home" class="navbar-brand shrink-0">
-            <img src="/images/logos/hc.svg" alt="Christian Hope Center" class="h-11 w-auto sm:h-14">
+            {{-- 8.5vw, matching #nav_logo in the legacy public/css/navbar.css --}}
+            <img src="/images/logos/hc.svg" alt="Christian Hope Center" class="h-auto w-[8.5vw]">
         </a>
 
         {{-- Desktop --}}
@@ -129,6 +137,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/>
             </svg>
         </button>
+    </div>
     </div>
 
     {{-- Mobile --}}

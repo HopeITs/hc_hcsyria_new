@@ -200,3 +200,23 @@
     @apply absolute left-4 -top-20 z-50 bg-brand-600 px-4 py-2 text-white;
     @apply focus:top-4;
 }
+
+/* .page-padding -- the legacy nav's horizontal rhythm: public/css/main-new-test.css */
+@utility page-padding {
+    padding: 1vw 4.1vw;
+}
+
+/*
+ * The legacy project grid is inset by three nested .page-margin divs
+ * (margin: 1% 4.7% each, compounding — see public/css/main-new-test.css),
+ * applied only around the card row, not the filters bar above it. Measured on
+ * the running legacy app: that nesting produces a content width of ~72.3% of
+ * its container at 1440px, which is coincidentally what .micro-page-margin
+ * declares directly (public/css/micro_page_new-test.css). Used here as the
+ * single-wrapper equivalent rather than reproducing three nested divs.
+ */
+@utility micro-page-margin {
+    max-width: 72.3vw;
+    margin-left: auto;
+    margin-right: auto;
+}
