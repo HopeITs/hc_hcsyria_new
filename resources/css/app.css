@@ -91,20 +91,6 @@
  * exactly the pixel values the live site renders (14.4px, 36px, 10.08px),
  * checked with getComputedStyle against the running legacy app.
  */
-@utility nav-link {
-    color: #676766;
-    font-size: 1vw;
-    line-height: 1.3;
-    text-transform: uppercase;
-}
-
-@utility dropdown-link {
-    display: block;
-    color: #676766;
-    font-size: 0.9vw;
-    line-height: 1.428571429;
-    white-space: normal;
-}
 
 @utility section-heading {
     color: #CF142B;
@@ -219,4 +205,98 @@
     max-width: 72.3vw;
     margin-left: auto;
     margin-right: auto;
+}
+
+/*
+ * Remaining navbar details, ported from public/css/navbar.css and measured
+ * live against the running legacy app (hover fills, dropdown offset/width,
+ * search pill) rather than guessed.
+ */
+
+/* .navbar { height: 5vw; padding-top: 1vw; padding-bottom: 0.5vw; } */
+@utility navbar-shell {
+    height: 5vw;
+    padding-top: 1vw;
+    padding-bottom: 0.5vw;
+}
+
+/* .nav-list-links:hover -- bold only, colour is unchanged */
+@utility nav-link {
+    color: #676766;
+    font-size: 1vw;
+    line-height: 1.3;
+    text-transform: uppercase;
+
+    &:hover {
+        font-weight: bold;
+        color: #676766;
+    }
+}
+
+/* .navbar-nav li.divider -- the vertical hairlines between HOME | WHO WE ARE | ... */
+@utility nav-divider {
+    width: 1px;
+    height: 1.5vw;
+    background-color: #676766;
+}
+
+/*
+ * .dropdown-menu.columns-2 { min-width: 37.4vw; } plus the Bootstrap default
+ * border/radius/padding it inherits, all measured on the open menu.
+ */
+@utility dropdown-panel {
+    min-width: 37.4vw;
+    border: 0.8px solid rgba(0, 0, 0, 0.15);
+    border-radius: 4px;
+    background-color: #fff;
+    padding: 0.6vw;
+}
+
+/*
+ * `.navbar .dropdown-menu { left: -12.5vw !important; }` -- the panel is
+ * shifted left of its trigger, not left-aligned under it.
+ */
+@utility dropdown-shift {
+    left: -12.5vw;
+}
+
+/* .dropdown_menu_big ul li a:hover -- solid red fill, not just a colour change */
+@utility dropdown-link {
+    display: block;
+    color: #676766;
+    font-size: 0.9vw;
+    line-height: 1.428571429;
+    white-space: normal;
+    padding: 0.3vw;
+
+    &:hover {
+        background-color: #BC1818;
+        color: #FFF;
+    }
+}
+
+/*
+ * The search box is one pill: input rounded on the left, button rounded on
+ * the right, flush in the middle. Both fixed vw sizes, not responsive
+ * Tailwind widths.
+ */
+@utility search-input {
+    width: 9vw;
+    height: 2.5vw;
+    font-size: 1vw;
+    border-radius: 4px 0 0 4px;
+
+    &:focus {
+        outline: none;
+        border-color: #bc1818;
+    }
+}
+
+@utility search-btn {
+    width: 3vw;
+    height: 2.5vw;
+    font-size: 1vw;
+    background-color: #bc1818;
+    color: #fff;
+    border-radius: 0 4px 4px 0;
 }

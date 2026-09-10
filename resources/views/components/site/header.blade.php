@@ -37,6 +37,16 @@
 <header
     x-data="{ mobileOpen: false, openMenu: null }"
     @keydown.escape.window="mobileOpen = false; openMenu = null"
+    {{--
+        The legacy nav is `position: fixed`, cleared by a `.page_start{padding-top:4vw}`
+        wrapper on the page content plus that content's own 1% top margin, which
+        land flush with the nav's bottom edge because the two values happen to sum
+        to ~72px at 1440px -- not a single deliberate offset. Reproducing that
+        compound, page-specific spacer is out of scope for the navbar component
+        itself; `sticky` gives the same "always visible, never overlapped" result
+        without requiring every page to carry a matching magic-number spacer.
+        Documented here as a deliberate difference, not an invented one.
+    --}}
     class="sticky top-0 z-40 bg-white"
 >
     {{--
@@ -46,31 +56,40 @@
         than one overriding the other.
     --}}
     <div class="page-padding">
-    <div class="flex items-center gap-6 px-3">
+    <div class="navbar-shell flex items-center gap-6 px-3">
         <a href="/home" class="navbar-brand shrink-0">
             {{-- 8.5vw, matching #nav_logo in the legacy public/css/navbar.css --}}
             <img src="/images/logos/hc.svg" alt="Christian Hope Center" class="h-auto w-[8.5vw]">
         </a>
 
         {{-- Desktop --}}
-        <nav aria-label="Main" class="hidden flex-1 items-center gap-5 lg:flex">
-            <a href="/home" class="nav-link">@lang('navbar.home')</a>
-            <a href="/who-we-are" class="nav-link">@lang('navbar.whoWeAre')</a>
+        <nav aria-label="Main" class="hidden flex-1 items-center gap-0 lg:flex">
+            <a href="/home" class="nav-link px-[1vw]">@lang('navbar.home')</a>
+            <span class="nav-divider" aria-hidden="true"></span>
 
-            <div class="relative" @mouseenter="openMenu = 'what'" @mouseleave="openMenu = null">
+            <a href="/who-we-are" class="nav-link px-[1vw]">@lang('navbar.whoWeAre')</a>
+            <span class="nav-divider" aria-hidden="true"></span>
+
+            <div class="relative px-[1vw]" @mouseenter="openMenu = 'what'" @mouseleave="openMenu = null">
                 <button type="button" class="nav-link" @click="openMenu = openMenu === 'what' ? null : 'what'"
                         :aria-expanded="(openMenu === 'what').toString()" aria-haspopup="true">
                     @lang('navbar.whatWeDo')
                 </button>
 
+                {{--
+                    `.navbar .dropdown-menu { left: -12.5vw !important; }` in the
+                    legacy CSS -- the panel sits shifted left of its trigger, not
+                    left-aligned under it. Width, border, radius and padding are
+                    all measured off the open menu on the running legacy page.
+                --}}
                 <div x-show="openMenu === 'what'" x-transition.opacity.duration.150ms x-cloak
-                     class="absolute left-0 top-full w-[38rem] border border-ink-100 bg-white p-6 shadow-lg">
-                    <div class="grid grid-cols-2 gap-x-8">
+                     class="dropdown-panel dropdown-shift absolute top-full">
+                    <div class="grid grid-cols-2 gap-x-[1vw]">
                         @foreach ($whatWeDo as $column)
-                            <ul class="space-y-1">
+                            <ul>
                                 @foreach ($column as $item)
                                     @isset($item['heading'])
-                                        <li class="pt-3 first:pt-0">
+                                        <li class="pt-[0.5vw] first:pt-0">
                                             <h2 class="section-heading">{{ $item['heading'] }}</h2>
                                         </li>
                                     @else
@@ -84,16 +103,17 @@
                     </div>
                 </div>
             </div>
+            <span class="nav-divider" aria-hidden="true"></span>
 
-            <div class="relative" @mouseenter="openMenu = 'pub'" @mouseleave="openMenu = null">
+            <div class="relative px-[1vw]" @mouseenter="openMenu = 'pub'" @mouseleave="openMenu = null">
                 <button type="button" class="nav-link" @click="openMenu = openMenu === 'pub' ? null : 'pub'"
                         :aria-expanded="(openMenu === 'pub').toString()" aria-haspopup="true">
                     Publications
                 </button>
 
                 <div x-show="openMenu === 'pub'" x-transition.opacity.duration.150ms x-cloak
-                     class="absolute left-0 top-full w-64 border border-ink-100 bg-white p-4 shadow-lg">
-                    <ul class="space-y-1">
+                     class="dropdown-panel absolute left-0 top-full min-w-64">
+                    <ul>
                         <li>
                             <a href="/rootsofhope" class="dropdown-link">
                                 Roots Of Hope <span class="newest">new</span>
@@ -109,18 +129,23 @@
                     </ul>
                 </div>
             </div>
+            <span class="nav-divider" aria-hidden="true"></span>
 
             {{-- Scrolls to the footer, as the legacy #contact-us handler did. --}}
-            <a href="#footer" class="nav-link">@lang('navbar.contactUs')</a>
+            <a href="#footer" class="nav-link px-[1vw]">@lang('navbar.contactUs')</a>
 
+            {{--
+                One pill: input rounded on the left, button rounded on the right,
+                flush in the middle -- exact sizes from `.navbar input` and
+                `#SearchBtn` (9vw / 3vw wide, 2.5vw tall, red button, uppercase).
+            --}}
             <form method="GET" action="/search" class="ml-auto flex items-center" role="search">
                 <label for="site-search" class="sr-only">@lang('navbar.contactUs')</label>
                 <input id="site-search" type="text" name="search" value="{{ request()->get('search') }}"
                        placeholder="search..." aria-label="Search"
-                       class="w-40 border border-ink-200 px-3 py-1.5 text-sm focus:border-brand-600 focus:outline-none xl:w-52">
-                <button type="submit" aria-label="Search"
-                        class="border border-l-0 border-ink-200 px-3 py-1.5 text-ink-600 hover:text-brand-600">
-                    <svg class="size-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                       class="search-input border border-r-0 border-ink-200 px-[0.5vw] focus:outline-none">
+                <button type="submit" aria-label="Search" class="search-btn flex items-center justify-center uppercase">
+                    <svg class="size-[1vw]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-4.35-4.35M17 11a6 6 0 1 1-12 0 6 6 0 0 1 12 0Z"/>
                     </svg>
                 </button>
@@ -175,7 +200,7 @@
                        aria-label="Search"
                        class="w-full border border-ink-200 px-3 py-2 text-sm focus:border-brand-600 focus:outline-none">
                 <button type="submit" aria-label="Search"
-                        class="border border-l-0 border-ink-200 px-3 py-2 text-ink-600">
+                        class="flex items-center justify-center bg-brand-600 px-4 py-2 text-white">
                     <svg class="size-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-4.35-4.35M17 11a6 6 0 1 1-12 0 6 6 0 0 1 12 0Z"/>
                     </svg>
