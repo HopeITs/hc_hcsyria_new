@@ -148,7 +148,7 @@ new class extends Component
 
         <div class="mt-4 flex flex-wrap items-center justify-center gap-4 sm:gap-10">
             <div class="flex items-center gap-3">
-                <span class="text-sm text-[#616262]">View</span>
+                <span class="nav-link normal-case">View</span>
 
                 <button type="button" wire:click="$set('activeView', 'tiles')"
                         aria-pressed="{{ $activeView === 'tiles' ? 'true' : 'false' }}" class="p-1">
@@ -177,12 +177,12 @@ new class extends Component
                 <label for="search-input" class="sr-only">Search</label>
                 <input id="search-input" type="text" placeholder="Search" wire:model="tempSearch"
                        wire:keydown.enter="applyFilters"
-                       class="border border-ink-200 px-3 py-1.5 text-sm focus:border-brand-600 focus:outline-none">
+                       class="border border-ink-200 px-3 py-1.5 text-[1vw] focus:border-brand-600 focus:outline-none">
                 <button type="button" wire:click="applyFilters" class="apply-btn">Apply</button>
             </div>
         </div>
 
-        <p class="mt-4 text-center text-sm text-[#616262]" aria-live="polite">
+        <p class="result-line mt-4 text-center" aria-live="polite">
             Filter Result:
             <span class="font-semibold">
                 {{ number_format($this->totalCount) }} ({{ number_format($this->totalProjectsCount) }}) Projects
@@ -197,12 +197,12 @@ new class extends Component
     {{-- Results --}}
     <div class="mt-8 grid gap-6 {{ $activeView === 'grid' ? 'sm:grid-cols-3 lg:grid-cols-4' : 'sm:grid-cols-2 lg:grid-cols-3' }}">
         @foreach ($this->projects as $project)
-            <x-project.card :$project :compact="$activeView === 'grid'" wire:key="project-{{ $project->id }}"/>
+            <x-project.card :$project wire:key="project-{{ $project->id }}"/>
         @endforeach
     </div>
 
     @if ($this->projects->isEmpty())
-        <p class="mt-10 text-center text-sm text-[#616262]">No projects match these filters.</p>
+        <p class="result-line mt-10 text-center">No projects match these filters.</p>
     @endif
 
     @if ($this->hasMore)
