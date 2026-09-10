@@ -63,21 +63,28 @@ host. Stripped during capture.
 
 No triggers and no views exist — checked, not assumed.
 
-## Finding: the translation split is in the schema, not just the models
+## Finding: the `*_english` tables are the content, not a translation
 
-The `*English` / `*French` model duplication is backed by real tables:
+The `*English` / `*French` model duplication is backed by real tables, but the
+naming misleads. The base tables carry metadata only — `news`, `initiatives`,
+`successes` and `testimonies` have **no text columns at all**. All text lives in
+`*_english`; French was the only genuine translation.
 
-| Base | English | French |
+| Base | English (content) | French (translation) |
 |---|---:|---:|
 | `news` (75) | `news_english` (75) | `news_french` (50) |
-| `projects` (2,954) | `projects_english` (2,726) | `projects_french` (901) |
-| `initiatives` (384) | `initiatives_english` (356) | `initiatives_french` (170) |
+| `projects` (2,947) | `projects_english` (2,947) | `projects_french` (1,082) |
+| `initiatives` (384) | `initiatives_english` (384) | `initiatives_french` (170) |
 | `successes` (271) | `successes_english` (271) | `successes_french` (129) |
 | `testimonies` (0) | `testimonies_english` (0) | `testimonies_french` (0) |
 
-The row counts show the real cost: French coverage runs 30–47% and English is
-incomplete too, so **every read path needs a fallback**, and each is hand-written
-today. Consolidating this is the single highest-leverage Phase 1 decision.
+Base-to-content is a strict 1:1 with zero orphans and zero gaps — verified on
+all five pairs. French coverage runs 30-47%, which is why every French read path
+in the legacy application needed a hand-written fallback.
+
+French is being dropped from the product. It is removed in application code
+only; the tables and their 1,431 rows stay in the database untouched. See
+`docs/legacy-schema-capture.md`.
 
 ## Defects recorded, not fixed
 
@@ -101,9 +108,12 @@ takes no default: `env('DB_LEGACY_PASSWORD', '')`.
 ## Reproducing this
 
 ```bash
-php artisan migrate --path=database/migrations/legacy   # into a scratch database
-php scripts/schema-compare.php hcsyria_db hcsyria_verify_db
+php artisan migrate                                      # into a dev database
+php scripts/schema-compare.php hcsyria_db hcsyria_new_db
+php scripts/generate-models.php                          # models from the schema
+php scripts/verify-models.php                            # models vs the schema
 ```
 
-`hcsyria_verify_db` is a throwaway database used for verification. It holds no
-data and can be dropped and rebuilt at any time.
+`hcsyria_new_db` is the development database. It holds no production data and
+can be dropped and rebuilt at any time. Schema commands against the live
+databases are refused — see `docs/legacy-schema-capture.md`.

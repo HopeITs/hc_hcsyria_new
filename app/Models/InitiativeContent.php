@@ -1,0 +1,32 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
+class InitiativeContent extends Model
+{
+    protected $table = 'initiatives_english';
+
+    protected $fillable = [
+        'initiative_id',
+        'title',
+        'organization',
+        'date_string',
+        'description',
+        'content',
+    ];
+
+    protected function casts(): array
+    {
+        return [
+            'initiative_id' => 'integer',
+        ];
+    }
+
+    public function initiative(): BelongsTo
+    {
+        return $this->belongsTo(Initiative::class, 'initiative_id', 'id');
+    }
+}

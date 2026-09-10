@@ -33,12 +33,20 @@ $fetch = function (string $db, string $sql) use ($pdo): array {
     return array_map(fn($r) => implode('|', array_map('strval', $r)), $st->fetchAll(PDO::FETCH_NUM));
 };
 
+/*
+ * Framework tables exist only in the new application, never in the legacy
+ * database. They are additive, so they are excluded from the diff rather than
+ * reported as drift.
+ */
+$framework = "'migrations','cache','cache_locks','jobs','job_batches','failed_jobs',
+              'sessions','password_reset_tokens','personal_access_tokens'";
+
 $queries = [
     'TABLES' => "SELECT TABLE_NAME,ENGINE FROM information_schema.TABLES
-                 WHERE TABLE_SCHEMA=? AND TABLE_TYPE='BASE TABLE' AND TABLE_NAME<>'migrations'
+                 WHERE TABLE_SCHEMA=? AND TABLE_TYPE='BASE TABLE' AND TABLE_NAME NOT IN ($framework)
                  ORDER BY TABLE_NAME",
     'COLUMNS' => "SELECT TABLE_NAME,COLUMN_NAME,COLUMN_TYPE,IS_NULLABLE,COALESCE(COLUMN_DEFAULT,'~'),EXTRA
-                  FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=? AND TABLE_NAME<>'migrations'
+                  FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=? AND TABLE_NAME NOT IN ($framework)
                   ORDER BY TABLE_NAME,COLUMN_NAME",
     'FKS' => "SELECT TABLE_NAME,COLUMN_NAME,REFERENCED_TABLE_NAME,REFERENCED_COLUMN_NAME
               FROM information_schema.KEY_COLUMN_USAGE
