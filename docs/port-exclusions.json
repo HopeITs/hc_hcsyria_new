@@ -1,0 +1,42 @@
+{
+    "_comment": "Areas that are reachable in the legacy application but must not be ported. Consumed by scripts/analyze-controllers.php, which moves these out of the port list and into the skip list.",
+
+    "controllers": {
+        "frenchController": "French is no longer a supported language.",
+        "InitiativesFrenchController": "French is no longer a supported language.",
+        "NewsFrenchController": "French is no longer a supported language.",
+        "SuccessFrenchController": "French is no longer a supported language.",
+        "TestimoniesFrenchController": "French is no longer a supported language.",
+        "RegisterController": "Cannot run: declares neither create() nor validator() for the RegistersUsers trait, references Admin and Trainee models that do not exist, and requires guards that are not configured. Authentication is being rebuilt."
+    },
+
+    "methods": {
+        "StudyController": {
+            "_reason": "The study-zone student and visit-entry tracking approach has been retired and is not being carried into the new application. The /admin/study and /admin/study/successes areas of this controller are unaffected and still port.",
+            "list": [
+                "studentsJSon",
+                "studentsEntriesJSon",
+                "students_create",
+                "students_destroy",
+                "students_edit",
+                "students_entries",
+                "students_store",
+                "students_update",
+                "students_visit",
+                "students_visit_create",
+                "studentsentry_destroy",
+                "filterEducation",
+                "filterEducationDegree",
+                "checkNational",
+                "checkEmail"
+            ]
+        }
+    },
+
+    "notes": {
+        "StudyController::index": "Mixed screen. It returns new.admin.study.index with study-zone initiatives (iniStudy, iniPending, sucstudy, sucpending) alongside student data (students, students_count, studentsentry_count and fifteen per-centre visit-count queries). Port the initiative half only; drop the student half.",
+        "routes": "Fifteen routes under /admin/student/* and /admin/studententry/* are retired with these methods, plus /admin/study/studentsjson and /admin/study/studentsentryjson.",
+        "students_index": "Routed at routes/web.php:293 but the method does not exist in StudyController, so /admin/student/index already returns a 500. Retired either way.",
+        "database": "The students and student_entries tables are left untouched in the database, as with the French tables. Nothing here changes the schema."
+    }
+}

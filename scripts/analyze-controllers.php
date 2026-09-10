@@ -200,6 +200,34 @@ foreach ($entry as $controller => $methods) {
     $reachable[$controller] = $seen;
 }
 
+/* ---- 3b. Apply the port exclusions -------------------------------------- */
+
+/*
+ * Some code is reachable but deliberately not being carried over — French, and
+ * the retired student/visit-entry tracking. Reachability cannot know that, so
+ * it is declared in docs/port-exclusions.json.
+ */
+$exclusions = ['controllers' => [], 'methods' => []];
+$exclusionsFile = __DIR__ . '/../docs/port-exclusions.json';
+if (is_file($exclusionsFile)) {
+    $decoded = json_decode(file_get_contents($exclusionsFile), true);
+    if (is_array($decoded)) {
+        $exclusions['controllers'] = $decoded['controllers'] ?? [];
+        $exclusions['methods'] = $decoded['methods'] ?? [];
+    }
+}
+
+$excludedMethodCount = 0;
+foreach ($reachable as $controller => $methods) {
+    $retired = $exclusions['methods'][$controller]['list'] ?? [];
+    foreach ($retired as $method) {
+        if (isset($reachable[$controller][$method])) {
+            unset($reachable[$controller][$method]);
+            $excludedMethodCount++;
+        }
+    }
+}
+
 /* ---- 4. Report ---------------------------------------------------------- */
 
 $totalMethods = $totalLive = 0;
@@ -213,7 +241,18 @@ $rows = [];
  */
 $magic = ['__construct', '__invoke', '__get', '__set', '__call', '__callStatic'];
 
+$excludedControllers = [];
+
 foreach ($controllers as $name => $data) {
+    // Reachable, but declared out of scope in docs/port-exclusions.json.
+    if (isset($exclusions['controllers'][$name])) {
+        $excludedControllers[$name] = [
+            'reason' => $exclusions['controllers'][$name],
+            'methods' => count($data['methods']),
+        ];
+        continue;
+    }
+
     $all = array_keys($data['methods']);
     $live = array_keys($reachable[$name] ?? []);
     $live = array_values(array_intersect($live, $all));
@@ -252,6 +291,17 @@ foreach ($rows as $name => $r) {
     if ($r['dead']) {
         sort($r['dead']);
         printf("    - dead (%d): %s\n", count($r['dead']), implode(', ', $r['dead']));
+    }
+}
+
+if ($excludedControllers || $exclusions['methods']) {
+    echo "\n=== EXCLUDED BY POLICY (do not port) ===\n";
+    foreach ($excludedControllers as $name => $info) {
+        printf("    %-38s %2d methods  %s\n", $name, $info['methods'], $info['reason']);
+    }
+    foreach ($exclusions['methods'] as $controller => $spec) {
+        printf("    %-38s %2d methods  %s\n",
+            $controller . ' (partial)', count($spec['list'] ?? []), $spec['_reason'] ?? '');
     }
 }
 

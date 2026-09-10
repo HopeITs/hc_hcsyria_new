@@ -25,6 +25,16 @@ use Illuminate\Support\Facades\DB;
 
 $failures = [];
 
+/*
+ * An uncaught exception here was being rendered by the framework's error
+ * handler and still exiting 0, which would let a broken query look like a
+ * passing run. Fail loudly instead.
+ */
+set_exception_handler(function (Throwable $e) {
+    fwrite(STDERR, "\nUNCAUGHT: " . get_class($e) . ': ' . $e->getMessage() . "\n");
+    exit(1);
+});
+
 function check(string $label, bool $ok, string $detail = ''): void
 {
     global $failures;
@@ -200,7 +210,6 @@ $ordered = $projects->pluck('created_at')->filter()->values();
 $isDescending = $ordered->toArray() === $ordered->sortDesc()->values()->toArray();
 check('projects log is ordered (legacy had no ORDER BY here)', $isDescending);
 
-/* ===================================================================== */
 echo "\n";
 if ($failures !== []) {
     printf("%d CHECK(S) FAILED:\n", count($failures));

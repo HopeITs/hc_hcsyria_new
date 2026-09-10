@@ -3,9 +3,9 @@
     "route_entry_points": 307,
     "totals": {
         "controllers": 34,
-        "methods": 344,
-        "reachable": 311,
-        "dead": 33
+        "methods": 302,
+        "reachable": 254,
+        "dead": 48
     },
     "port": {
         "PublicController": {
@@ -80,15 +80,11 @@
                 "__construct",
                 "add_image",
                 "add_image_success",
-                "checkEmail",
-                "checkNational",
                 "create",
                 "delete",
                 "delete_images",
                 "delete_images_success",
                 "edit",
-                "filterEducation",
-                "filterEducationDegree",
                 "index",
                 "order_images",
                 "publish",
@@ -96,17 +92,6 @@
                 "store",
                 "store_image",
                 "store_image_success",
-                "studentsEntriesJSon",
-                "studentsJSon",
-                "students_create",
-                "students_destroy",
-                "students_edit",
-                "students_entries",
-                "students_store",
-                "students_update",
-                "students_visit",
-                "students_visit_create",
-                "studentsentry_destroy",
                 "success_Englishchecked",
                 "success_create",
                 "success_destroy",
@@ -120,7 +105,23 @@
                 "unpublish",
                 "update"
             ],
-            "dead": []
+            "dead": [
+                "checkEmail",
+                "checkNational",
+                "filterEducation",
+                "filterEducationDegree",
+                "studentsEntriesJSon",
+                "studentsJSon",
+                "students_create",
+                "students_destroy",
+                "students_edit",
+                "students_entries",
+                "students_store",
+                "students_update",
+                "students_visit",
+                "students_visit_create",
+                "studentsentry_destroy"
+            ]
         },
         "DiscController": {
             "framework_driven": false,
@@ -294,21 +295,6 @@
             ],
             "dead": []
         },
-        "frenchController": {
-            "framework_driven": false,
-            "live": [
-                "__construct",
-                "edit",
-                "index",
-                "make_paid",
-                "make_paid_all",
-                "show",
-                "store",
-                "translate",
-                "update"
-            ],
-            "dead": []
-        },
         "UserController": {
             "framework_driven": false,
             "live": [
@@ -352,58 +338,6 @@
             ],
             "dead": []
         },
-        "InitiativesFrenchController": {
-            "framework_driven": false,
-            "live": [
-                "__construct",
-                "create",
-                "edit",
-                "paid",
-                "show",
-                "store",
-                "update"
-            ],
-            "dead": []
-        },
-        "NewsFrenchController": {
-            "framework_driven": false,
-            "live": [
-                "__construct",
-                "create",
-                "edit",
-                "paid",
-                "show",
-                "store",
-                "update"
-            ],
-            "dead": []
-        },
-        "SuccessFrenchController": {
-            "framework_driven": false,
-            "live": [
-                "__construct",
-                "create",
-                "edit",
-                "paid",
-                "show",
-                "store",
-                "update"
-            ],
-            "dead": []
-        },
-        "TestimoniesFrenchController": {
-            "framework_driven": false,
-            "live": [
-                "__construct",
-                "create",
-                "edit",
-                "paid",
-                "show",
-                "store",
-                "update"
-            ],
-            "dead": []
-        },
         "LogController": {
             "framework_driven": false,
             "live": [
@@ -413,17 +347,6 @@
                 "get_notifications_count",
                 "index",
                 "indexjson"
-            ],
-            "dead": []
-        },
-        "RegisterController": {
-            "framework_driven": true,
-            "live": [
-                "__construct",
-                "createAdmin",
-                "createTrainee",
-                "showAdminRegisterForm",
-                "showTraineeRegisterForm"
             ],
             "dead": []
         },
