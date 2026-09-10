@@ -108,12 +108,12 @@ takes no default: `env('DB_LEGACY_PASSWORD', '')`.
 ## Reproducing this
 
 ```bash
-php artisan migrate                                      # into a dev database
-php scripts/schema-compare.php hcsyria_db hcsyria_new_db
-php scripts/generate-models.php                          # models from the schema
-php scripts/verify-models.php                            # models vs the schema
+php scripts/verify-schema.php     # rebuild the schema in a temp db and diff it
+php scripts/generate-models.php   # models from the schema
+php scripts/verify-models.php     # models vs the schema
 ```
 
-`hcsyria_new_db` is the development database. It holds no production data and
-can be dropped and rebuilt at any time. Schema commands against the live
-databases are refused — see `docs/legacy-schema-capture.md`.
+The application runs against `hcsyria_db` itself; no separate development
+database is created. `verify-schema.php` makes its own throwaway database and
+drops it again. Schema commands against the live databases are refused — see
+`docs/legacy-schema-capture.md`.

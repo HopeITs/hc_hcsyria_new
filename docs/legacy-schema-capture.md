@@ -10,14 +10,30 @@ side by side against the *same* database while routes move across one at a time.
 The moment this schema diverges from the live one, the legacy application breaks.
 So the database is treated as fixed, and every simplification happens in code.
 
+## One database, not several
+
+The application points at `hcsyria_db` directly — the same database the legacy
+application uses. There is no separate development database, and creating one
+is not needed:
+
+- **Session, cache and queue drivers are `file`/`file`/`sync`**, matching the
+  legacy application. Laravel 12 defaults all three to `database`, which is the
+  only thing that would require `sessions`, `cache` and `jobs` tables the shared
+  database does not have. With file drivers the new app needs **no extra tables
+  at all**.
+- Because nothing is copied, there is no sync step and no drift between what
+  the two applications see.
+
+`database/migrations` therefore describes the schema; it is not run against
+`hcsyria_db`. Its job is to make the schema reviewable in git and rebuildable
+from scratch elsewhere.
+
 ## Schema capture
 
-`database/migrations` holds 107 migrations reverse-engineered from the live
-database (69 tables, 61 foreign keys, 2 stored procedures), plus three framework
-migrations for tables the legacy database never had (`sessions`,
-`password_reset_tokens`, `cache`, `jobs`).
+107 migrations reverse-engineered from the live database: 69 tables, 61 foreign
+keys, 2 stored procedures.
 
-Verified by rebuilding into an empty database and diffing every table, column
+Verified by rebuilding into a throwaway database and diffing every table, column
 and foreign key against the source:
 
 | | Live | Rebuilt |
@@ -27,9 +43,11 @@ and foreign key against the source:
 | Foreign keys | 61 | **61 exact** |
 
 ```bash
-php artisan migrate                                      # into a dev database
-php scripts/schema-compare.php hcsyria_db hcsyria_new_db
+php scripts/verify-schema.php   # creates a temp db, migrates, diffs, drops it
 ```
+
+The temp database is removed on every exit path, including failure, so
+verification never leaves databases behind.
 
 Three deliberate deviations, all from the generator's type mapping rather than
 from choice: `info_disc` and `projects_donors` rebuild as InnoDB instead of
@@ -86,15 +104,25 @@ every merged column matching, and zero orphans or duplicate keys.
 
 That is a cutover-time step, not a step to bake into this schema now.
 
-## Protection against writing to production
+## Protection against destroying the shared database
 
-`AppServiceProvider` refuses to run `migrate`, `migrate:*`, `db:wipe` or
-`schema:*` when the target database is one of the twelve live databases. It
-hooks `CommandStarting`, which fires before Laravel creates its `migrations`
-table, with a `MigrationsStarted` listener behind it for in-process calls.
+Because the application points at `hcsyria_db`, a stray `php artisan migrate`
+is a live risk rather than a hypothetical one — `migrate:fresh` would drop every
+table in it.
 
-This is not theoretical. `migrate:fresh` against `hcsyria_db` would drop every
-table in production; it is now refused.
+`AppServiceProvider` refuses `migrate`, `migrate:*`, `db:wipe` and `schema:*`
+whenever the target is one of the twelve live databases. It hooks
+`CommandStarting`, which fires before Laravel creates its `migrations` table;
+hooking `MigrationsStarted` instead is too late, and lets that table be created
+in the target first.
+
+A second `MigrationsStarted` listener covers in-process migrations (tests,
+`Artisan::call`). Note that this event carries only `$method` and `$options` —
+it has no `$connection` property — so the connection is resolved from
+`options['database']`, falling back to the default connection.
+
+`scripts/verify-schema.php` still works because it overrides `DB_DATABASE` for
+its child process, so the guard sees a scratch database and allows it.
 
 ## Open decision
 

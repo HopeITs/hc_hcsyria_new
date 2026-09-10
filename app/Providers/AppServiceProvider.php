@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Console\Events\CommandStarting;
 use Illuminate\Database\Events\MigrationsStarted;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 use RuntimeException;
@@ -80,9 +81,18 @@ class AppServiceProvider extends ServiceProvider
         /*
          * Defence in depth: catches migrations triggered in-process (tests,
          * Artisan::call) where no console command event is dispatched.
+         *
+         * MigrationsStarted carries only $method and $options — the connection
+         * name arrives as options['database'] when --database was passed, and
+         * is otherwise the default connection.
          */
         Event::listen(function (MigrationsStarted $event) {
-            $this->refuseIfProtected($event->connection->getDatabaseName(), 'migrate');
+            $connection = $event->options['database'] ?? config('database.default');
+
+            $this->refuseIfProtected(
+                DB::connection($connection)->getDatabaseName(),
+                'migrate'
+            );
         });
     }
 
