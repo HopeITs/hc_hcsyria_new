@@ -9,7 +9,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class ProjectSubCategory extends Model
 {
     protected $table = 'subcategory';
+
     protected $primaryKey = 'ID';
+
     public $timestamps = false;
 
     protected $fillable = [
@@ -24,11 +26,13 @@ class ProjectSubCategory extends Model
         ];
     }
 
+    /** @return BelongsTo<Category, $this> */
     public function categoryID(): BelongsTo
     {
         return $this->belongsTo(Category::class, 'Category_ID', 'ID');
     }
 
+    /** @return HasMany<Project, $this> */
     public function projects(): HasMany
     {
         return $this->hasMany(Project::class, 'SubCategory_ID', 'ID');

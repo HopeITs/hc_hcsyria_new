@@ -10,37 +10,41 @@
  * Exits non-zero if anything fails.
  */
 
-require __DIR__ . '/../vendor/autoload.php';
+require __DIR__.'/../vendor/autoload.php';
 
-$app = require __DIR__ . '/../bootstrap/app.php';
-$app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();
-
+use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Schema;
 
+$app = require __DIR__.'/../bootstrap/app.php';
+$app->make(Kernel::class)->bootstrap();
+
 $failures = [];
-$stats    = ['models' => 0, 'relations' => 0, 'columns' => 0];
+$stats = ['models' => 0, 'relations' => 0, 'columns' => 0];
 
-foreach (glob(__DIR__ . '/../app/Models/*.php') as $file) {
-    $class = 'App\\Models\\' . basename($file, '.php');
+foreach (glob(__DIR__.'/../app/Models/*.php') as $file) {
+    $class = 'App\\Models\\'.basename($file, '.php');
 
-    if (!class_exists($class)) {
+    if (! class_exists($class)) {
         $failures[] = "$class: class does not autoload";
+
         continue;
     }
 
-    $model = new $class();
-    if (!$model instanceof Model) {
+    $model = new $class;
+    if (! $model instanceof Model) {
         $failures[] = "$class: not an Eloquent model";
+
         continue;
     }
 
     $stats['models']++;
     $table = $model->getTable();
 
-    if (!Schema::hasTable($table)) {
+    if (! Schema::hasTable($table)) {
         $failures[] = "$class: table '$table' does not exist";
+
         continue;
     }
 
@@ -48,14 +52,16 @@ foreach (glob(__DIR__ . '/../app/Models/*.php') as $file) {
 
     foreach ($model->getFillable() as $column) {
         $stats['columns']++;
-        if (!in_array($column, $actual, true)) {
+        if (! in_array($column, $actual, true)) {
             $failures[] = "$class: \$fillable column '$column' missing from '$table'";
         }
     }
 
     foreach (array_keys($model->getCasts()) as $column) {
-        if ($column === $model->getKeyName()) continue;
-        if (!in_array($column, $actual, true)) {
+        if ($column === $model->getKeyName()) {
+            continue;
+        }
+        if (! in_array($column, $actual, true)) {
             $failures[] = "$class: cast column '$column' missing from '$table'";
         }
     }
@@ -63,26 +69,29 @@ foreach (glob(__DIR__ . '/../app/Models/*.php') as $file) {
     // Every public no-arg method with a relation return type must resolve.
     $reflection = new ReflectionClass($model);
     foreach ($reflection->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
-        if ($method->class !== $class || $method->getNumberOfParameters() > 0) continue;
+        if ($method->class !== $class || $method->getNumberOfParameters() > 0) {
+            continue;
+        }
 
         $type = $method->getReturnType();
-        if (!$type instanceof ReflectionNamedType || !is_subclass_of($type->getName(), Relation::class)) {
+        if (! $type instanceof ReflectionNamedType || ! is_subclass_of($type->getName(), Relation::class)) {
             continue;
         }
 
         $stats['relations']++;
         try {
             $relation = $model->{$method->getName()}();
-            $related  = $relation->getRelated();
+            $related = $relation->getRelated();
 
-            if (!Schema::hasTable($related->getTable())) {
+            if (! Schema::hasTable($related->getTable())) {
                 $failures[] = "$class::{$method->getName()}(): related table '{$related->getTable()}' missing";
+
                 continue;
             }
             // Force query compilation so bad keys surface here, not in production.
             $relation->toBase()->toSql();
         } catch (Throwable $e) {
-            $failures[] = "$class::{$method->getName()}(): " . $e->getMessage();
+            $failures[] = "$class::{$method->getName()}(): ".$e->getMessage();
         }
     }
 }
@@ -98,5 +107,7 @@ if ($failures === []) {
 }
 
 printf("\n%d FAILURE(S):\n", count($failures));
-foreach ($failures as $f) echo "  $f\n";
+foreach ($failures as $f) {
+    echo "  $f\n";
+}
 exit(1);

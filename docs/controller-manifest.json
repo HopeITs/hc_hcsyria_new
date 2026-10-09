@@ -1,10 +1,10 @@
 {
-    "generated_from": "E:/03-Website/hcsyria_website",
-    "route_entry_points": 307,
+    "generated_from": "E:/03-Website/hcsyria.org Website/hcsyria.org-website",
+    "route_entry_points": 314,
     "totals": {
         "controllers": 34,
-        "methods": 302,
-        "reachable": 254,
+        "methods": 324,
+        "reachable": 276,
         "dead": 48
     },
     "port": {
@@ -22,6 +22,8 @@
                 "discByPlace",
                 "disc_team",
                 "family_to_family",
+                "getPublishedProjectSustainabilityRate",
+                "getSortedDonors",
                 "get_cuactivities_IDs",
                 "get_discactivities_IDs",
                 "get_leapactivities_IDs",
@@ -37,7 +39,7 @@
                 "leap",
                 "leap_team",
                 "micro_project_new_test",
-                "news_by_type",
+                "newsletter",
                 "oneTypeOfproject",
                 "our_team",
                 "roots",
@@ -65,14 +67,179 @@
                 "get_projects_IDs",
                 "get_study_copy",
                 "micro_project_new",
-                "news_by_edition",
-                "news_by_what",
-                "news_by_who",
                 "search_list_beneficiaries",
                 "search_list_initiatives",
                 "search_list_projects",
                 "studyzone_all"
-            ]
+            ],
+            "views": {
+                "about": [
+                    "public.about"
+                ],
+                "about_us": [
+                    "new.public.who-we-are"
+                ],
+                "childrenUni": [
+                    "new.public.children-uni"
+                ],
+                "children_team": [
+                    "new.public.team"
+                ],
+                "christian_youth": [
+                    "new.public.youth"
+                ],
+                "christian_youth_member": [
+                    "new.public.youth-member"
+                ],
+                "contact": [
+                    "public.contact"
+                ],
+                "disc": [
+                    "new.public.disc"
+                ],
+                "discByPlace": [
+                    "new.errors.404",
+                    "public.disc-inner"
+                ],
+                "disc_team": [
+                    "new.public.team"
+                ],
+                "family_to_family": [
+                    "new.public.family-to-family"
+                ],
+                "homepage": [
+                    "new.public.home"
+                ],
+                "homepage_lb": [
+                    "public.coming-soon"
+                ],
+                "homeworkRoom": [
+                    "public.homework-room"
+                ],
+                "info_disc": [
+                    "new.public.info-disc"
+                ],
+                "initiative": [
+                    "new.errors.404",
+                    "new.public.initiative-test"
+                ],
+                "initiativeOfProject": [
+                    "new.errors.404"
+                ],
+                "initiatives_by_type": [
+                    "new.errors.404",
+                    "new.public.initiatives"
+                ],
+                "leap": [
+                    "new.public.leap"
+                ],
+                "leap_team": [
+                    "new.public.team"
+                ],
+                "micro_project_new_test": [
+                    "new.public.micro-project-new-test"
+                ],
+                "newsletter": [
+                    "new.public.newsletter"
+                ],
+                "oneTypeOfproject": [
+                    "new.errors.404",
+                    "public.initiatives"
+                ],
+                "our_team": [
+                    "new.public.team-private"
+                ],
+                "roots": [
+                    "new.public.rootsofhope"
+                ],
+                "school_to_school": [
+                    "new.public.school-to-school"
+                ],
+                "search": [
+                    "new.public.search"
+                ],
+                "show_article": [
+                    "new.errors.404",
+                    "new.public.article"
+                ],
+                "show_damascus_hope_team": [
+                    "new.public.team"
+                ],
+                "show_homs_hope_team": [
+                    "new.public.team"
+                ],
+                "show_latakia_hope_team": [
+                    "new.public.team"
+                ],
+                "show_team": [
+                    "new.public.team"
+                ],
+                "studyzone": [
+                    "new.public.study-zone"
+                ],
+                "studyzone_team": [
+                    "new.public.team"
+                ],
+                "test": [
+                    "public.test"
+                ]
+            }
+        },
+        "NewsController": {
+            "framework_driven": false,
+            "live": [
+                "Englishchecked",
+                "__construct",
+                "create",
+                "destroy",
+                "edit",
+                "edition",
+                "edition_destroy",
+                "edition_store",
+                "file_destroy",
+                "findByToken",
+                "hide",
+                "index",
+                "mark_offline",
+                "mark_online",
+                "offline",
+                "online",
+                "sendEmail",
+                "sendEmailAll",
+                "show",
+                "store",
+                "subscriber_destroy",
+                "tag_destroy",
+                "tag_store",
+                "tag_update",
+                "unhide",
+                "unsubscribe",
+                "update"
+            ],
+            "dead": [
+                "preview"
+            ],
+            "views": {
+                "create": [
+                    "new.admin.news.create"
+                ],
+                "edit": [
+                    "new.admin.news.edit"
+                ],
+                "edition": [
+                    "new.admin.news.edition"
+                ],
+                "index": [
+                    "new.admin.news.index"
+                ],
+                "show": [
+                    "new.admin.news.view"
+                ],
+                "unsubscribe": [
+                    "new.public.unsubscribe",
+                    "new.errors.404"
+                ]
+            }
         },
         "StudyController": {
             "framework_driven": false,
@@ -121,11 +288,46 @@
                 "students_visit",
                 "students_visit_create",
                 "studentsentry_destroy"
-            ]
+            ],
+            "views": {
+                "add_image": [
+                    "new.admin.study.images.create"
+                ],
+                "add_image_success": [
+                    "new.admin.study.successes.images.create"
+                ],
+                "create": [
+                    "new.admin.study.create"
+                ],
+                "edit": [
+                    "new.admin.study.edit"
+                ],
+                "index": [
+                    "new.admin.study.index"
+                ],
+                "show": [
+                    "new.errors.404",
+                    "new.admin.study.view"
+                ],
+                "success_create": [
+                    "new.admin.study.successes.create"
+                ],
+                "success_edit": [
+                    "new.admin.study.successes.edit"
+                ],
+                "success_index": [
+                    "new.admin.study.successes.index"
+                ],
+                "success_show": [
+                    "new.errors.404",
+                    "new.admin.study.successes.view"
+                ]
+            }
         },
         "DiscController": {
             "framework_driven": false,
             "live": [
+                "__construct",
                 "add_image",
                 "create",
                 "delete",
@@ -150,35 +352,38 @@
                 "unpublish",
                 "update"
             ],
-            "dead": []
-        },
-        "NewsController": {
-            "framework_driven": false,
-            "live": [
-                "Englishchecked",
-                "__construct",
-                "create",
-                "destroy",
-                "edit",
-                "edition",
-                "edition_destroy",
-                "edition_store",
-                "file_destroy",
-                "findByToken",
-                "index",
-                "mark_offline",
-                "mark_online",
-                "offline",
-                "online",
-                "sendEmail",
-                "sendEmailAll",
-                "show",
-                "store",
-                "subscriber_destroy",
-                "unsubscribe",
-                "update"
-            ],
-            "dead": []
+            "dead": [],
+            "views": {
+                "add_image": [
+                    "new.admin.disc.images.create"
+                ],
+                "create": [
+                    "new.admin.disc.create"
+                ],
+                "edit": [
+                    "new.admin.disc.edit"
+                ],
+                "index": [
+                    "new.admin.disc.index"
+                ],
+                "show": [
+                    "new.errors.404",
+                    "new.admin.disc.view"
+                ],
+                "success_create": [
+                    "new.admin.disc.successes.create"
+                ],
+                "success_edit": [
+                    "new.admin.disc.successes.edit"
+                ],
+                "success_index": [
+                    "new.admin.disc.successes.index"
+                ],
+                "success_show": [
+                    "new.errors.404",
+                    "new.admin.disc.successes.view"
+                ]
+            }
         },
         "projectsController": {
             "framework_driven": false,
@@ -190,8 +395,57 @@
                 "delete",
                 "delete_images",
                 "edit",
+                "hide",
                 "index",
                 "indexjson",
+                "microTextChanged",
+                "order_images",
+                "publish",
+                "show",
+                "store",
+                "store_image",
+                "unhide",
+                "unpublish",
+                "update"
+            ],
+            "dead": [
+                "show_projects"
+            ],
+            "views": {
+                "add_image": [
+                    "new.admin.add-image"
+                ],
+                "create": [
+                    "new.admin.project-create"
+                ],
+                "delete_images": [
+                    "new.admin.add-image"
+                ],
+                "edit": [
+                    "new.admin.project-edit"
+                ],
+                "index": [
+                    "new.admin.projects-index"
+                ],
+                "show": [
+                    "new.errors.404",
+                    "new.admin.project-view"
+                ],
+                "store_image": [
+                    "new.admin.add-image"
+                ]
+            }
+        },
+        "ChildrenController": {
+            "framework_driven": false,
+            "live": [
+                "__construct",
+                "add_image",
+                "create",
+                "delete",
+                "delete_images",
+                "edit",
+                "index",
                 "order_images",
                 "publish",
                 "show",
@@ -200,9 +454,63 @@
                 "unpublish",
                 "update"
             ],
-            "dead": [
-                "show_projects"
-            ]
+            "dead": [],
+            "views": {
+                "add_image": [
+                    "new.admin.children.images.create"
+                ],
+                "create": [
+                    "new.admin.children.create"
+                ],
+                "edit": [
+                    "new.admin.children.edit"
+                ],
+                "index": [
+                    "new.admin.children.index"
+                ],
+                "show": [
+                    "new.errors.404",
+                    "new.admin.children.view"
+                ]
+            }
+        },
+        "LeapController": {
+            "framework_driven": false,
+            "live": [
+                "__construct",
+                "add_image",
+                "create",
+                "delete",
+                "delete_images",
+                "edit",
+                "index",
+                "order_images",
+                "publish",
+                "show",
+                "store",
+                "store_image",
+                "unpublish",
+                "update"
+            ],
+            "dead": [],
+            "views": {
+                "add_image": [
+                    "new.admin.leap.images.create"
+                ],
+                "create": [
+                    "new.admin.leap.create"
+                ],
+                "edit": [
+                    "new.admin.leap.edit"
+                ],
+                "index": [
+                    "new.admin.leap.index"
+                ],
+                "show": [
+                    "new.errors.404",
+                    "new.admin.leap.view"
+                ]
+            }
         },
         "SchoolController": {
             "framework_driven": false,
@@ -222,45 +530,25 @@
                 "unpublish",
                 "update"
             ],
-            "dead": []
-        },
-        "ChildrenController": {
-            "framework_driven": false,
-            "live": [
-                "add_image",
-                "create",
-                "delete",
-                "delete_images",
-                "edit",
-                "index",
-                "order_images",
-                "publish",
-                "show",
-                "store",
-                "store_image",
-                "unpublish",
-                "update"
-            ],
-            "dead": []
-        },
-        "LeapController": {
-            "framework_driven": false,
-            "live": [
-                "add_image",
-                "create",
-                "delete",
-                "delete_images",
-                "edit",
-                "index",
-                "order_images",
-                "publish",
-                "show",
-                "store",
-                "store_image",
-                "unpublish",
-                "update"
-            ],
-            "dead": []
+            "dead": [],
+            "views": {
+                "add_image": [
+                    "new.admin.school.images.create"
+                ],
+                "create": [
+                    "new.admin.school.create"
+                ],
+                "edit": [
+                    "new.admin.school.edit"
+                ],
+                "index": [
+                    "new.admin.school.index"
+                ],
+                "show": [
+                    "new.errors.404",
+                    "new.admin.school.view"
+                ]
+            }
         },
         "InitiativesController": {
             "framework_driven": false,
@@ -270,18 +558,36 @@
                 "create",
                 "destroy",
                 "edit",
+                "hide",
                 "index",
                 "offline",
                 "online",
                 "show",
                 "store",
+                "unhide",
                 "update"
             ],
-            "dead": []
+            "dead": [],
+            "views": {
+                "create": [
+                    "new.admin.initiatives.create"
+                ],
+                "edit": [
+                    "new.admin.initiatives.edit"
+                ],
+                "index": [
+                    "new.admin.initiatives.index"
+                ],
+                "show": [
+                    "new.errors.404",
+                    "new.admin.initiatives.view"
+                ]
+            }
         },
         "ContentController": {
             "framework_driven": false,
             "live": [
+                "__construct",
                 "ajaxForm",
                 "create_images",
                 "destroy",
@@ -293,7 +599,52 @@
                 "store_image",
                 "update"
             ],
-            "dead": []
+            "dead": [],
+            "views": {
+                "ajaxForm": [
+                    "new.admin.partials.public-content-form"
+                ],
+                "create_images": [
+                    "new.admin.content.projectbrief-media"
+                ],
+                "index": [
+                    "new.admin.content.index"
+                ],
+                "show": [
+                    "new.errors.404",
+                    "new.admin.content.view"
+                ],
+                "show_partners": [
+                    "new.errors.404",
+                    "new.admin.content.view-partners"
+                ]
+            }
+        },
+        "RootsController": {
+            "framework_driven": false,
+            "live": [
+                "__construct",
+                "create",
+                "destroy",
+                "edit",
+                "index",
+                "offline",
+                "online",
+                "store",
+                "update"
+            ],
+            "dead": [],
+            "views": {
+                "create": [
+                    "new.admin.roots.create"
+                ],
+                "edit": [
+                    "new.admin.roots.edit"
+                ],
+                "index": [
+                    "new.admin.roots.index"
+                ]
+            }
         },
         "UserController": {
             "framework_driven": false,
@@ -308,21 +659,19 @@
                 "store",
                 "update"
             ],
-            "dead": []
-        },
-        "RootsController": {
-            "framework_driven": false,
-            "live": [
-                "create",
-                "destroy",
-                "edit",
-                "index",
-                "offline",
-                "online",
-                "store",
-                "update"
-            ],
-            "dead": []
+            "dead": [],
+            "views": {
+                "create": [
+                    "new.admin.users.user-create"
+                ],
+                "edit": [
+                    "new.errors.404",
+                    "new.admin.users.user-edit"
+                ],
+                "index": [
+                    "new.admin.users.index"
+                ]
+            }
         },
         "TeamController": {
             "framework_driven": false,
@@ -336,7 +685,62 @@
                 "store",
                 "update"
             ],
-            "dead": []
+            "dead": [],
+            "views": {
+                "create": [
+                    "new.admin.team.create"
+                ],
+                "edit": [
+                    "new.admin.team.edit"
+                ],
+                "index": [
+                    "new.admin.team.index"
+                ],
+                "show": [
+                    "errors.404",
+                    "new.admin.team.view"
+                ]
+            }
+        },
+        "LoginController": {
+            "framework_driven": true,
+            "live": [
+                "__construct",
+                "authenticated",
+                "loggedOut",
+                "login",
+                "logout",
+                "safeRedirectTarget",
+                "showLoginForm"
+            ],
+            "dead": [],
+            "views": {
+                "showLoginForm": [
+                    "new.auth.login"
+                ]
+            }
+        },
+        "CoverController": {
+            "framework_driven": false,
+            "live": [
+                "__construct",
+                "create",
+                "destroy",
+                "order",
+                "show",
+                "store"
+            ],
+            "dead": [
+                "updateCaption"
+            ],
+            "views": {
+                "create": [
+                    "new.admin.cover"
+                ],
+                "show": [
+                    "new.admin.cover-view"
+                ]
+            }
         },
         "LogController": {
             "framework_driven": false,
@@ -348,18 +752,12 @@
                 "index",
                 "indexjson"
             ],
-            "dead": []
-        },
-        "CoverController": {
-            "framework_driven": false,
-            "live": [
-                "create",
-                "destroy",
-                "order",
-                "show",
-                "store"
-            ],
-            "dead": []
+            "dead": [],
+            "views": {
+                "index": [
+                    "new.admin.log"
+                ]
+            }
         },
         "InitiativeImagesController": {
             "framework_driven": false,
@@ -370,18 +768,30 @@
                 "order_images",
                 "store"
             ],
-            "dead": []
+            "dead": [],
+            "views": {
+                "create": [
+                    "new.admin.initiatives.images.create"
+                ]
+            }
         },
         "NewsImagesController": {
             "framework_driven": false,
             "live": [
                 "__construct",
+                "cleanUpOldSpecialImages",
                 "create",
                 "destroy",
-                "order_images",
                 "store"
             ],
-            "dead": []
+            "dead": [
+                "order_images"
+            ],
+            "views": {
+                "create": [
+                    "new.admin.news.images.create"
+                ]
+            }
         },
         "TestimoniesController": {
             "framework_driven": false,
@@ -392,16 +802,12 @@
                 "store",
                 "update"
             ],
-            "dead": []
-        },
-        "LoginController": {
-            "framework_driven": true,
-            "live": [
-                "__construct",
-                "login",
-                "showLoginForm"
-            ],
-            "dead": []
+            "dead": [],
+            "views": {
+                "index": [
+                    "admin.initiatives.testimonies"
+                ]
+            }
         },
         "TrainingController": {
             "framework_driven": false,
@@ -412,7 +818,15 @@
             ],
             "dead": [
                 "set_locale"
-            ]
+            ],
+            "views": {
+                "home": [
+                    "training.home"
+                ],
+                "show_chat": [
+                    "training.add"
+                ]
+            }
         },
         "HomeController": {
             "framework_driven": false,
@@ -420,17 +834,24 @@
                 "__construct",
                 "home"
             ],
-            "dead": []
+            "dead": [],
+            "views": {
+                "home": [
+                    "new.admin.home"
+                ]
+            }
         },
         "ForgotPasswordController": {
             "framework_driven": true,
             "live": [],
-            "dead": []
+            "dead": [],
+            "views": []
         },
         "ResetPasswordController": {
             "framework_driven": true,
             "live": [],
-            "dead": []
+            "dead": [],
+            "views": []
         }
     },
     "skip": {
@@ -475,6 +896,72 @@
         "WebcamController": {
             "reason": "no reachable method",
             "methods": []
+        }
+    },
+    "broken": {
+        "PublicController": {
+            "study_zone": [
+                "(method does not exist)"
+            ],
+            "tt": [
+                "(method does not exist)"
+            ],
+            "successes_by_category": [
+                "(method does not exist)"
+            ],
+            "show_donate": [
+                "(method does not exist)"
+            ],
+            "show_donate_project": [
+                "(method does not exist)"
+            ],
+            "about": [
+                "public.about"
+            ]
+        },
+        "projectsController": {
+            "mark_NeedConversion": [
+                "(method does not exist)"
+            ],
+            "unmark_NeedConversion": [
+                "(method does not exist)"
+            ]
+        },
+        "SchoolController": {
+            "Englishchecked": [
+                "(method does not exist)"
+            ]
+        },
+        "ChildrenController": {
+            "Englishchecked": [
+                "(method does not exist)"
+            ]
+        },
+        "DiscController": {
+            "Englishchecked": [
+                "(method does not exist)"
+            ]
+        },
+        "LeapController": {
+            "Englishchecked": [
+                "(method does not exist)"
+            ]
+        },
+        "StudyController": {
+            "Englishchecked": [
+                "(method does not exist)"
+            ],
+            "students_index": [
+                "(method does not exist)"
+            ]
+        },
+        "TrainingController": {
+            "store_chat": [
+                "(method does not exist)"
+            ],
+            "destroy_chat": [
+                "(method does not exist)"
+            ]
         }
     }
 }

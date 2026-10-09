@@ -24,6 +24,7 @@ class HopeProjectMedia extends Model
         ];
     }
 
+    /** @return BelongsTo<HopeProject, $this> */
     public function project(): BelongsTo
     {
         return $this->belongsTo(HopeProject::class, 'project_id', 'id');

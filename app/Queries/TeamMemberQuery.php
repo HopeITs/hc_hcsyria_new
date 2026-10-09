@@ -24,18 +24,24 @@ class TeamMemberQuery
 
     /** @var string[] */
     private array $groups = [];
+
     private bool $activeOnly = true;
+
     private ?string $email = null;
 
     public static function make(): self
     {
-        return new self();
+        return new self;
     }
 
-    /** One or more `belong_to` groups: hope, hope_h, hope_d, hope_l, homs, study, disc, children, leap. */
+    /**
+     * One or more `belong_to` groups: hope, hope_h, hope_d, hope_l, homs, study, disc, children, leap.
+     *
+     * @param  string|list<string>  $groups
+     */
     public function inGroup(string|array $groups): self
     {
-        $this->groups = array_values((array) $groups);
+        $this->groups = (array) $groups;
 
         return $this;
     }
@@ -56,6 +62,7 @@ class TeamMemberQuery
         return $this;
     }
 
+    /** @return Builder<Profile> */
     public function builder(): Builder
     {
         $query = Profile::query();
@@ -78,6 +85,7 @@ class TeamMemberQuery
         return $query->orderBy('rank')->orderBy('id');
     }
 
+    /** @return Collection<int, Profile> */
     public function get(): Collection
     {
         return $this->builder()->get();

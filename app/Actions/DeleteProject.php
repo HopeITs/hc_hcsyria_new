@@ -43,7 +43,7 @@ class DeleteProject
         if (DB::table('successes')->where('project_id', $projectId)->exists()) {
             throw new RuntimeException(
                 "Project $projectId has success stories attached and cannot be deleted. "
-                . 'Remove or reassign them first.'
+                .'Remove or reassign them first.'
             );
         }
 
@@ -84,6 +84,6 @@ class DeleteProject
     /** Thumbnails are stored beside the original as "<name>b.jpg". */
     private function thumbnailFor(string $path): string
     {
-        return substr($path, 0, -4) . 'b.jpg';
+        return substr($path, 0, -4).'b.jpg';
     }
 }

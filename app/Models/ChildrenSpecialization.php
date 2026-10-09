@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class ChildrenSpecialization extends Model
 {
     protected $table = 'childrenspecializations';
+
     public $timestamps = false;
 
     protected $fillable = [

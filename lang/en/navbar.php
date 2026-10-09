@@ -31,4 +31,3 @@ return [
     'contactUs' => 'Contact US',
     'newsletter' => 'Newsletter',
 ];
-

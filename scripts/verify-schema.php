@@ -13,15 +13,17 @@
 $root = dirname(__DIR__);
 
 $env = [];
-foreach (file($root . '/.env') as $line) {
+foreach (file($root.'/.env') as $line) {
     $line = trim($line);
-    if ($line === '' || $line[0] === '#' || !str_contains($line, '=')) continue;
+    if ($line === '' || $line[0] === '#' || ! str_contains($line, '=')) {
+        continue;
+    }
     [$k, $v] = explode('=', $line, 2);
     $env[trim($k)] = trim(trim($v), "\"'");
 }
 
 $source = $env['DB_LEGACY_DATABASE'] ?? 'hcsyria_db';
-$scratch = 'tmp_schema_check_' . bin2hex(random_bytes(4));
+$scratch = 'tmp_schema_check_'.bin2hex(random_bytes(4));
 
 $pdo = new PDO(
     "mysql:host={$env['DB_LEGACY_HOST']};port={$env['DB_LEGACY_PORT']}",
@@ -48,7 +50,7 @@ try {
     echo "created $scratch\n";
 
     $php = PHP_BINARY;
-    $cd  = escapeshellarg($root);
+    $cd = escapeshellarg($root);
 
     /*
      * The child inherits this process's environment, and Dotenv does not
@@ -67,7 +69,7 @@ try {
     exec($cmd, $out, $code);
     putenv('DB_DATABASE');
     if ($code !== 0) {
-        echo implode("\n", array_slice($out, -20)) . "\n";
+        echo implode("\n", array_slice($out, -20))."\n";
         throw new RuntimeException('migration failed');
     }
     printf("migrated %d migrations\n\n", substr_count(implode("\n", $out), 'DONE'));
@@ -77,7 +79,7 @@ try {
         $cd, escapeshellarg($php), escapeshellarg($source), escapeshellarg($scratch)
     );
     exec($compare, $diff, $diffCode);
-    echo implode("\n", $diff) . "\n";
+    echo implode("\n", $diff)."\n";
 
     /*
      * schema-compare exits non-zero for the three documented type deviations
@@ -85,8 +87,11 @@ try {
      * only additional drift as a failure.
      */
     $unexpected = array_filter($diff, function ($line) {
-        if (!preg_match('/^\s+(MISSING|EXTRA)\s+(.*)$/', $line, $m)) return false;
-        return !preg_match(
+        if (! preg_match('/^\s+(MISSING|EXTRA)\s+(.*)$/', $line, $m)) {
+            return false;
+        }
+
+        return ! preg_match(
             '/^(info_disc|projects_donors)\||^(family_statistics|hope_statistics)\|\w+\|(float|double)/',
             $m[2]
         );
@@ -94,7 +99,9 @@ try {
 
     if ($unexpected !== []) {
         echo "\nUNEXPECTED DRIFT:\n";
-        foreach ($unexpected as $line) echo $line . "\n";
+        foreach ($unexpected as $line) {
+            echo $line."\n";
+        }
     } else {
         echo "\nSCHEMA MATCHES (only the 3 documented type deviations)\n";
         $exit = 0;

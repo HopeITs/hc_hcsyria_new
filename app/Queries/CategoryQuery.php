@@ -22,8 +22,8 @@ use InvalidArgumentException;
 class CategoryQuery
 {
     private const MODELS = [
-        'what'     => WhatCategory::class,
-        'who'      => WhoCategory::class,
+        'what' => WhatCategory::class,
+        'who' => WhoCategory::class,
         'sub_what' => SubWhatCategory::class,
     ];
 
@@ -35,12 +35,11 @@ class CategoryQuery
 
     private ?int $parentWhatCategoryId = null;
 
+    /**
+     * @param  'what'|'who'|'sub_what'  $type
+     */
     private function __construct(private string $type)
     {
-        if (! isset(self::MODELS[$type])) {
-            throw new InvalidArgumentException("unknown category type: $type");
-        }
-
         $this->model = self::MODELS[$type];
     }
 
@@ -63,7 +62,7 @@ class CategoryQuery
      * Restrict to a fixed set of ids. Several admin forms offer only a subset,
      * for example InitiativesController::create() with [1, 3, 4, 8, 18].
      *
-     * @param array<int, int> $ids
+     * @param  array<int, int>  $ids
      */
     public function only(array $ids): self
     {
@@ -84,6 +83,7 @@ class CategoryQuery
         return $this;
     }
 
+    /** @return Builder<WhatCategory|WhoCategory|SubWhatCategory> */
     public function builder(): Builder
     {
         $query = $this->model::query();
@@ -99,12 +99,17 @@ class CategoryQuery
         return $query->orderBy('id');
     }
 
+    /** @return Collection<int, WhatCategory|WhoCategory|SubWhatCategory> */
     public function get(): Collection
     {
         return $this->builder()->get();
     }
 
-    /** id => name, for a select box. */
+    /**
+     * id => name, for a select box.
+     *
+     * @return \Illuminate\Support\Collection<array-key, mixed>
+     */
     public function options(): \Illuminate\Support\Collection
     {
         return $this->builder()->pluck('name', 'id');
@@ -147,8 +152,8 @@ class CategoryQuery
     public function nameForInitiative(int $initiativeId): ?string
     {
         $column = match ($this->type) {
-            'what'     => 'what_category_id',
-            'who'      => 'who_category_id',
+            'what' => 'what_category_id',
+            'who' => 'who_category_id',
             'sub_what' => 'sub_what_category_id',
         };
 

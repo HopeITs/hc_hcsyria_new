@@ -56,6 +56,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | HSTS max-age
+    |--------------------------------------------------------------------------
+    |
+    | Seconds browsers remember to use HTTPS only (App\Http\Middleware\
+    | SecurityHeaders; production over HTTPS only). Start low, raise once the
+    | site is confirmed on HTTPS; 0 tells browsers to forget, the rollback.
+    |
+    */
+
+    'hsts_max_age' => (int) env('HSTS_MAX_AGE', 86400),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Timezone
     |--------------------------------------------------------------------------
     |

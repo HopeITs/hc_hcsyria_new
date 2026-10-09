@@ -20,11 +20,13 @@ class Testimony extends Model
         ];
     }
 
+    /** @return BelongsTo<Initiative, $this> */
     public function initiative(): BelongsTo
     {
         return $this->belongsTo(Initiative::class, 'initiative_id', 'id');
     }
 
+    /** @return HasOne<TestimonyContent, $this> */
     public function content(): HasOne
     {
         return $this->hasOne(TestimonyContent::class, 'testimony_id', 'id');

@@ -14,11 +14,13 @@ class WhoCategory extends Model
         'description',
     ];
 
+    /** @return HasMany<Initiative, $this> */
     public function initiatives(): HasMany
     {
         return $this->hasMany(Initiative::class, 'who_category_id', 'id');
     }
 
+    /** @return HasMany<Success, $this> */
     public function successes(): HasMany
     {
         return $this->hasMany(Success::class, 'who_category_id', 'id');

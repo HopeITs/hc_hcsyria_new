@@ -25,6 +25,7 @@ class InitiativeContent extends Model
         ];
     }
 
+    /** @return BelongsTo<Initiative, $this> */
     public function initiative(): BelongsTo
     {
         return $this->belongsTo(Initiative::class, 'initiative_id', 'id');

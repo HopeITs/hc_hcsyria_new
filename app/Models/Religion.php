@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Religion extends Model
 {
@@ -12,9 +11,4 @@ class Religion extends Model
     protected $fillable = [
         'name',
     ];
-
-    public function students(): HasMany
-    {
-        return $this->hasMany(Student::class, 'religion_id', 'id');
-    }
 }

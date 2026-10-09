@@ -14,4 +14,3 @@ return [
     'ELDERS' => 'ELDERLIES',
     'seeMore' => 'See More',
 ];
-

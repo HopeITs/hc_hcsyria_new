@@ -19,6 +19,7 @@ class Edition extends Model
         ];
     }
 
+    /** @return HasMany<News, $this> */
     public function news(): HasMany
     {
         return $this->hasMany(News::class, 'edition_id', 'id');

@@ -1,9 +1,7 @@
 @import 'tailwindcss';
 
-@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
-@source '../../storage/framework/views/*.php';
-@source '../**/*.blade.php';
-@source '../**/*.js';
+/* Only our own Blade views: every utility emitted is one a page uses. */
+@source '../views/**/*.blade.php';
 
 /*
  * Design tokens taken from the live site rather than invented: #BC1818 is the

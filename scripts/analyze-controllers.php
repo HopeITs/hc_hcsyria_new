@@ -18,11 +18,11 @@
 /* Positional argument is the legacy project path; --flags are not. */
 $positional = array_values(array_filter(
     array_slice($argv, 1),
-    fn($a) => ! str_starts_with($a, '--')
+    fn ($a) => ! str_starts_with($a, '--')
 ));
 
-$legacy = $positional[0] ?? 'E:/03-Website/hcsyria_website';
-$controllerDir = $legacy . '/app/Http/Controllers';
+$legacy = $positional[0] ?? 'E:/03-Website/hcsyria.org Website/hcsyria.org-website';
+$controllerDir = $legacy.'/app/Http/Controllers';
 
 if (! is_dir($controllerDir)) {
     exit("not a legacy project: $controllerDir\n");
@@ -33,7 +33,7 @@ function significantTokens(string $php): array
 {
     return array_values(array_filter(
         token_get_all($php),
-        fn($t) => ! is_array($t) || ! in_array($t[0], [T_COMMENT, T_DOC_COMMENT, T_WHITESPACE], true)
+        fn ($t) => ! is_array($t) || ! in_array($t[0], [T_COMMENT, T_DOC_COMMENT, T_WHITESPACE], true)
     ));
 }
 
@@ -43,24 +43,35 @@ function tokenIs($token, int $type): bool
 }
 
 /**
- * Method names declared in a class, and the methods each one calls.
+ * Method names declared in a class, the methods each one calls, and the
+ * views each one names with a literal view('...') call.
  *
- * @return array{methods: array<string,int>, calls: array<string, string[]>}
+ * @return array{methods: array<string,int>, calls: array<string, string[]>, views: array<string, string[]>}
  */
 function parseController(string $file): array
 {
     $tokens = significantTokens(file_get_contents($file));
     $methods = [];
     $calls = [];
+    $views = [];
     $current = null;
     $depth = 0;
 
     foreach ($tokens as $i => $token) {
         // Track brace depth so we know when a method body ends.
-        if ($token === '{') { $depth++; continue; }
+        // "{$var}" and "${var}" inside strings open with a token of their own
+        // but close with a plain '}', so they must count as an opening brace.
+        if ($token === '{' || tokenIs($token, T_CURLY_OPEN) || tokenIs($token, T_DOLLAR_OPEN_CURLY_BRACES)) {
+            $depth++;
+
+            continue;
+        }
         if ($token === '}') {
             $depth--;
-            if ($current !== null && $depth <= 1) $current = null;
+            if ($current !== null && $depth <= 1) {
+                $current = null;
+            }
+
             continue;
         }
 
@@ -70,6 +81,7 @@ function parseController(string $file): array
             $current = $tokens[$i + 1][1];
             $methods[$current] = $token[2]; // line number
             $calls[$current] ??= [];
+
             continue;
         }
 
@@ -91,22 +103,33 @@ function parseController(string $file): array
         if ($isThisCall || $isStaticCall) {
             $calls[$current][] = $tokens[$i + 2][1];
         }
+
+        // view('literal.name' — dynamic names cannot be checked and are skipped.
+        if (tokenIs($token, T_STRING) && $token[1] === 'view'
+            && ($tokens[$i + 1] ?? null) === '('
+            && isset($tokens[$i + 2]) && tokenIs($tokens[$i + 2], T_CONSTANT_ENCAPSED_STRING)) {
+            $views[$current][] = trim($tokens[$i + 2][1], "'\"");
+        }
     }
 
     foreach ($calls as $k => $v) {
         $calls[$k] = array_values(array_unique($v));
     }
 
-    return ['methods' => $methods, 'calls' => $calls];
+    return ['methods' => $methods, 'calls' => $calls, 'views' => $views];
 }
 
 /* ---- 1. Parse every controller ---------------------------------------- */
 
 $controllers = [];
 foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($controllerDir)) as $f) {
-    if ($f->getExtension() !== 'php') continue;
+    if ($f->getExtension() !== 'php') {
+        continue;
+    }
     $name = $f->getBasename('.php');
-    if ($name === 'Controller') continue; // base class
+    if ($name === 'Controller') {
+        continue;
+    } // base class
     $controllers[$name] = parseController($f->getPathname()) + ['path' => $f->getPathname()];
 }
 
@@ -116,7 +139,7 @@ $entry = [];            // controller => [method, ...]
 $frameworkDriven = [];  // classes whose routes come from framework traits
 $routeCount = 0;
 
-foreach (glob($legacy . '/routes/*.php') as $routeFile) {
+foreach (glob($legacy.'/routes/*.php') as $routeFile) {
     $tokens = significantTokens(file_get_contents($routeFile));
 
     foreach ($tokens as $i => $token) {
@@ -154,13 +177,17 @@ foreach (glob($legacy . '/routes/*.php') as $routeFile) {
             && isset($tokens[$i + 2]) && tokenIs($tokens[$i + 2], T_STRING)
             && $tokens[$i + 2][1] === 'routes') {
             foreach ([
-                'LoginController'          => ['showLoginForm', 'login', 'logout'],
-                'RegisterController'       => ['showRegistrationForm', 'register'],
+                'LoginController' => ['showLoginForm', 'login', 'logout'],
+                'RegisterController' => ['showRegistrationForm', 'register'],
                 'ForgotPasswordController' => ['showLinkRequestForm', 'sendResetLinkEmail'],
-                'ResetPasswordController'  => ['showResetForm', 'reset'],
+                'ResetPasswordController' => ['showResetForm', 'reset'],
             ] as $controller => $methods) {
-                if (! isset($controllers[$controller])) continue;
-                foreach ($methods as $m) $entry[$controller][] = $m;
+                if (! isset($controllers[$controller])) {
+                    continue;
+                }
+                foreach ($methods as $m) {
+                    $entry[$controller][] = $m;
+                }
 
                 /*
                  * These classes barely declare the methods the routes call —
@@ -188,7 +215,9 @@ foreach ($entry as $controller => $methods) {
 
     while ($queue) {
         $method = array_shift($queue);
-        if (isset($seen[$method])) continue;
+        if (isset($seen[$method])) {
+            continue;
+        }
         $seen[$method] = true;
 
         foreach ($controllers[$controller]['calls'][$method] ?? [] as $called) {
@@ -208,7 +237,7 @@ foreach ($entry as $controller => $methods) {
  * it is declared in docs/port-exclusions.json.
  */
 $exclusions = ['controllers' => [], 'methods' => []];
-$exclusionsFile = __DIR__ . '/../docs/port-exclusions.json';
+$exclusionsFile = __DIR__.'/../docs/port-exclusions.json';
 if (is_file($exclusionsFile)) {
     $decoded = json_decode(file_get_contents($exclusionsFile), true);
     if (is_array($decoded)) {
@@ -250,6 +279,7 @@ foreach ($controllers as $name => $data) {
             'reason' => $exclusions['controllers'][$name],
             'methods' => count($data['methods']),
         ];
+
         continue;
     }
 
@@ -276,18 +306,53 @@ foreach ($controllers as $name => $data) {
     $rows[$name] = ['all' => $all, 'live' => $live, 'dead' => $dead];
 }
 
+/*
+ * A route that reaches a method is not enough: the view it returns must exist.
+ * /about reached PublicController::about(), which returns a view that was
+ * never committed, so the live site answers it with a 500. Methods like that
+ * are reported as broken and must not be ported.
+ */
+$broken = [];
+
+// A route naming a method the controller does not declare (e.g. /tt) is a 500.
+foreach ($entry as $name => $methods) {
+    if (isset($frameworkDriven[$name])) {
+        continue;
+    }
+    foreach (array_unique($methods) as $method) {
+        if (! isset($controllers[$name]['methods'][$method])) {
+            $broken[$name][$method][] = '(method does not exist)';
+        }
+    }
+}
+
+foreach ($rows as $name => $r) {
+    foreach ($r['live'] as $method) {
+        foreach ($controllers[$name]['views'][$method] ?? [] as $view) {
+            $file = $legacy.'/resources/views/'.str_replace('.', '/', $view).'.blade.php';
+            if (! is_file($file)) {
+                $broken[$name][$method][] = $view;
+            }
+        }
+    }
+}
+
 echo "ROUTE ENTRY POINTS: $routeCount\n";
 printf("CONTROLLERS: %d   METHODS: %d   REACHABLE: %d   DEAD: %d (%d%%)\n\n",
     count($controllers), $totalMethods, $totalLive, $totalMethods - $totalLive,
     $totalMethods ? round(($totalMethods - $totalLive) / $totalMethods * 100) : 0);
 
 echo "=== CONTROLLERS TO PORT ===\n";
-uasort($rows, fn($a, $b) => count($b['live']) <=> count($a['live']));
+uasort($rows, fn ($a, $b) => count($b['live']) <=> count($a['live']));
 foreach ($rows as $name => $r) {
-    if ($r['live'] === []) continue;
+    if ($r['live'] === []) {
+        continue;
+    }
     printf("\n%s  (%d of %d methods live)\n", $name, count($r['live']), count($r['all']));
     sort($r['live']);
-    foreach ($r['live'] as $m) echo "    + $m\n";
+    foreach ($r['live'] as $m) {
+        echo "    + $m\n";
+    }
     if ($r['dead']) {
         sort($r['dead']);
         printf("    - dead (%d): %s\n", count($r['dead']), implode(', ', $r['dead']));
@@ -301,7 +366,16 @@ if ($excludedControllers || $exclusions['methods']) {
     }
     foreach ($exclusions['methods'] as $controller => $spec) {
         printf("    %-38s %2d methods  %s\n",
-            $controller . ' (partial)', count($spec['list'] ?? []), $spec['_reason'] ?? '');
+            $controller.' (partial)', count($spec['list'] ?? []), $spec['_reason'] ?? '');
+    }
+}
+
+if ($broken) {
+    echo "\n=== BROKEN: reachable but the view does not exist (do not port) ===\n";
+    foreach ($broken as $controller => $methods) {
+        foreach ($methods as $method => $views) {
+            printf("    %-42s missing %s\n", "$controller::$method", implode(', ', array_unique($views)));
+        }
     }
 }
 
@@ -334,6 +408,7 @@ if ($manifestPath !== null) {
         ],
         'port' => [],
         'skip' => [],
+        'broken' => $broken,
     ];
 
     foreach ($rows as $name => $r) {
@@ -342,19 +417,28 @@ if ($manifestPath !== null) {
 
         if ($r['live'] === [] && ! isset($frameworkDriven[$name])) {
             $manifest['skip'][$name] = ['reason' => 'no reachable method', 'methods' => $r['all']];
+
             continue;
+        }
+
+        $views = [];
+        foreach ($r['live'] as $method) {
+            if (! empty($controllers[$name]['views'][$method])) {
+                $views[$method] = array_values(array_unique($controllers[$name]['views'][$method]));
+            }
         }
 
         $manifest['port'][$name] = [
             'framework_driven' => isset($frameworkDriven[$name]),
             'live' => $r['live'],
             'dead' => $r['dead'],
+            'views' => $views,
         ];
     }
 
     file_put_contents(
         $manifestPath,
-        json_encode($manifest, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n"
+        json_encode($manifest, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)."\n"
     );
     echo "\nmanifest written to $manifestPath\n";
 }

@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Verifies that database/migrations/legacy rebuilds the legacy schema exactly.
  *
@@ -10,9 +11,11 @@
  */
 $root = dirname(__DIR__);
 $env = [];
-foreach (file($root . '/.env') as $line) {
+foreach (file($root.'/.env') as $line) {
     $line = trim($line);
-    if ($line === '' || $line[0] === '#' || !str_contains($line, '=')) continue;
+    if ($line === '' || $line[0] === '#' || ! str_contains($line, '=')) {
+        continue;
+    }
     [$k, $v] = explode('=', $line, 2);
     $env[trim($k)] = trim(trim($v), "\"'");
 }
@@ -30,7 +33,8 @@ $pdo = new PDO(
 $fetch = function (string $db, string $sql) use ($pdo): array {
     $st = $pdo->prepare($sql);
     $st->execute([$db]);
-    return array_map(fn($r) => implode('|', array_map('strval', $r)), $st->fetchAll(PDO::FETCH_NUM));
+
+    return array_map(fn ($r) => implode('|', array_map('strval', $r)), $st->fetchAll(PDO::FETCH_NUM));
 };
 
 /*
@@ -48,10 +52,10 @@ $queries = [
     'COLUMNS' => "SELECT TABLE_NAME,COLUMN_NAME,COLUMN_TYPE,IS_NULLABLE,COALESCE(COLUMN_DEFAULT,'~'),EXTRA
                   FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=? AND TABLE_NAME NOT IN ($framework)
                   ORDER BY TABLE_NAME,COLUMN_NAME",
-    'FKS' => "SELECT TABLE_NAME,COLUMN_NAME,REFERENCED_TABLE_NAME,REFERENCED_COLUMN_NAME
+    'FKS' => 'SELECT TABLE_NAME,COLUMN_NAME,REFERENCED_TABLE_NAME,REFERENCED_COLUMN_NAME
               FROM information_schema.KEY_COLUMN_USAGE
               WHERE TABLE_SCHEMA=? AND REFERENCED_TABLE_NAME IS NOT NULL
-              ORDER BY TABLE_NAME,COLUMN_NAME",
+              ORDER BY TABLE_NAME,COLUMN_NAME',
 ];
 
 $exit = 0;
@@ -59,11 +63,17 @@ foreach ($queries as $label => $sql) {
     $a = $fetch($src, $sql);
     $b = $fetch($dst, $sql);
     $missing = array_diff($a, $b);
-    $extra   = array_diff($b, $a);
+    $extra = array_diff($b, $a);
     printf("%-8s source=%-5d rebuilt=%-5d missing=%-3d extra=%d\n",
         $label, count($a), count($b), count($missing), count($extra));
-    foreach ($missing as $m) echo "   MISSING  $m\n";
-    foreach ($extra as $m)   echo "   EXTRA    $m\n";
-    if ($missing || $extra) $exit = 1;
+    foreach ($missing as $m) {
+        echo "   MISSING  $m\n";
+    }
+    foreach ($extra as $m) {
+        echo "   EXTRA    $m\n";
+    }
+    if ($missing || $extra) {
+        $exit = 1;
+    }
 }
 exit($exit);

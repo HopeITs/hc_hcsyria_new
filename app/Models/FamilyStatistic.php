@@ -25,6 +25,7 @@ class FamilyStatistic extends Model
         ];
     }
 
+    /** @return BelongsTo<FamilyStatisType, $this> */
     public function familyStatisType(): BelongsTo
     {
         return $this->belongsTo(FamilyStatisType::class, 'family_statis_type_id', 'id');

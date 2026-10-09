@@ -22,6 +22,7 @@ class SuccessContent extends Model
         ];
     }
 
+    /** @return BelongsTo<Success, $this> */
     public function success(): BelongsTo
     {
         return $this->belongsTo(Success::class, 'success_id', 'id');

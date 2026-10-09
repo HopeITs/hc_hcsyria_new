@@ -23,12 +23,14 @@ use Illuminate\Database\Eloquent\Collection;
 class StudyZoneCenterQuery
 {
     private ?int $placeId = null;
+
     private bool $activeOnly = false;
+
     private bool $withPlace = false;
 
     public static function make(): self
     {
-        return new self();
+        return new self;
     }
 
     public function inPlace(int|string|null $placeId): self
@@ -53,6 +55,7 @@ class StudyZoneCenterQuery
         return $this;
     }
 
+    /** @return Builder<StudyzoneCenter> */
     public function builder(): Builder
     {
         $query = StudyzoneCenter::query()
@@ -78,6 +81,7 @@ class StudyZoneCenterQuery
         return $query->orderBy('studyzonecenters.rank')->orderBy('studyzonecenters.id');
     }
 
+    /** @return Collection<int, StudyzoneCenter> */
     public function get(): Collection
     {
         return $this->builder()->get();
@@ -87,7 +91,7 @@ class StudyZoneCenterQuery
      * Centres grouped by place id, which is what the page actually needs —
      * the legacy code ran one query per city to build the same thing.
      *
-     * @return \Illuminate\Support\Collection<int, Collection>
+     * @return \Illuminate\Support\Collection<array-key, Collection<int, StudyzoneCenter>>
      */
     public function groupedByPlace(): \Illuminate\Support\Collection
     {

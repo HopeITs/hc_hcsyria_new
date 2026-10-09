@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class TestimonyContent extends Model
 {
     protected $table = 'testimonies_english';
+
     public $timestamps = false;
 
     protected $fillable = [
@@ -23,6 +24,7 @@ class TestimonyContent extends Model
         ];
     }
 
+    /** @return BelongsTo<Testimony, $this> */
     public function testimony(): BelongsTo
     {
         return $this->belongsTo(Testimony::class, 'testimony_id', 'id');

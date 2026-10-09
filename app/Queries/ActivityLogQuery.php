@@ -22,22 +22,28 @@ use Illuminate\Support\Collection;
 class ActivityLogQuery
 {
     /** Category ids as used by the legacy admin screen. */
-    public const PROJECTS    = 0;
+    public const PROJECTS = 0;
+
     public const INITIATIVES = 1;
-    public const SUCCESSES   = 2;
-    public const NEWS        = 3;
-    public const EDITIONS    = 4;
-    public const TEAM        = 5;
-    public const STUDENTS    = 7;
+
+    public const SUCCESSES = 2;
+
+    public const NEWS = 3;
+
+    public const EDITIONS = 4;
+
+    public const TEAM = 5;
+
+    public const STUDENTS = 7;
 
     /** The categories the admin screen actually displays, in tab order. */
     public const DISPLAYED = [
-        'projectsLog'    => self::PROJECTS,
+        'projectsLog' => self::PROJECTS,
         'initiativesLog' => self::INITIATIVES,
-        'successesLog'   => self::SUCCESSES,
-        'newsLog'        => self::NEWS,
-        'teamLog'        => self::TEAM,
-        'studentLog'     => self::STUDENTS,
+        'successesLog' => self::SUCCESSES,
+        'newsLog' => self::NEWS,
+        'teamLog' => self::TEAM,
+        'studentLog' => self::STUDENTS,
     ];
 
     /** Entries before this are not shown. */
@@ -47,7 +53,7 @@ class ActivityLogQuery
 
     public static function make(): self
     {
-        return new self();
+        return new self;
     }
 
     public function forCategory(int $category): self
@@ -57,6 +63,7 @@ class ActivityLogQuery
         return $this;
     }
 
+    /** @return Builder<Log> */
     public function builder(): Builder
     {
         $query = Log::query()
@@ -83,6 +90,7 @@ class ActivityLogQuery
             ->orderByDesc('logs.id');
     }
 
+    /** @return Collection<int, Log> */
     public function get(): Collection
     {
         return collect($this->builder()->get());
@@ -92,7 +100,7 @@ class ActivityLogQuery
      * Every displayed category in one pass, keyed as the admin screen expects.
      * The legacy code ran six separate queries for this.
      *
-     * @return array<string, Collection>
+     * @return array<string, Collection<int, Log>>
      */
     public static function forAdminScreen(): array
     {

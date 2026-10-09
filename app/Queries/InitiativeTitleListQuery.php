@@ -18,17 +18,21 @@ use Illuminate\Support\Collection;
 class InitiativeTitleListQuery
 {
     /** what_category_id per programme, as used by the public search. */
-    public const STUDY_ZONE  = 7;
-    public const DISC        = 5;
+    public const STUDY_ZONE = 7;
+
+    public const DISC = 5;
+
     public const CHILDREN_UNI = 17;
-    public const LEAP        = 19;
+
+    public const LEAP = 19;
 
     private ?int $whatCategoryId = null;
+
     private bool $onlineOnly = false;
 
     public static function make(): self
     {
-        return new self();
+        return new self;
     }
 
     public function forCategory(int $whatCategoryId): self

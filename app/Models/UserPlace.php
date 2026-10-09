@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class UserPlace extends Model
 {
     protected $table = 'users_places';
+
     public $timestamps = false;
 
     protected $fillable = [
@@ -23,11 +24,13 @@ class UserPlace extends Model
         ];
     }
 
+    /** @return BelongsTo<User, $this> */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
+    /** @return BelongsTo<Place, $this> */
     public function place(): BelongsTo
     {
         return $this->belongsTo(Place::class, 'place_id', 'id');

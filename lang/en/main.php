@@ -74,9 +74,9 @@ return [
     'micro1_desc' => 'Projects already funded',
     'micro2_desc' => 'of beneficiaries lost their livelihood during war',
     'micro3_desc' => 'New income generating projects established',
-    //'micro4_desc' => 'Already existing businesses developed',
-    //'micro2_desc' => 'Are reviving their lost crafts during war',
-    //'micro3_desc' => 'Became successful and financially independent individuals',
+    // 'micro4_desc' => 'Already existing businesses developed',
+    // 'micro2_desc' => 'Are reviving their lost crafts during war',
+    // 'micro3_desc' => 'Became successful and financially independent individuals',
     'micro4_desc' => 'Lives were touched and their reality has changed',
 
     'edition' => 'Edition',

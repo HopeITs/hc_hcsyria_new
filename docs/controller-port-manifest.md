@@ -15,14 +15,39 @@ routes and large commented-out method bodies that a regex would count as live.
 
 ## Totals
 
-| | Count |
-|---|---:|
-| Controllers | 34 |
-| Methods declared | 344 |
-| Reachable from a route | 311 |
-| Dead — no route reaches them | 33 |
-| Excluded by policy | 57 |
-| **To port** | **254** |
+Re-baselined 2026-10-09 against the canonical legacy repository,
+`E:/03-Website/hcsyria.org Website/hcsyria.org-website` @ `6d45ef9`. Phase 0
+had read a stale clone (`E:/03-Website/hcsyria_website`, 162 commits behind).
+
+| | Phase 0 (stale) | Now |
+|---|---:|---:|
+| Controllers | 34 | 34 |
+| Methods declared (after policy exclusions) | 302 | 324 |
+| **Reachable — to port** | **254** | **276** |
+| Dead — no route reaches them | 48 | 48 |
+
+New since Phase 0 — public: `PublicController::newsletter`,
+`getSortedDonors`, `getPublishedProjectSustainabilityRate`; admin: hide/unhide
+on news, initiatives and projects, news tag CRUD, `LoginController` redirects
+and logout, `projectsController::microTextChanged`,
+`NewsImagesController::cleanUpOldSpecialImages`. Gone:
+`PublicController::news_by_type` (now the `NewsPage` Livewire component) and
+`NewsImagesController::order_images`.
+
+Two analyzer fixes came with the re-baseline:
+
+- **Broken routes are now reported.** A route that names a method the
+  controller does not declare, or a method whose `view()` does not exist, is
+  listed under BROKEN and not ported. 16 found, including the public `/donate`,
+  `/donate/projects/micro-projects/{id}`, `/hope/{slug}`, `/tt` and `/about`.
+- **String interpolation no longer derails method tracking.** `"{$var}"`
+  opens with a `T_CURLY_OPEN` token but closes with a plain `}`, which made the
+  brace counter end methods early. No reachability result changed, but views
+  named after that point (e.g. `search()`'s) were being missed.
+
+For the public site, `docs/port-ledger.json` is the working list: every
+public route with its views, assets and live HTTP status
+(`scripts/build-port-ledger.php`, `scripts/probe-live-site.php`).
 
 Exclusions are declared in `docs/port-exclusions.json` and applied by the
 analyzer, so they survive a regeneration rather than living in someone's head.

@@ -58,36 +58,43 @@ class Project extends Model
         ];
     }
 
+    /** @return BelongsTo<ProjectSubCategory, $this> */
     public function subCategoryID(): BelongsTo
     {
         return $this->belongsTo(ProjectSubCategory::class, 'SubCategory_ID', 'ID');
     }
 
+    /** @return BelongsTo<ProjectType, $this> */
     public function projecttype(): BelongsTo
     {
         return $this->belongsTo(ProjectType::class, 'projecttype_id', 'id');
     }
 
+    /** @return BelongsTo<Donor, $this> */
     public function mPEDonor(): BelongsTo
     {
         return $this->belongsTo(Donor::class, 'MPE_Donor', 'id');
     }
 
+    /** @return BelongsTo<Place, $this> */
     public function mPECity(): BelongsTo
     {
         return $this->belongsTo(Place::class, 'MPE_City', 'id');
     }
 
+    /** @return HasMany<Image, $this> */
     public function images(): HasMany
     {
         return $this->hasMany(Image::class, 'project_id', 'id');
     }
 
+    /** @return HasOne<ProjectContent, $this> */
     public function content(): HasOne
     {
         return $this->hasOne(ProjectContent::class, 'project_id', 'id');
     }
 
+    /** @return HasMany<Success, $this> */
     public function successes(): HasMany
     {
         return $this->hasMany(Success::class, 'project_id', 'id');

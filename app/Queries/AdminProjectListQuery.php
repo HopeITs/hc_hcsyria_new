@@ -25,16 +25,19 @@ use Illuminate\Support\Facades\DB;
 class AdminProjectListQuery
 {
     /** City ids used by the admin tabs. */
-    public const ALEPPO   = 3;
-    public const HOMS     = 1;
+    public const ALEPPO = 3;
+
+    public const HOMS = 1;
+
     public const DAMASCUS = 2;
 
     private ?int $cityId = null;
+
     private ?int $published = 1;
 
     public static function make(): self
     {
-        return new self();
+        return new self;
     }
 
     public function inCity(int $cityId): self
@@ -52,6 +55,7 @@ class AdminProjectListQuery
         return $this;
     }
 
+    /** @return Collection<int, \stdClass> */
     public function get(): Collection
     {
         $query = DB::table('projects')
@@ -99,7 +103,11 @@ class AdminProjectListQuery
         return collect($query->orderBy('projects.MicroProject_ID')->orderBy('projects.id')->get());
     }
 
-    /** Cancelled projects, for the admin tab of the same name. */
+    /**
+     * Cancelled projects, for the admin tab of the same name.
+     *
+     * @return Collection<int, \stdClass>
+     */
     public static function cancelled(): Collection
     {
         return collect(
@@ -112,7 +120,11 @@ class AdminProjectListQuery
         );
     }
 
-    /** Projects awaiting publication. */
+    /**
+     * Projects awaiting publication.
+     *
+     * @return Collection<int, \stdClass>
+     */
     public static function pending(): Collection
     {
         return collect(

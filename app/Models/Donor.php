@@ -26,11 +26,13 @@ class Donor extends Model
         ];
     }
 
+    /** @return HasMany<InitiativeDonor, $this> */
     public function initiativeDonors(): HasMany
     {
         return $this->hasMany(InitiativeDonor::class, 'donor_id', 'id');
     }
 
+    /** @return HasMany<Project, $this> */
     public function projects(): HasMany
     {
         return $this->hasMany(Project::class, 'MPE_Donor', 'id');

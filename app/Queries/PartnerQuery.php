@@ -22,7 +22,11 @@ class PartnerQuery
      */
     private const HIDDEN_DONOR_IDS = [9, 10, 19];
 
-    /** Donors shown on the public pages, in display order. */
+    /**
+     * Donors shown on the public pages, in display order.
+     *
+     * @return Collection<int, Donor>
+     */
     public static function publicDonors(): Collection
     {
         return Donor::query()
@@ -33,7 +37,11 @@ class PartnerQuery
             ->get();
     }
 
-    /** Micro-project donors, as used by the project filters. */
+    /**
+     * Micro-project donors, as used by the project filters.
+     *
+     * @return Collection<int, Donor>
+     */
     public static function microDonors(): Collection
     {
         return Donor::query()
@@ -44,13 +52,21 @@ class PartnerQuery
             ->get();
     }
 
-    /** The organisation's stated values, shown on /about-us. */
+    /**
+     * The organisation's stated values, shown on /about-us.
+     *
+     * @return Collection<int, HopeValue>
+     */
     public static function hopeValues(): Collection
     {
         return HopeValue::query()->orderBy('id')->get();
     }
 
-    /** Partner organisations plotted on the family-to-family map. */
+    /**
+     * Partner organisations plotted on the family-to-family map.
+     *
+     * @return Collection<int, FamilyPartner>
+     */
     public static function familyPartners(): Collection
     {
         return FamilyPartner::query()->orderBy('id')->get();

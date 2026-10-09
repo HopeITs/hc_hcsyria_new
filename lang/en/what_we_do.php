@@ -61,12 +61,11 @@ return [
     'relief_36' => 'Stationery and School Bags Distributions',
     'relief_45' => 'Cash aid distributions – Muhardeh',
 
-    'social_1'=> 'Basketball tournament',
-    'social_2'=> 'Scout Olympics',
-    'social_3'=> 'Carnival',
-    'social_4'=> 'Kids\' Talent',
-
+    'social_1' => 'Basketball tournament',
+    'social_2' => 'Scout Olympics',
+    'social_3' => 'Carnival',
+    'social_4' => 'Kids\' Talent',
 
     'previewAll' => 'Preview All >',
-    'youth' => 'CHRISTIAN YOUTH'
+    'youth' => 'CHRISTIAN YOUTH',
 ];

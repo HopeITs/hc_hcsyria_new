@@ -23,16 +23,19 @@ class SubWhatCategory extends Model
         ];
     }
 
+    /** @return BelongsTo<WhatCategory, $this> */
     public function whatCategory(): BelongsTo
     {
         return $this->belongsTo(WhatCategory::class, 'what_category_id', 'id');
     }
 
+    /** @return HasMany<Initiative, $this> */
     public function initiatives(): HasMany
     {
         return $this->hasMany(Initiative::class, 'sub_what_category_id', 'id');
     }
 
+    /** @return HasMany<Success, $this> */
     public function successes(): HasMany
     {
         return $this->hasMany(Success::class, 'sub_what_category_id', 'id');

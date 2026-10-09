@@ -36,36 +36,43 @@ class Success extends Model
         ];
     }
 
+    /** @return BelongsTo<WhoCategory, $this> */
     public function whoCategory(): BelongsTo
     {
         return $this->belongsTo(WhoCategory::class, 'who_category_id', 'id');
     }
 
+    /** @return BelongsTo<WhatCategory, $this> */
     public function whatCategory(): BelongsTo
     {
         return $this->belongsTo(WhatCategory::class, 'what_category_id', 'id');
     }
 
+    /** @return BelongsTo<StudyzoneCenter, $this> */
     public function szCenter(): BelongsTo
     {
         return $this->belongsTo(StudyzoneCenter::class, 'sz_center_id', 'id');
     }
 
+    /** @return BelongsTo<Project, $this> */
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class, 'project_id', 'id');
     }
 
+    /** @return BelongsTo<SubWhatCategory, $this> */
     public function subWhatCategory(): BelongsTo
     {
         return $this->belongsTo(SubWhatCategory::class, 'sub_what_category_id', 'id');
     }
 
+    /** @return BelongsTo<Place, $this> */
     public function place(): BelongsTo
     {
         return $this->belongsTo(Place::class, 'place_id', 'id');
     }
 
+    /** @return HasOne<SuccessContent, $this> */
     public function content(): HasOne
     {
         return $this->hasOne(SuccessContent::class, 'success_id', 'id');

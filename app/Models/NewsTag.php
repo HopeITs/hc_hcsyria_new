@@ -22,11 +22,13 @@ class NewsTag extends Model
         ];
     }
 
+    /** @return BelongsTo<News, $this> */
     public function news(): BelongsTo
     {
         return $this->belongsTo(News::class, 'news_id', 'id');
     }
 
+    /** @return BelongsTo<Tag, $this> */
     public function tag(): BelongsTo
     {
         return $this->belongsTo(Tag::class, 'tag_id', 'id');

@@ -113,6 +113,6 @@ END");
      */
     public function down(): void
     {
-        DB::unprepared("DROP PROCEDURE IF EXISTS get_statistics");
+        DB::unprepared('DROP PROCEDURE IF EXISTS get_statistics');
     }
 };

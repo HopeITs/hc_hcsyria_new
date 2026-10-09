@@ -13,6 +13,7 @@ class Permission extends Model
         'name',
     ];
 
+    /** @return HasMany<UserPermission, $this> */
     public function userPermissions(): HasMany
     {
         return $this->hasMany(UserPermission::class, 'permission_id', 'id');

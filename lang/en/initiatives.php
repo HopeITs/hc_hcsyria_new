@@ -14,5 +14,4 @@ return [
     'more2' => ' program,',
     'clickHere' => 'click here',
 
-
 ];

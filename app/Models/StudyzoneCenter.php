@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class StudyzoneCenter extends Model
 {
     protected $table = 'studyzonecenters';
+
     public $timestamps = false;
 
     protected $fillable = [
@@ -40,26 +41,25 @@ class StudyzoneCenter extends Model
         ];
     }
 
+    /** @return BelongsTo<Place, $this> */
     public function place(): BelongsTo
     {
         return $this->belongsTo(Place::class, 'place_id', 'id');
     }
 
+    /** @return HasMany<Initiative, $this> */
     public function initiatives(): HasMany
     {
         return $this->hasMany(Initiative::class, 'sz_center_id', 'id');
     }
 
-    public function studentEntries(): HasMany
-    {
-        return $this->hasMany(StudentEntry::class, 'center_id', 'id');
-    }
-
+    /** @return HasMany<Success, $this> */
     public function successes(): HasMany
     {
         return $this->hasMany(Success::class, 'sz_center_id', 'id');
     }
 
+    /** @return HasMany<UserCenter, $this> */
     public function userCenters(): HasMany
     {
         return $this->hasMany(UserCenter::class, 'studyzone_center_id', 'id');

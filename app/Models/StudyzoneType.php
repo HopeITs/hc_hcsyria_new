@@ -15,6 +15,7 @@ class StudyzoneType extends Model
         'image',
     ];
 
+    /** @return HasMany<StudyzoneTypeDescription, $this> */
     public function studyzoneTypeDescriptions(): HasMany
     {
         return $this->hasMany(StudyzoneTypeDescription::class, 'type_id', 'id');

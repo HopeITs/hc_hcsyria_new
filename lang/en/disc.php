@@ -29,10 +29,8 @@ return [
     'testimoniesSandyText' => '"The Center has renewed my personality and refined it, and I have a new way of thinking and a new way of communication with people."',
     'testimoniesSandyName' => '<small>Sandy Haddad<br>Architect  / <b>Homs DISC- Syria</b></small>',
 
-
     'employed' => 'Employed',
     'percentage' => 'Percentage',
-
 
     'presentation_skill' => 'Presentation skills',
     'statistics_label' => 'Percentage of distinguished and excelling students',

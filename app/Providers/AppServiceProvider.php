@@ -2,11 +2,17 @@
 
 namespace App\Providers;
 
+use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Console\Events\CommandStarting;
+use Illuminate\Contracts\Console\Kernel as ConsoleKernel;
 use Illuminate\Database\Events\MigrationsStarted;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
+use Livewire\Livewire;
 use RuntimeException;
 
 class AppServiceProvider extends ServiceProvider
@@ -36,12 +42,15 @@ class AppServiceProvider extends ServiceProvider
     ];
 
     /*
-     * Commands that create, drop or alter schema. `migrate` covers the whole
-     * `migrate:*` family because the check is a prefix match.
+     * Commands that create, drop or alter schema, or write rows. `migrate`
+     * covers the whole `migrate:*` family because the check is a prefix match.
+     * `db:seed` is here because a seeder writes test rows into whatever the
+     * connection points at — on hcsyria_db, that is the live site.
      */
     private const SCHEMA_COMMANDS = [
         'migrate',
         'db:wipe',
+        'db:seed',
         'schema:dump',
     ];
 
@@ -52,6 +61,62 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        $this->configureRateLimiting();
+        $this->throttleLivewireUpdates();
+        $this->guardLiveDatabases();
+    }
+
+    /*
+     * Rate limits, from the Tracking app. Keyed by IP for signed-out visitors,
+     * which on the public site is everyone.
+     */
+    private function configureRateLimiting(): void
+    {
+        RateLimiter::for('livewire', fn (Request $request) => Limit::perMinute(180)->by(
+            (string) ($request->user()?->getAuthIdentifier() ?? $request->ip()),
+        ));
+
+        // On the whole `web` group (bootstrap/app.php). An office behind one
+        // IP stays far below 300 signed-out requests a minute.
+        RateLimiter::for('guest', fn (Request $request) => $request->user() === null
+            ? Limit::perMinute(300)->by('guest:'.$request->ip())
+            : Limit::none());
+    }
+
+    /*
+     * Every wire:click / wire:model on the site posts to this one endpoint
+     * (the micro-projects filters, load-more, search), so it is the obvious
+     * target for a resource-exhaustion attack. Persistent middleware only
+     * re-applies what the page route already has, so the endpoint is
+     * throttled directly. Livewire adds the `web` group (and with it CSRF)
+     * itself; $path keeps its per-install endpoint path.
+     */
+    private function throttleLivewireUpdates(): void
+    {
+        Livewire::setUpdateRoute(fn ($handle, $path) => Route::post($path, $handle)
+            ->middleware(['throttle:livewire']));
+    }
+
+    private function guardLiveDatabases(): void
+    {
+        /*
+         * Laravel stops firing CommandStarting when APP_ENV is "testing"
+         * (Foundation\Console\Kernel only reroutes the Symfony command events
+         * outside unit tests). Without this, `APP_ENV=testing php artisan
+         * migrate:fresh` — or any test using RefreshDatabase — would run
+         * db:wipe against hcsyria_db before the MigrationsStarted backstop
+         * below ever fired. Rerouting is idempotent, so outside tests this is
+         * a no-op; it must happen before the Artisan application is built,
+         * which is lazy, so `booted` is early enough.
+         */
+        if ($this->app->runningInConsole()) {
+            $this->app->booted(function () {
+                // Resolve through the contract: that is the shared instance
+                // Artisan runs on. Resolving the concrete class builds a new one.
+                $this->app->make(ConsoleKernel::class)->rerouteSymfonyCommandEvents();
+            });
+        }
+
         /*
          * Primary guard. CommandStarting fires before the migrator runs, and
          * critically before Laravel creates its `migrations` table — a later
@@ -62,7 +127,7 @@ class AppServiceProvider extends ServiceProvider
 
             $isSchemaCommand = false;
             foreach (self::SCHEMA_COMMANDS as $prefix) {
-                if ($command === $prefix || str_starts_with($command, $prefix . ':')) {
+                if ($command === $prefix || str_starts_with($command, $prefix.':')) {
                     $isSchemaCommand = true;
                     break;
                 }
@@ -72,8 +137,14 @@ class AppServiceProvider extends ServiceProvider
                 return;
             }
 
-            $default  = config('database.default');
-            $database = config("database.connections.$default.database");
+            /*
+             * The connection the command will actually use: --database when
+             * given (e.g. `db:wipe --database=legacy` while the default points
+             * at a scratch database), otherwise the default.
+             */
+            $connection = $event->input->getParameterOption('--database', null, true)
+                ?: config('database.default');
+            $database = config("database.connections.$connection.database");
 
             $this->refuseIfProtected($database, $command);
         });
@@ -104,8 +175,8 @@ class AppServiceProvider extends ServiceProvider
 
         throw new RuntimeException(
             "Refusing to run '{$command}' against '{$database}': it belongs to the live "
-            . 'legacy application. Point DB_DATABASE at a development database '
-            . '(for example hcsyria_new_db) and run again.'
+            .'legacy application. Point DB_DATABASE at a development database '
+            .'(for example hcsyria_new_db) and run again.'
         );
     }
 }

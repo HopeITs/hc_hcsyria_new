@@ -10,7 +10,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        DB::unprepared("CREATE PROCEDURE `clear_dublicates_entries`()
+        DB::unprepared('CREATE PROCEDURE `clear_dublicates_entries`()
 Begin
 
 DELETE c1
@@ -26,7 +26,7 @@ WHERE
     day(c1.`created_at`) = day(c2.`created_at`) AND
     month(c1.`created_at`) = month(c2.`created_at`) AND
     year(c1.`created_at`) = year(c2.`created_at`);
-END");
+END');
     }
 
     /**
@@ -34,6 +34,6 @@ END");
      */
     public function down(): void
     {
-        DB::unprepared("DROP PROCEDURE IF EXISTS clear_dublicates_entries");
+        DB::unprepared('DROP PROCEDURE IF EXISTS clear_dublicates_entries');
     }
 };

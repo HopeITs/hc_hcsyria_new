@@ -11,6 +11,7 @@ class Tag extends Model
         'name',
     ];
 
+    /** @return HasMany<NewsTag, $this> */
     public function newsTags(): HasMany
     {
         return $this->hasMany(NewsTag::class, 'tag_id', 'id');

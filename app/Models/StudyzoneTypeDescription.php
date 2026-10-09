@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class StudyzoneTypeDescription extends Model
 {
     protected $table = 'studyzone_types_description';
+
     public $timestamps = false;
 
     protected $fillable = [
@@ -23,6 +24,7 @@ class StudyzoneTypeDescription extends Model
         ];
     }
 
+    /** @return BelongsTo<StudyzoneType, $this> */
     public function type(): BelongsTo
     {
         return $this->belongsTo(StudyzoneType::class, 'type_id', 'id');

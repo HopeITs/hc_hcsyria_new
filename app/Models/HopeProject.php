@@ -27,6 +27,7 @@ class HopeProject extends Model
         ];
     }
 
+    /** @return HasMany<HopeProjectMedia, $this> */
     public function hopeProjectMedia(): HasMany
     {
         return $this->hasMany(HopeProjectMedia::class, 'project_id', 'id');

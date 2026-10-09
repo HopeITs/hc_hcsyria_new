@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -20,7 +19,7 @@ use Illuminate\Notifications\Notifiable;
  */
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use Notifiable;
 
     protected $fillable = [
         'name',
@@ -38,35 +37,35 @@ class User extends Authenticatable
     {
         return [
             'password' => 'hashed',
-            'active'   => 'boolean',
+            'active' => 'boolean',
         ];
     }
 
+    /** @return HasMany<Log, $this> */
     public function logs(): HasMany
     {
         return $this->hasMany(Log::class, 'user_id', 'id');
     }
 
-    public function studentEntries(): HasMany
-    {
-        return $this->hasMany(StudentEntry::class, 'user_id', 'id');
-    }
-
+    /** @return HasMany<UserCenter, $this> */
     public function userCenters(): HasMany
     {
         return $this->hasMany(UserCenter::class, 'user_id', 'id');
     }
 
+    /** @return HasMany<UserPermission, $this> */
     public function userPermissions(): HasMany
     {
         return $this->hasMany(UserPermission::class, 'user_id', 'id');
     }
 
+    /** @return HasMany<UserPlace, $this> */
     public function userPlaces(): HasMany
     {
         return $this->hasMany(UserPlace::class, 'user_id', 'id');
     }
 
+    /** @return HasMany<UserRole, $this> */
     public function userRoles(): HasMany
     {
         return $this->hasMany(UserRole::class, 'user_id', 'id');

@@ -3,11 +3,15 @@
 use Illuminate\Support\Facades\Route;
 
 /*
- * Routes are added as pages are migrated. Anything not listed here is still
- * served by the legacy application.
+ * Public routes, added as pages are ported. docs/port-ledger.json lists every
+ * public route of the legacy site and what happens to it here.
  */
 
-Route::view('/', 'welcome');
+// Legacy homepage_lb(): on the hcsyria host, / is a 302 to /home.
+Route::redirect('/', '/home', 302);
+
+// Legacy /about answered 500 (its view was never committed); nothing links to it.
+Route::permanentRedirect('/about', '/who-we-are');
 
 Route::livewire('/projects/micro-projects', 'micro-projects')
     ->name('projects.micro');

@@ -3,6 +3,11 @@
 Found while extracting the query layer. These affect the **live site**, not only
 the rewrite, so they are listed separately from the migration notes.
 
+**Decision 2026-10-09: the old site is not changed.** The patches suggested
+below are recorded for whoever maintains it, but they are not part of this
+project. The new app does not have these defects, and they close at cutover
+(`docs/upgrade-plan.md` §1).
+
 ## 1. SQL injection on four public routes — confirmed exploitable
 
 **Severity: high. Unauthenticated, on the public site.**
@@ -51,11 +56,19 @@ sites, is to bind the value:
 ->whereRaw('replace(lower(name), " ", "-") LIKE ?', [$type])
 ```
 
-## 2. `/about` publicly lists 81 former staff members
+## 2. `/about` is a broken route with a latent former-staff bug
 
-**Severity: medium. A privacy and accuracy problem rather than a breach.**
+**Severity: low. Corrected 2026-10-09 — an earlier version of this note said
+the page publishes 81 former staff. It does not: it has never rendered.**
 
-`PublicController::about()` builds its filter as:
+`/about` returns `view('public.about')`, and that view does not exist in the
+legacy repository and never has (`git log --all` finds no such file). The live
+site answers `https://hcsyria.org/about` with a 500, confirmed 2026-10-09.
+Nothing links to it; the team page is `/who-we-are`, served by `about_us()`,
+which filters correctly with `whereIn`.
+
+The query inside `about()` is still wrong, and would have exposed former staff
+had the view existed. It builds its filter as:
 
 ```php
 DB::table('profile')->where('inactive', '0')
@@ -68,11 +81,16 @@ The `orWhere` calls are not grouped, so they escape the `inactive` filter.
 `inactive` is not a boolean despite the name — it stores a departure date such
 as `31/03/2023`.
 
-Measured on live data: **111 profiles returned where 30 are current staff.**
-81 people who have left the organisation are published on the public page, some
-dating back to 2022.
+Measured on live data: the query returns **111 profiles where 30 are current
+staff** — 81 former staff of the study and DISC teams, rows that also carry
+`email` and `phone`.
 
-The fix is to group the alternatives, which `TeamMemberQuery` does.
+Not ported: `/about` is dead (no view, no inbound link). The rewrite answers it
+with a 301 to `/who-we-are`. `TeamMemberQuery` groups the alternatives, so the
+bug cannot come back through the query layer either.
+
+The lesson for the reachability analyzer: a route that reaches a method is not
+enough — the view the method returns has to exist too.
 
 ## 3. Deleting a project leaves every image file on disk
 

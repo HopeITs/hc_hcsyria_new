@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class UserCenter extends Model
 {
     protected $table = 'users_centers';
+
     public $timestamps = false;
 
     protected $fillable = [
@@ -23,11 +24,13 @@ class UserCenter extends Model
         ];
     }
 
+    /** @return BelongsTo<User, $this> */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
+    /** @return BelongsTo<StudyzoneCenter, $this> */
     public function studyzoneCenter(): BelongsTo
     {
         return $this->belongsTo(StudyzoneCenter::class, 'studyzone_center_id', 'id');

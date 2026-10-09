@@ -12,7 +12,6 @@ return [
 ',
     'address_h' => 'Bustan Al-Diwan, in front of lady of peace church Homs, Syria',
 
-
     'faculties_title' => 'Our University Faculties',
 
     'media' => 'MEDIA',

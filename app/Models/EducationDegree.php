@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class EducationDegree extends Model
 {
     protected $table = 'educationdegree';
+
     public $timestamps = false;
 
     protected $fillable = [
@@ -15,6 +16,7 @@ class EducationDegree extends Model
         'name_en',
     ];
 
+    /** @return HasMany<EducationField, $this> */
     public function educationFields(): HasMany
     {
         return $this->hasMany(EducationField::class, 'educationdegree_id', 'id');

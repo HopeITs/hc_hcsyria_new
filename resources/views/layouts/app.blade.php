@@ -14,7 +14,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&family=Martel:wght@400;600;800&display=swap"
           rel="stylesheet">
 
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @vite('resources/css/app.css')
     @livewireStyles
 </head>
 <body class="flex min-h-full flex-col">

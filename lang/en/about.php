@@ -52,13 +52,11 @@ return [
     'address_h' => 'Hamidieh, Al Ozon street, Homs, Syria',
     'address_d' => 'Bab Sharqi, Kasabeh Alley, Damascus, Syria',
 
-
     'tel' => 'Tel',
     'workingHours' => 'Working Hours: <span>Monday to Friday from <br> 9:00 to 17:00</span>',
 
     'homework_address' => '<strong>Villat,</strong> in front of Sports Institute<br> Aleppo, Syria',
     'homework_workingHours' => 'Working Hours: <br><strong>Monday</strong> to <strong>Friday</strong> from <strong>14:30</strong> to <strong>19:00</strong><br><strong>Saturday</strong> from <strong>11:00</strong> to <strong>14:00</strong>',
-
 
     'mission1' => 'Family Recover',
     'mission2' => 'Livelihood Support',

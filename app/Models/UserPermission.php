@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class UserPermission extends Model
 {
     protected $table = 'users_permissions';
+
     public $timestamps = false;
 
     protected $fillable = [
@@ -23,11 +24,13 @@ class UserPermission extends Model
         ];
     }
 
+    /** @return BelongsTo<User, $this> */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
+    /** @return BelongsTo<Permission, $this> */
     public function permission(): BelongsTo
     {
         return $this->belongsTo(Permission::class, 'permission_id', 'id');

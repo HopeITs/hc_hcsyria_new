@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class InitiativeDonor extends Model
 {
     protected $table = 'initiatives_donors';
+
     public $timestamps = false;
 
     protected $fillable = [
@@ -23,11 +24,13 @@ class InitiativeDonor extends Model
         ];
     }
 
+    /** @return BelongsTo<Initiative, $this> */
     public function initiative(): BelongsTo
     {
         return $this->belongsTo(Initiative::class, 'initiative_id', 'id');
     }
 
+    /** @return BelongsTo<Donor, $this> */
     public function donor(): BelongsTo
     {
         return $this->belongsTo(Donor::class, 'donor_id', 'id');

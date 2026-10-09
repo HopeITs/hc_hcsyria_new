@@ -46,26 +46,31 @@ class News extends Model
         ];
     }
 
+    /** @return BelongsTo<Place, $this> */
     public function place(): BelongsTo
     {
         return $this->belongsTo(Place::class, 'place_id', 'id');
     }
 
+    /** @return BelongsTo<Edition, $this> */
     public function edition(): BelongsTo
     {
         return $this->belongsTo(Edition::class, 'edition_id', 'id');
     }
 
+    /** @return HasOne<NewsContent, $this> */
     public function content(): HasOne
     {
         return $this->hasOne(NewsContent::class, 'news_id', 'id');
     }
 
+    /** @return HasMany<NewsImage, $this> */
     public function newsImages(): HasMany
     {
         return $this->hasMany(NewsImage::class, 'news_id', 'id');
     }
 
+    /** @return HasMany<NewsTag, $this> */
     public function newsTags(): HasMany
     {
         return $this->hasMany(NewsTag::class, 'news_id', 'id');

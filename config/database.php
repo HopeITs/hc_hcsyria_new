@@ -101,7 +101,9 @@ return [
             'collation' => 'utf8mb4_unicode_ci',
             'prefix' => '',
             'prefix_indexes' => true,
-            'strict' => true,
+            // The legacy app runs with strict off; replayed legacy SQL must see
+            // the same sql_mode, or GROUP BY queries it relies on are refused.
+            'strict' => false,
             'engine' => null,
         ],
 

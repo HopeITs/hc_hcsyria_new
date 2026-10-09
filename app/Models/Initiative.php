@@ -38,51 +38,61 @@ class Initiative extends Model
         ];
     }
 
+    /** @return BelongsTo<WhoCategory, $this> */
     public function whoCategory(): BelongsTo
     {
         return $this->belongsTo(WhoCategory::class, 'who_category_id', 'id');
     }
 
+    /** @return BelongsTo<WhatCategory, $this> */
     public function whatCategory(): BelongsTo
     {
         return $this->belongsTo(WhatCategory::class, 'what_category_id', 'id');
     }
 
+    /** @return BelongsTo<SubWhatCategory, $this> */
     public function subWhatCategory(): BelongsTo
     {
         return $this->belongsTo(SubWhatCategory::class, 'sub_what_category_id', 'id');
     }
 
+    /** @return BelongsTo<Place, $this> */
     public function place(): BelongsTo
     {
         return $this->belongsTo(Place::class, 'place_id', 'id');
     }
 
+    /** @return BelongsTo<StudyzoneCenter, $this> */
     public function szCenter(): BelongsTo
     {
         return $this->belongsTo(StudyzoneCenter::class, 'sz_center_id', 'id');
     }
 
+    /** @return HasMany<InitiativeDonor, $this> */
     public function initiativeDonors(): HasMany
     {
         return $this->hasMany(InitiativeDonor::class, 'initiative_id', 'id');
     }
 
+    /** @return HasOne<InitiativeContent, $this> */
     public function content(): HasOne
     {
         return $this->hasOne(InitiativeContent::class, 'initiative_id', 'id');
     }
 
+    /** @return HasMany<InitiativeImage, $this> */
     public function initiativeImages(): HasMany
     {
         return $this->hasMany(InitiativeImage::class, 'initiative_id', 'id');
     }
 
+    /** @return HasMany<InitiativeImageRehabilitation, $this> */
     public function initiativeImageRehabilitations(): HasMany
     {
         return $this->hasMany(InitiativeImageRehabilitation::class, 'initiative_id', 'id');
     }
 
+    /** @return HasMany<Testimony, $this> */
     public function testimonies(): HasMany
     {
         return $this->hasMany(Testimony::class, 'initiative_id', 'id');

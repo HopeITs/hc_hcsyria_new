@@ -110,16 +110,32 @@ Because the application points at `hcsyria_db`, a stray `php artisan migrate`
 is a live risk rather than a hypothetical one — `migrate:fresh` would drop every
 table in it.
 
-`AppServiceProvider` refuses `migrate`, `migrate:*`, `db:wipe` and `schema:*`
-whenever the target is one of the twelve live databases. It hooks
+`AppServiceProvider` refuses `migrate`, `migrate:*`, `db:wipe`, `db:seed` and
+`schema:dump` whenever the target is one of the twelve live databases. It hooks
 `CommandStarting`, which fires before Laravel creates its `migrations` table;
 hooking `MigrationsStarted` instead is too late, and lets that table be created
 in the target first.
 
-A second `MigrationsStarted` listener covers in-process migrations (tests,
-`Artisan::call`). Note that this event carries only `$method` and `$options` —
+The target is the connection named by `--database` when one is given, not
+only the default: `db:wipe --database=legacy` with a scratch default would
+otherwise have wiped `hcsyria_db` through the `legacy` connection.
+
+**Laravel does not fire `CommandStarting` when `APP_ENV=testing`.** Until
+2026-10-09 that meant `APP_ENV=testing php artisan migrate:fresh` — or any test
+using `RefreshDatabase` — would run `db:wipe` against `hcsyria_db` before the
+backstop below could fire. The provider now reroutes the command events itself
+in every environment. `tests/Feature/MigrationGuardTest.php` covers the CLI,
+`APP_ENV=testing`, in-process `Artisan::call` and `--database` paths, using only
+commands that are harmless if the guard ever fails.
+
+A second `MigrationsStarted` listener stays as a backstop for in-process
+migrations. Note that this event carries only `$method` and `$options` —
 it has no `$connection` property — so the connection is resolved from
 `options['database']`, falling back to the default connection.
+
+The guard is a code-level control. In production the new app should also
+connect as a database user without `DROP`/`ALTER` on the legacy tables, so a
+bug here cannot destroy data either.
 
 `scripts/verify-schema.php` still works because it overrides `DB_DATABASE` for
 its child process, so the guard sees a scratch database and allows it.

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class ProjectContent extends Model
 {
     protected $table = 'projects_english';
+
     public $timestamps = false;
 
     protected $fillable = [
@@ -27,6 +28,7 @@ class ProjectContent extends Model
         ];
     }
 
+    /** @return BelongsTo<Project, $this> */
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class, 'project_id', 'id');

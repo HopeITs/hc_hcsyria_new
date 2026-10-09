@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class DiscCourseType extends Model
 {
     protected $table = 'disc_course_type';
+
     public $timestamps = false;
 
     protected $fillable = [

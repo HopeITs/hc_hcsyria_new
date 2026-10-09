@@ -9,7 +9,8 @@ use Illuminate\Database\Eloquent\Builder;
  * Micro-project search for the public listing at /projects/micro-projects.
  *
  * Derived from App\Livewire\MicroProjects::loadProjects() in the legacy
- * application, which is what that route actually runs. The similarly named
+ * application (as of legacy commit 6d45ef9), which is what that route
+ * actually runs. The similarly named
  * PublicController::get_projects_IDs() is dead code — its only caller,
  * micro_project_new(), has been commented out of the routes — so it is
  * deliberately not reproduced here.
@@ -25,13 +26,16 @@ class ProjectSearch
     private const COMPLETED = [1, 2];
 
     private ?string $term = null;
+
     private ?int $donorId = null;
+
     private ?int $cityId = null;
+
     private bool $onlyWithVideo = false;
 
     public static function make(): self
     {
-        return new self();
+        return new self;
     }
 
     public function search(?string $term): self
@@ -63,25 +67,31 @@ class ProjectSearch
         return $this;
     }
 
+    /** @return Builder<Project> */
     public function builder(): Builder
     {
         $query = Project::query()
             ->whereIn('MPE_Done', self::COMPLETED)
             ->whereIn('MPE_Published', self::PUBLISHED);
 
-        if ($this->term !== null) {
-            $like = '%' . $this->escapeLike($this->term) . '%';
-
+        if ($this->term !== null && ctype_digit($this->term)) {
             /*
-             * The legacy version put both conditions inside one whereHas on the
-             * content relation, even though MPE_BeneficiaryName lives on
-             * `projects`. MySQL resolved that column against the outer query,
-             * so it happened to work. Written out explicitly here; the result is
-             * the same because every project has exactly one content row.
+             * A number is a project number, matched exactly — what visitors
+             * type when they hold a printed project card. Legacy commits
+             * 0897784 / 358bc8e.
              */
+            $query->where('projects.MicroProject_ID', $this->term);
+        } elseif ($this->term !== null) {
+            $like = '%'.$this->escapeLike($this->term).'%';
+
             $query->where(function (Builder $q) use ($like) {
-                $q->whereHas('content', fn(Builder $c) => $c->where('MPE_Name', 'like', $like))
-                    ->orWhere('projects.MPE_BeneficiaryName', 'like', $like);
+                $q->where('projects.MPE_BeneficiaryName', 'like', $like)
+                    ->orWhere('projects.MPE_PartnerName', 'like', $like)
+                    ->orWhere('projects.MPE_PartnerName2', 'like', $like)
+                    ->orWhereHas('content', fn (Builder $c) => $c
+                        ->where('MPE_Name', 'like', $like)
+                        ->orWhere('MPE_ExpSkill', 'like', $like)
+                        ->orWhere('MPE_Suffering', 'like', $like));
             });
         }
 
@@ -113,7 +123,7 @@ class ProjectSearch
     /** @return array<int, int> */
     public function ids(): array
     {
-        return $this->builder()->pluck('id')->map(fn($id) => (int) $id)->all();
+        return $this->builder()->pluck('id')->map(fn ($id) => (int) $id)->all();
     }
 
     /**

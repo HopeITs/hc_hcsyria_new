@@ -30,10 +30,14 @@ class MicroProjectStatsQuery
 
     public static function make(): self
     {
-        return new self();
+        return new self;
     }
 
-    /** Project count per city id, for the map and the counters. */
+    /**
+     * Project count per city id, for the map and the counters.
+     *
+     * @return Collection<array-key, mixed>
+     */
     public function countsByCity(): Collection
     {
         return Project::query()
@@ -58,6 +62,8 @@ class MicroProjectStatsQuery
      * Project count per sub-category name.
      * Note MPE_Done is 1 only here, unlike the city counts which allow 1 or 2 —
      * that difference is carried over from the legacy queries as-is.
+     *
+     * @return Collection<int, \stdClass>
      */
     public function countsByCategory(): Collection
     {
@@ -76,6 +82,8 @@ class MicroProjectStatsQuery
     /**
      * Project count per age band. The join condition treats an age of 0 as 1,
      * so newborns fall inside the first band rather than outside every band.
+     *
+     * @return Collection<int, \stdClass>
      */
     public function countsByAgeRange(): Collection
     {
@@ -84,7 +92,7 @@ class MicroProjectStatsQuery
                 ->leftJoin('age', function ($join) {
                     $join->whereRaw(
                         '(CASE WHEN YEAR(CURDATE()) - projects.DOB = 0 THEN 1'
-                        . ' ELSE YEAR(CURDATE()) - projects.DOB END) BETWEEN age.Min AND age.Max'
+                        .' ELSE YEAR(CURDATE()) - projects.DOB END) BETWEEN age.Min AND age.Max'
                     );
                 })
                 ->select('age.Name', DB::raw('COUNT(projects.id) AS project_count'))

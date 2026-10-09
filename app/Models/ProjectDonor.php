@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class ProjectDonor extends Model
 {
     protected $table = 'projects_donors';
+
     public $timestamps = false;
 
     protected $fillable = [
