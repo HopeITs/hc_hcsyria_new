@@ -1,0 +1,53 @@
+/*
+ * The hero title under the navbar: a red corner line with two lines of
+ * large grey capitals tucked into it ("SOME SEE A HOPELESS END / OTHERS SEE
+ * AN ENDLESS HOPE"). Legacy .first-column + .content with .main_title and
+ * .main_subtitle (main-new.css); used on 10 pages.
+ *
+ * The red corner is /images/home/red-line.svg as a background; the text is
+ * absolutely positioned inside a flex column that packs to the bottom, so it
+ * sits at the bottom-left of the frame.
+ */
+@layer components {
+    .page-title {
+        display: flex;
+        flex-direction: column;
+        flex: 1 1 0%;
+        justify-content: flex-end;
+        padding: 0 0 0 0.75rem;
+    }
+
+    .page-title__frame {
+        height: 6.3vw;
+        background: url('/images/home/red-line.svg') no-repeat;
+        background-size: 100%;
+
+        @media (width >= 576px) {
+            height: 5.7vw;
+        }
+    }
+
+    .page-title__text {
+        position: absolute;
+        line-height: 2.2vw;
+
+        @media (width >= 576px) {
+            line-height: 2vw;
+        }
+    }
+
+    .page-title__line {
+        font-size: 2.1vw;
+        text-transform: uppercase;
+        color: #575756;
+
+        @media (width >= 576px) {
+            font-size: 1.5vw;
+        }
+    }
+
+    .page-title__line--strong {
+        font-size: 2.5vw;
+        font-weight: 900;
+    }
+}

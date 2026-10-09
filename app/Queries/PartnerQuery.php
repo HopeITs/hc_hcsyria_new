@@ -38,6 +38,24 @@ class PartnerQuery
     }
 
     /**
+     * The public donors with the ones named in $order first, in that order;
+     * the rest follow in their usual order. /who-we-are sets the order by
+     * hand so its rows of logos balance (6 / 6 / 7).
+     *
+     * @param  list<int>  $order  donor ids
+     * @return Collection<int, Donor>
+     */
+    public static function publicDonorsInOrder(array $order): Collection
+    {
+        // sortBy is stable, so donors not listed keep their rank order.
+        return self::publicDonors()
+            ->sortBy(fn (Donor $donor) => ($position = array_search((int) $donor->id, $order, true)) === false
+                ? PHP_INT_MAX
+                : $position)
+            ->values();
+    }
+
+    /**
      * Micro-project donors, as used by the project filters.
      *
      * @return Collection<int, Donor>

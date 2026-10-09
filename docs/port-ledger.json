@@ -2918,9 +2918,9 @@
             "action": "PublicController@about_us",
             "name": "public.who-we-are",
             "order": 27,
-            "status": "pending",
+            "status": "ported",
             "notes": null,
-            "ported_from": null,
+            "ported_from": "6d45ef9",
             "live_status": "200",
             "examples": [
                 {
@@ -2990,9 +2990,9 @@
             "action": "PublicController@about_us",
             "name": "public.who-we-are-partners",
             "order": 53,
-            "status": "pending",
+            "status": "ported",
             "notes": null,
-            "ported_from": null,
+            "ported_from": "6d45ef9",
             "live_status": "200",
             "examples": [
                 {

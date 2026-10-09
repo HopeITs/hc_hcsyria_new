@@ -11,4 +11,16 @@
     .page-margin {
         margin: 1% 4.7%;
     }
+
+    /*
+     * .page_start: the gap under the fixed navbar that content pages begin
+     * with (17 pages; the home page, whose cover runs under the bar, has none).
+     */
+    .page-start {
+        padding-top: 12vw;
+
+        @media (width >= 576px) {
+            padding-top: 4vw;
+        }
+    }
 }

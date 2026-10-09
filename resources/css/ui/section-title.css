@@ -1,0 +1,31 @@
+/*
+ * A section's name in bold red, sitting on a white patch over the bottom of
+ * the red bar above it. Legacy .section-title (main-new.css, 14 pages).
+ */
+@layer components {
+    .section-title {
+        padding: 2.3vw;
+        font-size: 3.8vw;
+        font-weight: 900;
+        color: #bc1818;
+        background: #fff;
+
+        @media (width >= 576px) {
+            font-size: 2.5vw;
+        }
+    }
+
+    /* Under it, a short description in grey (legacy .section-title-desc). */
+    .section-title-desc {
+        margin-bottom: 4vw;
+        font-size: 3vw;
+        line-height: 3.4vw;
+        color: #58595b;
+
+        @media (width >= 576px) {
+            margin-bottom: 2.3vw;
+            font-size: 1.2vw;
+            line-height: 1.7vw;
+        }
+    }
+}

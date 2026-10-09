@@ -1,0 +1,65 @@
+/*
+ * The partner strip: logos of the organisations that fund the work, in rows
+ * that start and end on the same edges. Legacy .partners-grid, .partner-item
+ * and the per-logo width classes (main-new.css). Each logo has the width the
+ * legacy site gave it, because the artwork has very different proportions;
+ * three columns on phones, evenly spread rows from 768px.
+ */
+@layer components {
+    .partner-grid {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+        margin: 1.5rem -0.75rem;
+
+        @media (width >= 768px) {
+            justify-content: space-between;
+            padding: 0 4vw;
+        }
+    }
+
+    .partner-grid__cell {
+        display: flex;
+        flex: 0 0 auto;
+        width: 33.3333%;
+        align-items: center;
+        justify-content: center;
+        max-width: 100%;
+        margin-bottom: 1.5rem;
+        padding: 0 0.75rem;
+
+        @media (width >= 768px) {
+            width: auto;
+        }
+    }
+
+    /* The break that makes the rows 6 / 6 / 7 from 768px. */
+    .partner-grid__break {
+        display: none;
+        width: 100%;
+
+        @media (width >= 768px) {
+            display: block;
+        }
+    }
+
+    .partner-logo {
+        display: flex;
+        width: 9vw;
+        text-align: end;
+
+        @media (width >= 768px) {
+            width: 4vw;
+        }
+    }
+
+    .partner-logo--louvre { width: 10.3vw; height: 8vw; @media (width >= 768px) { width: 5.3vw; height: auto; } }
+    .partner-logo--kerk { width: 17vw; @media (width >= 768px) { width: 6.3vw; } }
+    .partner-logo--salt { width: 8vw; @media (width >= 768px) { width: 3.5vw; } }
+    .partner-logo--jm { width: 13vw; @media (width >= 768px) { width: 5vw; } }
+    .partner-logo--hungary { width: 10vw; @media (width >= 768px) { width: 5vw; } }
+    .partner-logo--missio { width: 15vw; @media (width >= 768px) { width: 9.3vw; } }
+    .partner-logo--rs { width: 20vw; @media (width >= 768px) { width: 7vw; } }
+    .partner-logo--paris { width: 17vw; height: 80px; @media (width >= 768px) { width: 4.5vw; height: 110px; } }
+}

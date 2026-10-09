@@ -1,0 +1,153 @@
+/*
+ * A full-width band split in two: a photo on one half and, on the other, a
+ * grey panel of text that changes with the carousel. Legacy
+ * .animated-container / .animated-content / .padding-screen (main-new.css,
+ * who-we-are.css): the values and the vision on /who-we-are. The halves
+ * stack on phones.
+ */
+@layer components {
+    .showcase {
+        display: flex;
+        flex-wrap: wrap;
+        margin: 9vw -0.75rem 0;
+
+        @media (width >= 576px) {
+            margin-top: 5vw;
+        }
+    }
+
+    .showcase__half {
+        position: relative;
+        flex: 0 0 auto;
+        width: 100%;
+        padding: 0;
+
+        @media (width >= 576px) {
+            width: 50%;
+        }
+    }
+
+    .showcase__photo {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    /*
+     * Straight in a half (no carousel around it) the legacy photo is an inline
+     * image: it sits on the text baseline, which leaves a few pixels under it
+     * that make the band taller.
+     */
+    .showcase__half > .showcase__photo {
+        display: inline;
+        vertical-align: baseline;
+    }
+
+    /* The panel: as tall as the photo band, text centred in it. */
+    .showcase__panel {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 40vw;
+        margin-top: 0;
+        font-size: 3vw;
+        font-weight: 900;
+        color: #616262;
+        text-align: center;
+        background-color: #f4f4f4;
+
+        @media (width >= 576px) {
+            height: 28vw;
+            font-size: 1.9vw;
+        }
+    }
+
+    /* The panel's text column. */
+    .showcase__text {
+        width: 100%;
+        padding: 0 0.75rem;
+        margin-top: 3vw;
+
+        & > div {
+            padding-right: 4.7vw;
+            padding-left: 4.7vw;
+        }
+
+        @media (width >= 576px) {
+            margin-top: 1vw;
+        }
+    }
+
+    .showcase__quote {
+        margin-bottom: 3vw;
+        font-size: 3vw;
+        font-weight: 100;
+        line-height: 3vw;
+        color: #58595b;
+        text-align: center;
+
+        /* The quotation marks name Avenir, which the site never loads, so the browser's own font draws them. */
+        & span {
+            font-family: Avenir;
+        }
+
+        @media (width >= 576px) {
+            margin-bottom: 0;
+            font-size: 1.3vw;
+            line-height: 1.7vw;
+        }
+    }
+
+    .showcase__source {
+        margin: 0.5rem 0 2vw;
+        font-size: 2.5vw;
+        font-weight: 400;
+        color: #616262;
+        text-align: center;
+
+        @media (width >= 576px) {
+            margin-bottom: 0;
+            font-size: 1vw;
+            font-weight: 100;
+        }
+    }
+
+    /* The vision slides: left-aligned, smaller text. */
+    .showcase__panel--vision {
+        font-size: 2.8vw;
+        line-height: 2.8vw;
+        text-align: left;
+
+        /* One more gutter each side than the values panel has. */
+        & .showcase__text > div {
+            margin-right: 0.75rem;
+            margin-left: 0.75rem;
+        }
+
+        @media (width >= 576px) {
+            font-size: 1.2vw;
+            line-height: 1.6vw;
+        }
+    }
+
+    .showcase__heading {
+        margin-bottom: 1vw;
+        font-size: 3vw;
+        font-weight: 900;
+        text-transform: capitalize;
+
+        @media (width >= 576px) {
+            font-size: 2.5vw;
+        }
+    }
+
+    .showcase__lead {
+        padding-bottom: 0.3vw;
+    }
+
+    .showcase__body {
+        font-weight: 500;
+    }
+}

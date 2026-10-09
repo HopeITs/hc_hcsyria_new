@@ -1,0 +1,12 @@
+/*
+ * The torn-paper edge laid over the bottom of a photo (legacy .image-mask,
+ * /images/home/image-mask.png). The photo's container must be positioned.
+ */
+@layer components {
+    .torn-edge {
+        position: absolute;
+        bottom: -0.1vw;
+        left: 0;
+        width: 100%;
+    }
+}

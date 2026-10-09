@@ -8,7 +8,16 @@
 @import './ui/reveal.css';
 @import './ui/rule-heading.css';
 @import './ui/program-card.css';
+@import './ui/carousel.css';
+@import './ui/motion.css';
+@import './ui/page-title.css';
+@import './ui/red-rule.css';
+@import './ui/section-title.css';
+@import './ui/showcase.css';
+@import './ui/torn-edge.css';
+@import './ui/partner-logos.css';
 @import './pages/home.css';
+@import './pages/who-we-are.css';
 
 /* Only our own Blade views: every utility emitted is one a page uses. */
 @source '../views/**/*.blade.php';
@@ -110,13 +119,6 @@
  * the public-site phase; these go with it. Values are legacy computed styles
  * (navbar.css, micro_page_new-test.css, main-new-test.css) at 1440px.
  */
-@utility section-title {
-    background: white;
-    color: #BC1818;
-    font-weight: 900;
-    font-size: 2.5vw;
-}
-
 @utility apply-btn {
     background: #BC1818;
     border: 2px solid #BC1818;

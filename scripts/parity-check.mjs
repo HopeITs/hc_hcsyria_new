@@ -99,8 +99,15 @@ async function capture(browser, url, width) {
             console.error(`CSP violation: ${e.violatedDirective} blocked ${e.blockedURI}`));
     });
 
+    // Images are not in git, and the local copy of them is older than the live
+    // site's. Both pages draw their /images from the legacy server, so only the
+    // page itself is compared.
+    await page.route(`${newBase}/images/**`, (route) => route.continue({ url: route.request().url().replace(newBase, legacyBase) }));
+
     await page.setViewportSize({ width, height: 900 });
     const response = await page.goto(url, { waitUntil: 'networkidle', timeout: 60000 });
+    // Pages with a loading screen keep it up for 2.5s; capture what is under it.
+    await page.waitForSelector('.preloader', { state: 'detached', timeout: 10000 }).catch(() => {});
     await page.addStyleTag({ content: freezeCss });
     await page.evaluate(async () => {
         await document.fonts.ready;

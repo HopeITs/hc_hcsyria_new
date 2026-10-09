@@ -51,6 +51,8 @@ const states = [
 const b = await chromium.launch();
 const shot = async (url, width, steps) => {
   const c = await b.newContext({ viewport: { width, height: 900 }, reducedMotion: 'reduce' }); const p = await c.newPage();
+  // Images are not in git and the local copy is older than the live site's: both pages draw them from the legacy server.
+  const origin = new URL(NEW).origin; await p.route(`${origin}/images/**`, (route) => route.continue({ url: route.request().url().replace(origin, new URL(LEG).origin) }));
   await p.goto(url, { waitUntil: 'networkidle' }); await p.addStyleTag({ content: '*{animation:none!important;transition:none!important}' }); await p.evaluate(() => document.fonts.ready); await p.waitForTimeout(settle);
   // Autoplaying videos are captured on their first frame, so two runs compare.
   await p.evaluate(() => document.querySelectorAll('video').forEach((v) => { v.pause(); v.currentTime = 0; })); await p.waitForTimeout(400);

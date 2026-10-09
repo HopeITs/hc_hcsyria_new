@@ -17,6 +17,10 @@ Route::permanentRedirect('/about', '/who-we-are');
 Route::livewire('/home', 'pages::home')
     ->name('home');
 
+// The legacy router sent both of these to the same page.
+Route::livewire('/who-we-are', 'pages::who-we-are')->name('public.who-we-are');
+Route::livewire('/who-we-are/partners', 'pages::who-we-are')->name('public.who-we-are-partners');
+
 Route::livewire('/projects/micro-projects', 'micro-projects')
     ->name('projects.micro');
 

@@ -1,0 +1,94 @@
+/*
+ * /who-we-are and /who-we-are/partners. Legacy: who-we-are.css and the
+ * section rules of main-new.css, measured on the running page
+ * (storage/parity/spec/wwa-*.json).
+ */
+@layer components {
+    /* Spacing between the page's sections (legacy .section-space) */
+    .section-gap {
+        margin-top: 13vw;
+
+        @media (width >= 576px) {
+            margin-top: 9vw;
+        }
+    }
+
+    /* A section whose bottom edge sits just above the next red bar */
+    .section-gap--padded {
+        padding-bottom: 5vw;
+
+        @media (width >= 576px) {
+            padding-bottom: 1vw;
+        }
+    }
+
+    /* The grey card with the logo and the short introduction (legacy .card-height) */
+    .about-card {
+        margin: 9vw 0 1rem;
+        padding: 3vw;
+        background-color: #f4f4f4;
+
+        @media (width >= 576px) {
+            margin-top: 5vw;
+        }
+    }
+
+    .about-card__logo {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 14vw;
+        height: 10vw;
+        margin-right: 5vw;
+
+        @media (width >= 576px) {
+            width: auto;
+            height: 18vw;
+        }
+    }
+
+    .about-card__text {
+        margin-top: 2vw;
+        font-size: 2.5vw;
+        color: #58595b;
+
+        @media (width >= 576px) {
+            margin-top: 0;
+            font-size: 1.3vw;
+        }
+    }
+
+    /* The partners block has the card's spacing but no grey */
+    .partners-block {
+        margin: 9vw 0.75rem 0;
+        padding: 3vw;
+
+        @media (width >= 576px) {
+            margin-top: 5vw;
+        }
+    }
+}
+
+@layer components {
+    /* #HomeCarousel: the cover photo band */
+    .cover-carousel {
+        height: auto;
+        margin-top: -0.2vw;
+    }
+
+    .cover-carousel__track {
+        height: 40vw;
+
+        @media (width >= 576px) {
+            height: 33.5vw;
+        }
+    }
+
+    .cover-carousel .carousel__control {
+        width: 10%;
+    }
+
+    .cover-carousel .carousel__dots {
+        bottom: -1vw;
+    }
+}

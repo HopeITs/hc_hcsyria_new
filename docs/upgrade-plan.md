@@ -43,6 +43,7 @@ Public side first; the admin dashboard comes after (decided 2026-10-09).
 | Layout, header, footer (default variant) | **Done** — measured against the running legacy pages at 375/768/1440/1920px; menus, hover fills and the phone menu compared state by state (`npm run parity:nav`, 9 states, all under 0.25% pixel difference) |
 | Every error page (401 403 404 419 429 500 503 + any 4xx/5xx) | **Done** — see §9, Error pages |
 | Home page `/home` | **Done** — matches legacy at 375/768/1440/1920px (≤0.45% of pixels) and as a phone (0.23%); 18 interactive nav states; scroll switch and preloader behaviour checked; 63 tests |
+| Who we are `/who-we-are` (+ `/who-we-are/partners`) | **Done** — matches legacy at 375/768/1440/1920px (≤0.32%) and as a phone (0.42%); desktop and tablet nav states pass, the phone ones differ only in text anti-aliasing (every box identical); 70 tests. New shared pieces: carousel, page title, red rule, section title, torn edge, showcase, partner logos |
 | Footer variants (micro-projects, children, DISC, LEAP) | Next, with their pages |
 | The 30 public pages | Next |
 

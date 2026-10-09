@@ -1,7 +1,9 @@
 {
     "_comment": "Differences from the legacy site that were approved on purpose. scripts/parity-check.mjs ignores a text, link or font diff line that matches an entry exactly. Every entry needs a reason; anything not listed here fails the check.",
     "text": {
-        "+ Skip to content": "Keyboard skip link, visually hidden until focused (accessibility; upgrade-plan §2.4)."
+        "+ Skip to content": "Keyboard skip link, visually hidden until focused (accessibility; upgrade-plan §2.4).",
+        "- Previous": "Carousel buttons: the legacy visually-hidden <span> is now the button's aria-label; screen readers say the same, nothing visible changes.",
+        "- Next": "Carousel buttons: the legacy visually-hidden <span> is now the button's aria-label; screen readers say the same, nothing visible changes."
     },
     "links": {
         "+ a #main": "Target of the skip link above.",

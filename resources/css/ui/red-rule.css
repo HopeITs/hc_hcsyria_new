@@ -1,0 +1,33 @@
+/*
+ * The red vertical bar that joins one section to the next, hanging from the
+ * middle of the page. Legacy .horizontal-line (despite the name it is
+ * vertical; main-new.css, 15 pages) and its .small variant.
+ *
+ * It is taken out of the flow: the space around it comes from the margin on
+ * the section that follows. Absolutely positioned with no offsets, so it
+ * sits where it would have been in the flow.
+ */
+@layer components {
+    .red-rule {
+        position: absolute;
+        left: 49.7%;
+        z-index: 999;
+        width: 50%;
+        height: 13vw;
+        text-align: center;
+        border-left: 0.5vw solid #bc1818;
+
+        @media (width >= 576px) {
+            height: 9vw;
+            border-left-width: 0.4vw;
+        }
+    }
+
+    .red-rule--short {
+        height: 8vw;
+
+        @media (width >= 576px) {
+            height: 4vw;
+        }
+    }
+}
