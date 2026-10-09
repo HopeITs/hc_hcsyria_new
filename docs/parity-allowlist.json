@@ -1,9 +1,16 @@
 {
-    "_comment": "Differences from the legacy site that were approved on purpose. scripts/parity-check.mjs ignores a text or link diff line that matches an entry exactly. Every entry needs a reason; anything not listed here fails the check.",
+    "_comment": "Differences from the legacy site that were approved on purpose. scripts/parity-check.mjs ignores a text, link or font diff line that matches an entry exactly. Every entry needs a reason; anything not listed here fails the check.",
     "text": {
         "+ Skip to content": "Keyboard skip link, visually hidden until focused (accessibility; upgrade-plan §2.4)."
     },
     "links": {
-        "+ a #main": "Target of the skip link above."
+        "+ a #main": "Target of the skip link above.",
+        "- a /newsletter/10/1": "Footer 'Visit our Newsletter' pointed at /newsletter/10/1, a 404 on the live site; it now points at /our-news (the newsletter page, already linked from the navbar).",
+        "- img /images/logos/hc-w.svg": "The white navbar logo (#nav_logo_w) is display:none at every width; not ported."
+    },
+    "fonts": {
+        "- FontAwesome normal normal": "FontAwesome 4.7 icon font replaced by inline SVG of the glyphs used (components/ui/icon.blade.php).",
+        "- Font Awesome 6 Free 900 normal": "Font Awesome 6 icon font replaced by inline SVG of the glyphs used.",
+        "- bootstrap-icons normal normal": "Bootstrap Icons font replaced by inline SVG of the glyphs used."
     }
 }

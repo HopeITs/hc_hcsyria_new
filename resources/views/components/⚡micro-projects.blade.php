@@ -4,6 +4,7 @@ use App\Queries\MicroProjectStatsQuery;
 use App\Queries\PartnerQuery;
 use App\Queries\ProjectSearch;
 use Livewire\Attributes\Computed;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 
 /*
@@ -14,7 +15,7 @@ use Livewire\Component;
  * and the view toggles between tiles and grid. Querying is delegated to
  * app/Queries\ProjectSearch, which is verified against the legacy query.
  */
-new class extends Component
+new #[Layout('layouts::app', ['footer' => 'micro'])] class extends Component
 {
     /** Staged filter values, applied on Apply. */
     public string $tempSearch = '';

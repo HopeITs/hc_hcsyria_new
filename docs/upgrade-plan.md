@@ -38,6 +38,13 @@ Public side first; the admin dashboard comes after (decided 2026-10-09).
 | 7. Fonts to `.woff2`, tokens | **Done** — Lato 400/700/900 + Archivo 400 self-hosted, Google Fonts gone from layout and CSP, unused tokens removed. Icon glyphs move to inline SVG with each page port. |
 | 8. Verification harness (§7) | **Done** — `npm run parity`: pixel, text, link, font and console checks at 4 widths against a local legacy reference on the same database; approved differences in `docs/parity-allowlist.json`. |
 
+| Phase 2 step | Status |
+|---|---|
+| Layout, header, footer (default variant) | **Done** — measured against the running legacy pages at 375/768/1440/1920px; menus, hover fills and the phone menu compared state by state (`npm run parity:nav`, 9 states, all under 0.25% pixel difference) |
+| Every error page (401 403 404 419 429 500 503 + any 4xx/5xx) | **Done** — see §9, Error pages |
+| Footer variants (micro-projects, children, DISC, LEAP) | Next, with their pages |
+| The 30 public pages | Next |
+
 Found on the way: the Phase 0 migration guard did not run under
 `APP_ENV=testing`, so `migrate:fresh` (or `RefreshDatabase`) could have wiped
 `hcsyria_db`. Fixed and tested — see `docs/legacy-schema-capture.md`.
@@ -460,6 +467,22 @@ and, per page and width, `legacy.png`, `new.png` and `diff.png`. Approved
 differences live in `docs/parity-allowlist.json`, each with its reason; any
 other difference fails.
 
+Two more tools sit beside it:
+
+- `npm run parity:nav -- --path=/some/page` compares the navigation's
+  interactive states (menus opened by hover and click, an item hovered, the
+  phone menu) between the two pages.
+- `node scripts/style-spec.mjs --url=… --selector=…` records what a legacy
+  region renders — box, computed styles, **and the authored value that won
+  the cascade with the stylesheet and media query it came from** — at four
+  widths. Porting from that, not from the 125 stylesheets, is what keeps the
+  numbers right (`4.1vw`, not `59.04px`).
+
+Method notes learned the hard way: measure a menu's *final* state after its
+animation (legacy slides over 650ms); compare icon baselines by measurement
+(Chrome snaps glyph baselines to whole pixels); a flaky pass or fail on a
+legacy page that loads Google Fonts is usually the font arriving late — rerun.
+
 **Compare against the legacy code on the same database, not production.** The
 local `hcsyria_db` is a snapshot, so production content differs. The reference
 is a throwaway clone — the legacy repository itself is never touched:
@@ -561,6 +584,35 @@ port ledger shows which; a frozen page gets no live fixes until cutover, §11):
 
 Each page is done when it meets the Definition of Done below. Pages are
 accepted on the staging address; nothing goes live before cutover.
+
+#### Error pages
+
+The legacy site had one error page that worked. `new/errors/404.blade.php` is
+a designed page (a giant 404, a message, a "Back to Homepage" button, inside
+the normal navbar and footer). Its 500 twin crashed on an undefined
+`$edition`, so visitors to a failing page got Symfony's bare "Oops! An Error
+Occurred"; every other status (401, 403, 419, 429, 503 and the rest) showed
+Laravel's or Symfony's plain default.
+
+The new site gives **every status the one legacy design**:
+
+| Status | Heading | Notes |
+|---|---|---|
+| 401, 403, 404, 419, 429, 500 | per status, in the legacy 404's voice | 404 and 500 use the legacy wording unchanged |
+| 503 | "We’ll be back soon!" | the legacy maintenance page (`public/indexM.php`), now inside the site chrome |
+| any other 4xx / 5xx | generic 4xx or 5xx wording | the real status shows in the large type |
+
+Rules: an error page must render with **nothing working behind it** — no
+database, no session — because a 500 is often caused by exactly that
+(`tests/Feature/ErrorPagesTest.php` proves it with an unreachable database);
+it keeps the security headers; JSON requests still get JSON; the status is
+never rendered inside a `try` that could fail. Wording lives in
+`lang/en/errors.php`, one view per status in `resources/views/errors/`,
+one component (`x-site.error-page`) for the design.
+
+Decisions for you: the wording for 401, 403, 419, 429 and the generic pages
+is new (written in the 404's voice) because the legacy site had none — edit
+`lang/en/errors.php` if you want different words.
 
 ### Phase 3 — Admin dashboard, redesigned (≈9–11 weeks)
 

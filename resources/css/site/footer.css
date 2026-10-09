@@ -1,0 +1,167 @@
+/*
+ * Site footer — the default variant, used by 23 of the public pages. Ported
+ * from new/public/footer.blade.php with footer.css, main-new.css and the
+ * Bootstrap 5.0 grid, using the values the running legacy page computes
+ * (storage/parity/spec/footer-*.json). Below 576px the three columns stack
+ * and centre (footer.css @media max-width 575px); from 576px they sit side by
+ * side (col-sm-4).
+ */
+@layer components {
+    /* div.footer-margin > footer#footer */
+    .site-footer {
+        position: relative;
+        z-index: 1000;
+        margin-top: 5vw;
+        background-color: #bc1818;
+    }
+
+    /* .seperator-line */
+    .site-footer__separator {
+        height: 1vw;
+        background-color: #fff;
+    }
+
+    /* .footer-middle */
+    .site-footer__middle {
+        padding: 0 2vw;
+        font-size: 3.3vw;
+        text-align: center;
+        color: #fff;
+        background-color: #bc1818;
+
+        @media (width >= 576px) {
+            font-size: 1vw;
+            text-align: start;
+        }
+    }
+
+    /* .footer-bottom */
+    .site-footer__bottom {
+        margin: 0 2vw;
+        font-size: 2.4vw;
+        color: #fff;
+        background-color: #bc1818;
+        border-top: 0.12vw solid #fff;
+
+        @media (width >= 576px) {
+            font-size: 1.3vw;
+        }
+    }
+
+    /* .page-padding */
+    .site-footer__inner {
+        padding: 1vw 4.1vw;
+    }
+
+    /* .row */
+    .site-footer__row {
+        display: flex;
+        flex-wrap: wrap;
+        margin: 0 -0.75rem;
+    }
+
+    /* .col-12.col-sm-4 */
+    .site-footer__col {
+        flex: 0 0 auto;
+        width: 100%;
+        max-width: 100%;
+        padding: 0 0.75rem;
+
+        @media (width >= 576px) {
+            width: 33.333333%;
+        }
+    }
+
+    /* .office-name */
+    .site-footer__office {
+        font-size: 5vw;
+        font-weight: 900;
+        text-transform: uppercase;
+
+        @media (width >= 576px) {
+            font-size: 1.3vw;
+        }
+    }
+
+    /* .office-position */
+    .site-footer__label {
+        font-weight: 900;
+        text-transform: capitalize;
+    }
+
+    /* #info-link */
+    .site-footer__info-link {
+        letter-spacing: 0.02vw;
+        color: #fff;
+    }
+
+    /*
+     * .socials i — a white-ringed circle that turns grey on hover.
+     *
+     * The legacy <i> held a FontAwesome glyph, so it sat on the line by that
+     * glyph's baseline: 1px border + half-leading ((line-height - font-size)/2)
+     * + ascent (1536/1792 = 0.857 of the font-size) from its top, which Chrome
+     * snaps down to a whole pixel (measured on the legacy page at eight
+     * widths: 11, 14, 17, 7, 10, 12, 18, 23px). Here it holds an SVG;
+     * overflow: hidden makes the box's bottom edge its baseline, and
+     * vertical-align moves that edge to where the glyph's baseline was.
+     *
+     * Below 576px: height 4.7vw, line-height 4vw, font-size 2.5vw.
+     * From 576px: height 1.7vw, line-height 1.7vw, font-size 1vw.
+     */
+    .site-footer__social {
+        overflow: hidden;
+        vertical-align: calc(round(down, 1px + 2.8929vw, 1px) - 4.7vw);
+        display: inline-block;
+        width: 4.7vw;
+        height: 4.7vw;
+        margin-right: 5px;
+        font-size: 2.5vw;
+        line-height: 4vw;
+        text-align: center;
+        color: #fff;
+        background-color: #bc1818;
+        border: 1px solid #fff;
+        border-radius: 50%;
+        transition: all 0.7s ease-in-out;
+
+        &:hover {
+            background-color: #7a797b;
+        }
+
+        @media (width >= 576px) {
+            width: 1.8vw;
+            height: 1.7vw;
+            font-size: 1vw;
+            line-height: 1.7vw;
+            vertical-align: calc(round(down, 1px + 1.2071vw, 1px) - 1.7vw);
+        }
+    }
+
+    /* .copy-right */
+    .site-footer__copyright {
+        margin-top: 2vw;
+        font-size: 2.3vw;
+        font-weight: 100;
+        letter-spacing: 0.05vw;
+
+        & span {
+            font-weight: 700;
+        }
+
+        @media (width >= 576px) {
+            margin-top: 0;
+            font-size: 0.9vw;
+        }
+    }
+
+    /* "Back to Top": an anchor without href in the legacy markup */
+    .site-footer__to-top {
+        padding: 0;
+        font: inherit;
+        color: inherit;
+        background: none;
+        border: 0;
+        cursor: pointer;
+    }
+}

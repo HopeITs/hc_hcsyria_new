@@ -74,7 +74,16 @@ async function capture(browser, url, width) {
     const page = await context.newPage();
     const errors = [];
     page.on('pageerror', (e) => errors.push(`pageerror: ${e.message}`));
-    page.on('console', (m) => { if (m.type() === 'error') errors.push(`console: ${m.text()}`); });
+    // A failed resource is recorded by its URL. Chrome also logs a page that
+    // answers 404 (the 404 page itself) as a console error; that is the
+    // status being tested, not a fault, so console "Failed to load resource"
+    // lines are dropped in favour of the URL-level record.
+    page.on('console', (m) => {
+        if (m.type() === 'error' && ! m.text().startsWith('Failed to load resource')) errors.push(`console: ${m.text()}`);
+    });
+    page.on('response', (r) => {
+        if (r.status() >= 400 && r.request().resourceType() !== 'document') errors.push(`HTTP ${r.status()} ${r.url()}`);
+    });
     await page.addInitScript(() => {
         document.addEventListener('securitypolicyviolation', (e) =>
             console.error(`CSP violation: ${e.violatedDirective} blocked ${e.blockedURI}`));
@@ -184,7 +193,7 @@ for (const pagePath of paths) {
             heights,
             text: width === widths[0] ? lineDiff(legacy.text, fresh.text).filter(notAllowed('text')) : undefined,
             links: width === widths[0] ? setDiff(legacy.links, fresh.links).filter(notAllowed('links')) : undefined,
-            fonts: setDiff(legacy.fonts, fresh.fonts),
+            fonts: setDiff(legacy.fonts, fresh.fonts).filter(notAllowed('fonts')),
             newPageErrors: fresh.errors,
         };
         const pass = entry.status[0] === entry.status[1]

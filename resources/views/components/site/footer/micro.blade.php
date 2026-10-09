@@ -2,6 +2,9 @@
 
 @php
     /*
+     * The micro-projects footer (legacy new/public/footer-micro.blade.php),
+     * as approximated in Phase 0. Re-ported with the micro-projects page.
+     *
      * Ported from resources/views/new/public/footer-micro.blade.php.
      * Addresses, phone numbers, map links and copy are exactly as they are
      * there; the strings come from lang/en/about.php and lang/en/main.php,

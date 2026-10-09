@@ -29,5 +29,5 @@ return [
     'whatWeDo.youth' => 'Christian Youth',
 
     'contactUs' => 'Contact US',
-    'newsletter' => 'Newsletter',
+    'newsletter' => 'Our News',
 ];

@@ -1,0 +1,440 @@
+/*
+ * Site navigation. Ported from new/public/navbar.blade.php with navbar.css,
+ * main-new.css and the Bootstrap 5.0 navbar, dropdown and input-group rules,
+ * using the values the running legacy page computes (scripts/style-spec.mjs,
+ * storage/parity/spec/navbar-*.json). Breakpoints are the legacy ones:
+ * 576px (navbar-expand-sm: the menu is inline from here up), 768px (mb-md-0)
+ * and the 460px tweaks in navbar.css.
+ */
+@layer components {
+    /* .navbar.fixed-top.page-padding */
+    .site-nav {
+        position: fixed;
+        top: 0;
+        right: 0;
+        left: 0;
+        z-index: 1030;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        height: 13vw;
+        padding: 1vw 4.1vw 0.5vw;
+        background-color: #fff;
+
+        @media (width >= 576px) {
+            flex-wrap: nowrap;
+            justify-content: flex-start;
+            height: 5vw;
+        }
+    }
+
+    /* .navbar > .container-fluid */
+    .site-nav__inner {
+        display: flex;
+        flex-wrap: inherit;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        margin: 0 auto;
+        padding: 0 0.75rem;
+    }
+
+    /* .navbar-brand: the image sits on the text baseline of a 1.25rem/1.5 line. */
+    .site-nav__brand {
+        margin-right: 1rem;
+        padding: 0;
+        font-size: 1.25rem;
+        line-height: 1.5;
+        white-space: nowrap;
+        color: rgba(0, 0, 0, 0.9);
+    }
+
+    /* #nav_logo */
+    .site-nav__logo {
+        display: inline;
+        vertical-align: baseline;
+        width: 11vw;
+        height: auto;
+
+        @media (width >= 576px) {
+            width: 8.5vw;
+        }
+    }
+
+    /* .navbar-toggler + .navbar-toggler-icon (Bootstrap's own icon, navbar-light colour) */
+    .site-nav__toggler {
+        padding: 0;
+        font-size: 1rem;
+        line-height: 1;
+        background-color: transparent;
+        border: 1px solid transparent;
+        border-radius: 0.25rem;
+        cursor: pointer;
+
+        @media (width >= 576px) {
+            display: none;
+        }
+    }
+
+    .site-nav__toggler-icon {
+        display: inline-block;
+        width: 1.5em;
+        height: 1.5em;
+        vertical-align: middle;
+        background: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%280, 0, 0, 0.55%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") center / 100% no-repeat;
+    }
+
+    /*
+     * .navbar-collapse. Below 576px it slides open and shut like Bootstrap's
+     * collapse (height, 0.35s ease), driven by .is-open from Alpine; the
+     * grid-rows technique animates to the content's own height. CSS alone
+     * decides the closed/open state, so before Alpine starts the menu is
+     * already shut on phones and already shown from 576px up.
+     */
+    .site-nav__collapse {
+        display: grid;
+        flex-basis: 100%;
+        grid-template-rows: 0fr;
+        visibility: hidden;
+        transition: grid-template-rows 0.35s ease, visibility 0.35s;
+
+        &.is-open {
+            grid-template-rows: 1fr;
+            visibility: visible;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            transition: none;
+        }
+
+        @media (width >= 576px) {
+            display: flex;
+            flex-basis: auto;
+            align-items: center;
+            visibility: visible;
+            transition: none;
+        }
+    }
+
+    .site-nav__collapse-inner {
+        min-height: 0;
+        overflow: hidden;
+
+        @media (width >= 576px) {
+            display: contents;
+        }
+    }
+
+    /* ul.navbar-nav.me-auto.mb-2.mb-md-0 — a floating card on phones, a row from 576px. */
+    .site-nav__list {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        float: right;
+        width: 40%;
+        margin: 0 auto 0.5rem 0;
+        padding: 0 0 1vw;
+        line-height: 1.3vw;
+        background-color: #fff;
+        border: 0.1vw solid #999;
+        border-radius: 0.25rem;
+
+        @media (width >= 576px) {
+            flex-direction: row;
+            float: none;
+            width: auto;
+            padding: 0;
+            background-color: transparent;
+            border: 0;
+            border-radius: 0;
+        }
+
+        @media (width >= 768px) {
+            margin-bottom: 0;
+        }
+    }
+
+    .site-nav__item {
+        position: relative;
+        width: 100%;
+        margin: 1vw;
+        padding: 0 1vw 1vw 1.1vw;
+        text-align: left;
+
+        @media (width >= 576px) {
+            width: auto;
+            margin: 0;
+            padding-left: 1vw;
+            text-align: inherit;
+        }
+    }
+
+    /* li.divider: a hairline under each item on phones, a vertical rule from 576px. */
+    .site-nav__divider {
+        position: relative;
+        display: block;
+        width: 100%;
+        height: 0.1vw;
+        margin: 1vw;
+        padding-left: 1.1vw;
+        background-color: rgba(103, 102, 102, 0.16);
+
+        @media (width >= 576px) {
+            top: -0.5vw;
+            width: 0.01vw;
+            height: 1.5vw;
+            margin: 0;
+            padding: 0;
+            background-color: #676766;
+        }
+    }
+
+    /* .nav-list-links — bold on hover and while its menu is open (a.show). */
+    .site-nav__link {
+        padding: 0;
+        font: inherit;
+        font-size: 2.5vw;
+        line-height: inherit;
+        text-transform: uppercase;
+        color: #676766;
+        background: none;
+        border: 0;
+        cursor: pointer;
+
+        &:hover,
+        &.is-open {
+            font-weight: 700;
+        }
+
+        @media (width >= 576px) {
+            font-size: 1vw;
+        }
+    }
+
+    /* .dropdown-toggle and its ::after caret */
+    .site-nav__link--toggle {
+        white-space: nowrap;
+
+        &::after {
+            content: '';
+            display: inline-block;
+            margin-left: 0.255em;
+            vertical-align: 0.255em;
+            border-top: 0.3em solid;
+            border-right: 0.3em solid transparent;
+            border-bottom: 0;
+            border-left: 0.3em solid transparent;
+        }
+    }
+
+    /*
+     * .dropdown-menu. In the phone menu it is part of the flow; from 576px up
+     * it hangs below its trigger. Opened by hovering (wide screens) the
+     * legacy page gave it margin-top 0.5vw; opened by clicking, Bootstrap's
+     * [data-bs-popper] rule gave 0.125rem — kept, as .is-hover.
+     */
+    .site-nav__panel {
+        position: static;
+        z-index: 1000;
+        margin-top: 1.5vw;
+        padding: 0.6vw 0.6vw 0.6vw 0.3vw;
+        font-size: 1rem;
+        line-height: 1.3vw;
+        text-align: left;
+        color: #212529;
+        background-color: #fff;
+
+        @media (width >= 576px) {
+            position: absolute;
+            top: auto;
+            margin-top: 0.125rem;
+            border: 1px solid rgba(0, 0, 0, 0.15);
+            border-radius: 0.25rem;
+
+            &.is-hover {
+                margin-top: 0.5vw;
+            }
+        }
+    }
+
+    /* .dropdown-menu.columns-2: shifted left of its trigger (navbar.css). */
+    .site-nav__panel--wide {
+        min-width: 37.4vw;
+
+        @media (width <= 460px) {
+            min-width: unset;
+        }
+
+        @media (width >= 576px) {
+            left: -12.5vw;
+        }
+    }
+
+    /* .dropdown-menu.news: as wide as its trigger (inline min-width: -webkit-fill-available). */
+    .site-nav__panel--narrow {
+        min-width: 100%;
+
+        @media (width <= 460px) {
+            min-width: unset;
+        }
+
+        @media (width >= 576px) {
+            left: 0;
+
+            &:not(.is-hover) {
+                top: 100%;
+            }
+        }
+    }
+
+    /* .row > .col-sm-6 */
+    .site-nav__columns {
+        display: flex;
+        flex-wrap: wrap;
+        margin: 0 -0.75rem;
+    }
+
+    .site-nav__column-wrap {
+        flex: 0 0 auto;
+        width: 100%;
+        padding: 0 0.75rem;
+
+        @media (width >= 576px) {
+            width: 50%;
+        }
+    }
+
+    /* ul.multi-column-dropdown and its li */
+    .site-nav__column {
+        padding-left: 0.3vw;
+        line-height: 1.3vw;
+    }
+
+    .site-nav__column > li {
+        position: relative;
+        width: 100%;
+        margin: 1vw;
+        text-align: left;
+
+        @media (width >= 576px) {
+            margin: 0;
+        }
+    }
+
+    /* h5.projects-title-separator > b (bolder than 500 is 700) */
+    .site-nav__heading {
+        display: block;
+        padding-bottom: 0.2vw;
+        font-size: 2.7vw;
+        font-weight: 700;
+        line-height: 1.2;
+        color: #cf142b;
+        cursor: default;
+
+        @media (width >= 576px) {
+            font-size: 1.2vw;
+        }
+    }
+
+    /* .dropdown_menu_big ul li a — a solid red fill on hover */
+    .site-nav__panel-link {
+        display: block;
+        clear: both;
+        padding: 0;
+        font-size: 2.5vw;
+        line-height: 1.42857;
+        color: #676766;
+
+        &:hover {
+            color: #fff;
+            background-color: #bc1818;
+        }
+
+        @media (width >= 576px) {
+            padding: 0.3vw;
+            font-size: 0.9vw;
+        }
+    }
+
+    /* Publications items also carry .nav-list-links: uppercase, bold on hover. */
+    .site-nav__panel-link--caps {
+        text-transform: uppercase;
+
+        &:hover {
+            font-weight: 700;
+        }
+    }
+
+    /* li.div between dropdown links */
+    .site-nav__column > .site-nav__rule {
+        height: 0.5px;
+        margin: 2px 0;
+        overflow: hidden;
+        background-color: #e5e5e5;
+        opacity: 0.2;
+
+        @media (width >= 576px) {
+            margin: 5px 0;
+            opacity: 1;
+        }
+    }
+
+    /* .input-group with .form-control + #SearchBtn */
+    .site-nav__search {
+        position: relative;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: stretch;
+        width: 100%;
+    }
+
+    .site-nav__search-input {
+        position: relative;
+        flex: 1 1 auto;
+        width: 9vw;
+        min-width: 0;
+        height: 2.5vw;
+        padding: 0.375rem 0.75rem;
+        font: inherit;
+        font-size: 1vw;
+        font-weight: 400;
+        line-height: 1.5;
+        color: #212529;
+        background-color: #fff;
+        border: 1px solid #ced4da;
+        border-radius: 0.25rem 0 0 0.25rem;
+        appearance: none;
+
+        &:focus {
+            outline: none;
+            border-color: #bc1818;
+        }
+
+        @media (width <= 460px) {
+            padding-left: 0.5vw;
+            font-size: 2.5vw;
+        }
+    }
+
+    .site-nav__search-button {
+        position: relative;
+        z-index: 2;
+        width: 3vw;
+        height: inherit;
+        margin-left: -1px;
+        padding: 0 1vw;
+        font: inherit;
+        font-size: 1vw;
+        line-height: 1.5;
+        text-align: center;
+        text-transform: uppercase;
+        vertical-align: middle;
+        color: #fff;
+        background-color: #bc1818;
+        border: 1px solid #bc1818;
+        border-radius: 0 0.25rem 0.25rem 0;
+        cursor: pointer;
+        user-select: none;
+    }
+}

@@ -5,7 +5,8 @@
     "scripts": {
         "build": "vite build",
         "dev": "vite",
-        "parity": "node scripts/parity-check.mjs"
+        "parity": "node scripts/parity-check.mjs",
+        "parity:nav": "node scripts/parity-nav-states.mjs"
     },
     "devDependencies": {
         "@tailwindcss/vite": "^4.3.3",

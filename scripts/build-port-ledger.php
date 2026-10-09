@@ -18,7 +18,7 @@
  * That command only reads; the legacy repository is never written to.
  *
  * Regenerating keeps each route's status, notes and ported_from, so the
- * hand-maintained parts survive.
+ * hand-maintained parts (status, notes, ported_from, views_override) survive.
  *
  * Needs docs/controller-manifest.json (scripts/analyze-controllers.php).
  */
@@ -261,6 +261,10 @@ foreach ($publicRoutes as $uri => $route) {
         $startViews = $manifest['port'][$controller]['views'][$method] ?? [];
     }
 
+    // Routes the scan cannot follow (closures, like the 404 fallback) name
+    // their views by hand in the ledger's `views_override`.
+    $startViews = array_values(array_unique([...$startViews, ...($previousRoutes[$uri]['views_override'] ?? [])]));
+
     $deps = walk($legacy, $startViews);
     $files = array_values(array_unique(array_filter([
         $controller ? 'app/Http/Controllers/'.str_replace('\\', '/', preg_replace('#@.*$#', '', $action)).'.php' : null,
@@ -281,6 +285,7 @@ foreach ($publicRoutes as $uri => $route) {
         'live_status' => $old['live_status'] ?? null,
         'examples' => $old['examples'] ?? [],
         'failures' => $old['failures'] ?? [],
+        'views_override' => $old['views_override'] ?? [],
         'views_unresolved' => $startViews === [],
         'missing_views' => $deps['missing_views'],
         'legacy_files' => $files,

@@ -56,7 +56,7 @@ return [
                                     God who sent Jesus to bring us hope and life, may he guide you and bless this group which I have touched amongst what kindness truly is."',
     'testimoniesMonicaName' => '<small>Monica Joseph<br>Superior general of the congregation of the religious of Jesus and Mary</small>',
 
-    'footer' => 'Copyright &copy; 2018 - 2025 <span>HOPE CENTER</span>',
+    'footer' => 'Copyright &copy; 2018 - '.date('Y').' <span>HOPE CENTER</span>',
 
     'ourNextGeneration' => 'OUR NEXT GENERATION',
     'stories' => 'STORIES',

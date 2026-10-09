@@ -1,0 +1,116 @@
+/*
+ * Error pages. The design is the legacy new/errors/404.blade.php — the only
+ * error page the live site actually renders (its 500 view crashes and falls
+ * back to Symfony's bare page) — measured from the running legacy page
+ * (storage/parity/spec/error404-*.json). Every status code uses it.
+ */
+@layer components {
+    /* .error-wrapper: fills the space between the fixed navbar and the footer */
+    .error-page {
+        display: flex;
+        flex: 1 0 auto;
+        align-items: center;
+        justify-content: center;
+        padding: 60px 20px;
+        background-color: #fff;
+    }
+
+    /*
+     * .container > .row: the row's -0.75rem margins cancel the container's
+     * 0.75rem padding, so the content spans the container's full width.
+     */
+    .error-page__container {
+        width: 100%;
+        margin: 0 auto;
+        padding: 0;
+
+        @media (width >= 576px) {
+            max-width: 540px;
+        }
+
+        @media (width >= 768px) {
+            max-width: 720px;
+        }
+
+        @media (width >= 992px) {
+            max-width: 960px;
+        }
+
+        @media (width >= 1200px) {
+            max-width: 1140px;
+        }
+
+        @media (width >= 1400px) {
+            max-width: 1320px;
+        }
+    }
+
+    /* .error-content-box.animated.fadeIn (animate.css, 1.3s) */
+    .error-page__box {
+        width: 100%;
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 0 0.75rem;
+        text-align: center;
+        animation: error-page-fade-in 1.3s both;
+    }
+
+    /* .error-giant-heading */
+    .error-page__code {
+        margin-bottom: 20px;
+        font-size: 8rem;
+        font-weight: 900;
+        line-height: 1;
+        letter-spacing: -0.04em;
+        color: #676766;
+    }
+
+    /* .error-main-msg */
+    .error-page__title {
+        margin-bottom: 14px;
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: #676766;
+    }
+
+    /* No sub-message (500): keep the 404's gap before the button. */
+    .error-page__title--last {
+        margin-bottom: 35px;
+    }
+
+    /* .error-sub-msg */
+    .error-page__message {
+        margin-bottom: 35px;
+        font-size: 1.1rem;
+        color: #676766;
+    }
+
+    /* .error-action-btn */
+    .error-page__action {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 32px;
+        font-size: 0.9rem;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: #fff;
+        background-color: rgb(188, 24, 23);
+        border: none;
+        border-radius: 6px;
+        box-shadow: 0 4px 6px -1px rgba(179, 27, 27, 0.2);
+        cursor: pointer;
+        transition: all 0.2s ease-in-out;
+    }
+
+    @keyframes error-page-fade-in {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+}

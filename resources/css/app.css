@@ -1,5 +1,8 @@
 @import 'tailwindcss';
 @import './fonts.css';
+@import './site/navbar.css';
+@import './site/footer.css';
+@import './site/error-page.css';
 
 /* Only our own Blade views: every utility emitted is one a page uses. */
 @source '../views/**/*.blade.php';
@@ -13,6 +16,16 @@
  */
 @theme {
     --font-sans: 'Lato', sans-serif;
+
+    /*
+     * Bootstrap 5's breakpoints, which the legacy layout is built on, so that
+     * sm: md: lg: here mean exactly what -sm -md -lg meant there.
+     */
+    --breakpoint-sm: 36rem;
+    --breakpoint-md: 48rem;
+    --breakpoint-lg: 62rem;
+    --breakpoint-xl: 75rem;
+    --breakpoint-2xl: 87.5rem;
 
     /* #BC1818: the brand red across home_page.css, footer.css, initiative.css,
        micro_page_new.css and four other legacy stylesheets. */
@@ -34,6 +47,7 @@
         display: none !important;
     }
 
+    /* Bootstrap 5 reboot: smooth scrolling unless the visitor asks for less motion. */
     html {
         scroll-behavior: smooth;
     }
@@ -48,10 +62,28 @@
      * Bootstrap 5's body, as the live pages compute it: #212529 text, 16px /
      * 1.5, white ground, and no font smoothing override (antialiased would
      * thin every glyph on macOS).
+     *
+     * main-new.css: html and body fill the window and body is a flex column,
+     * so the footer sits at the bottom of short pages (the 404) and the
+     * content between grows to fill the gap. backface-visibility comes from
+     * animate.css on body; it changes how Chrome composites the page, so it
+     * is kept for identical text rendering.
      */
+    html,
     body {
-        background-color: #fff;
+        height: 100%;
+        margin: 0;
+    }
+
+    body {
+        display: flex;
+        flex-direction: column;
+        font-size: 1rem;
+        font-weight: 400;
+        line-height: 1.5;
+        backface-visibility: hidden;
         color: #212529;
+        background-color: #fff;
         font-family: var(--font-sans);
     }
 
@@ -61,38 +93,17 @@
     }
 }
 
+/* Skip link: off-screen until focused (accessibility; docs/parity-allowlist.json). */
+@utility skip-link {
+    @apply absolute left-4 -top-20 z-[1100] bg-brand-600 px-4 py-2 text-white;
+    @apply focus:top-4;
+}
+
 /*
- * Ported 1:1 from the legacy stylesheets: public/css/navbar.css,
- * micro_page_new-test.css and main-new-test.css.
- *
- * Sizes are viewport units because that is what the legacy site uses: 1vw
- * links, 2.5vw section titles, .7vw result text. At 1440px these compute to
- * exactly the pixel values the live site renders (14.4px, 36px, 10.08px),
- * checked with getComputedStyle against the running legacy app.
+ * Used only by the Phase 0 micro-projects page, which is re-ported in full in
+ * the public-site phase; these go with it. Values are legacy computed styles
+ * (navbar.css, micro_page_new-test.css, main-new-test.css) at 1440px.
  */
-
-@utility section-heading {
-    color: #CF142B;
-    font-size: 1.2vw;
-    font-weight: bold;
-    margin: 0;
-    padding: 0 0 0.2vw 0;
-    cursor: default;
-}
-
-@utility newest {
-    display: inline-block;
-    background: #bc1212;
-    color: #fff;
-    font-size: 0.5vw;
-    font-weight: 600;
-    line-height: 0.6vw;
-    padding: 0.07vw 0.2vw;
-    border-radius: 0.3vw;
-    margin-left: 0.3vw;
-    vertical-align: super;
-}
-
 @utility section-title {
     background: white;
     color: #BC1818;
@@ -109,8 +120,6 @@
     padding: 0.7vw;
 }
 
-/* The filter dropdowns are Bootstrap .btn-light: no border, #f7f7f7 ground,
-   thin #B2B2B2 label. */
 @utility filter-dropdown {
     background: #f7f7f7;
     border: 0;
@@ -160,122 +169,15 @@
     margin-top: 0;
 }
 
-/* Skip link: off-screen until focused. */
-@utility skip-link {
-    @apply absolute left-4 -top-20 z-50 bg-brand-600 px-4 py-2 text-white;
-    @apply focus:top-4;
-}
-
-/* .page-padding -- the legacy nav's horizontal rhythm: public/css/main-new-test.css */
-@utility page-padding {
-    padding: 1vw 4.1vw;
-}
-
-/*
- * The legacy project grid is inset by three nested .page-margin divs
- * (margin: 1% 4.7% each, compounding — see public/css/main-new-test.css),
- * applied only around the card row, not the filters bar above it. Measured on
- * the running legacy app: that nesting produces a content width of ~72.3% of
- * its container at 1440px, which is coincidentally what .micro-page-margin
- * declares directly (public/css/micro_page_new-test.css). Used here as the
- * single-wrapper equivalent rather than reproducing three nested divs.
- */
-@utility micro-page-margin {
-    max-width: 72.3vw;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-/*
- * Remaining navbar details, ported from public/css/navbar.css and measured
- * live against the running legacy app (hover fills, dropdown offset/width,
- * search pill) rather than guessed.
- */
-
-/* .navbar { height: 5vw; padding-top: 1vw; padding-bottom: 0.5vw; } */
-@utility navbar-shell {
-    height: 5vw;
-    padding-top: 1vw;
-    padding-bottom: 0.5vw;
-}
-
-/* .nav-list-links:hover -- bold only, colour is unchanged */
 @utility nav-link {
     color: #676766;
     font-size: 1vw;
     line-height: 1.3;
     text-transform: uppercase;
-
-    &:hover {
-        font-weight: bold;
-        color: #676766;
-    }
 }
 
-/* .navbar-nav li.divider -- the vertical hairlines between HOME | WHO WE ARE | ... */
-@utility nav-divider {
-    width: 1px;
-    height: 1.5vw;
-    background-color: #676766;
-}
-
-/*
- * .dropdown-menu.columns-2 { min-width: 37.4vw; } plus the Bootstrap default
- * border/radius/padding it inherits, all measured on the open menu.
- */
-@utility dropdown-panel {
-    min-width: 37.4vw;
-    border: 0.8px solid rgba(0, 0, 0, 0.15);
-    border-radius: 4px;
-    background-color: #fff;
-    padding: 0.6vw;
-}
-
-/*
- * `.navbar .dropdown-menu { left: -12.5vw !important; }` -- the panel is
- * shifted left of its trigger, not left-aligned under it.
- */
-@utility dropdown-shift {
-    left: -12.5vw;
-}
-
-/* .dropdown_menu_big ul li a:hover -- solid red fill, not just a colour change */
-@utility dropdown-link {
-    display: block;
-    color: #676766;
-    font-size: 0.9vw;
-    line-height: 1.428571429;
-    white-space: normal;
-    padding: 0.3vw;
-
-    &:hover {
-        background-color: #BC1818;
-        color: #FFF;
-    }
-}
-
-/*
- * The search box is one pill: input rounded on the left, button rounded on
- * the right, flush in the middle. Both fixed vw sizes, not responsive
- * Tailwind widths.
- */
-@utility search-input {
-    width: 9vw;
-    height: 2.5vw;
-    font-size: 1vw;
-    border-radius: 4px 0 0 4px;
-
-    &:focus {
-        outline: none;
-        border-color: #bc1818;
-    }
-}
-
-@utility search-btn {
-    width: 3vw;
-    height: 2.5vw;
-    font-size: 1vw;
-    background-color: #bc1818;
-    color: #fff;
-    border-radius: 0 4px 4px 0;
+@utility micro-page-margin {
+    max-width: 72.3vw;
+    margin-left: auto;
+    margin-right: auto;
 }
