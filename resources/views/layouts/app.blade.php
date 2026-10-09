@@ -9,11 +9,8 @@
         <meta name="description" content="{{ $description }}">
     @endisset
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&family=Martel:wght@400;600;800&display=swap"
-          rel="stylesheet">
-
+    {{-- Body text on every page; the other faces are found in the stylesheet. --}}
+    <link rel="preload" href="{{ Vite::asset('resources/fonts/lato/lato-400-latin.woff2') }}" as="font" type="font/woff2" crossorigin>
     @vite('resources/css/app.css')
     @livewireStyles
 </head>

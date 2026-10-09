@@ -1,56 +1,30 @@
 @import 'tailwindcss';
+@import './fonts.css';
 
 /* Only our own Blade views: every utility emitted is one a page uses. */
 @source '../views/**/*.blade.php';
 
 /*
- * Design tokens taken from the live site rather than invented: #BC1818 is the
- * brand red used across home_page.css, footer.css, initiative.css,
- * micro_page_new.css and four others; #616262 is the body grey. The typefaces
- * are the ones the live pages load, Lato for text and Martel for display.
+ * Tokens are values the live site actually renders — no invented scales.
+ * Only tokens a view uses are declared; add one when a ported page needs it.
+ *
+ * --font-sans is the live stack exactly ("Lato, sans-serif"), so characters
+ * Lato lacks fall back the same way they do today.
  */
 @theme {
-    --font-sans: 'Lato', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
-        'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
-    --font-display: 'Martel', Georgia, 'Times New Roman', serif;
+    --font-sans: 'Lato', sans-serif;
 
-    /* Brand red, with a scale built around the one value the site actually uses. */
-    --color-brand-50: #fdf3f3;
-    --color-brand-100: #fbe5e5;
-    --color-brand-200: #f7cfcf;
-    --color-brand-300: #f0adad;
-    --color-brand-400: #e57d7d;
-    --color-brand-500: #d64f4f;
+    /* #BC1818: the brand red across home_page.css, footer.css, initiative.css,
+       micro_page_new.css and four other legacy stylesheets. */
     --color-brand-600: #bc1818;
-    --color-brand-700: #9e1515;
-    --color-brand-800: #831616;
-    --color-brand-900: #6d1818;
-    --color-brand-950: #3b0808;
 
-    /* Neutrals, anchored on the greys already in use. */
-    --color-ink-50: #f7f7f7;
+    /* Greys in use on the ported pages. */
     --color-ink-100: #ededed;
     --color-ink-200: #cdcdcd;
-    --color-ink-300: #bebebe;
-    --color-ink-400: #9a9a9a;
-    --color-ink-500: #7b7b7b;
     --color-ink-600: #616262;
-    --color-ink-700: #4a4a4a;
-    --color-ink-800: #333333;
-    --color-ink-900: #1c1c1c;
 }
 
-/*
- * Fluid type: the site has to hold up from a 320px phone to a wide desktop, so
- * the display sizes interpolate rather than jumping at breakpoints.
- */
 @layer base {
-    :root {
-        --step-display: clamp(1.875rem, 1.2rem + 3.4vw, 3.5rem);
-        --step-heading: clamp(1.5rem, 1.1rem + 2vw, 2.25rem);
-        --step-subheading: clamp(1.125rem, 1rem + 0.6vw, 1.5rem);
-    }
-
     /*
      * Required for x-cloak to do anything. Without it, every element Alpine
      * is about to hide renders expanded until Alpine boots — which showed the
@@ -70,8 +44,15 @@
         }
     }
 
+    /*
+     * Bootstrap 5's body, as the live pages compute it: #212529 text, 16px /
+     * 1.5, white ground, and no font smoothing override (antialiased would
+     * thin every glyph on macOS).
+     */
     body {
-        @apply bg-white text-ink-700 font-sans antialiased;
+        background-color: #fff;
+        color: #212529;
+        font-family: var(--font-sans);
     }
 
     /* Visible keyboard focus everywhere, which the legacy CSS removed. */

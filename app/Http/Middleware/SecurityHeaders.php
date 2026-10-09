@@ -32,15 +32,6 @@ use Symfony\Component\HttpFoundation\Response;
 class SecurityHeaders
 {
     /**
-     * Google Fonts, until the faces are self-hosted as .woff2
-     * (docs/upgrade-plan.md §4.4). Remove both once layouts/app.blade.php no
-     * longer links fonts.googleapis.com.
-     */
-    private const FontStylesheetOrigin = 'https://fonts.googleapis.com';
-
-    private const FontFileOrigin = 'https://fonts.gstatic.com';
-
-    /**
      * Handle an incoming request.
      *
      * @param  Closure(Request): (Response)  $next
@@ -84,9 +75,9 @@ class SecurityHeaders
         $directives = [
             'default-src' => ["'self'"],
             'script-src' => array_filter(["'self'", "'unsafe-inline'", "'unsafe-eval'", $devServer]),
-            'style-src' => array_filter(["'self'", "'unsafe-inline'", self::FontStylesheetOrigin, $devServer]),
+            'style-src' => array_filter(["'self'", "'unsafe-inline'", $devServer]),
             'img-src' => ["'self'", 'data:', 'blob:'],
-            'font-src' => array_filter(["'self'", 'data:', self::FontFileOrigin, $devServer]),
+            'font-src' => array_filter(["'self'", 'data:', $devServer]),
             'connect-src' => array_filter(["'self'", $devServer, $this->webSocketOrigin($devServer)]),
             'frame-src' => ["'self'"],
             'worker-src' => ["'self'"],

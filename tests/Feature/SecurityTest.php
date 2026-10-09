@@ -25,13 +25,18 @@ it('sends the headers on error responses too', function () {
     $this->get('/no-such-page')->assertNotFound()->assertHeader('X-Content-Type-Options', 'nosniff');
 });
 
-it('allows no third-party origin except the ones listed in SecurityHeaders', function () {
+it('allows no third-party origin in the CSP', function () {
     $csp = $this->get('/projects/micro-projects')->headers->get('Content-Security-Policy');
 
-    preg_match_all('#https?://[^\s;]+#', (string) $csp, $origins);
+    expect((string) $csp)->not->toMatch('#https?://#');
+});
 
-    expect(array_values(array_unique($origins[0])))
-        ->toEqualCanonicalizing(['https://fonts.googleapis.com', 'https://fonts.gstatic.com']);
+it('serves fonts from this origin only, preloading body text', function () {
+    $html = $this->get('/projects/micro-projects')->getContent();
+
+    expect($html)->not->toContain('fonts.googleapis.com')
+        ->not->toContain('fonts.gstatic.com')
+        ->toMatch('#<link rel="preload" href="[^"]+/lato-400-latin-[^"]+\.woff2" as="font" type="font/woff2" crossorigin>#');
 });
 
 it('redirects http to https in production, and refuses non-GET over http', function () {

@@ -35,7 +35,7 @@ Public side first; the admin dashboard comes after (decided 2026-10-09).
 | 4. Laravel 13 / PHP 8.4, Pest, Larastan, Pint | **Done** — Laravel 13.35, platform pinned to 8.4.21, Larastan level 7 clean, Pint clean, 19 tests |
 | 5. Security middleware from Tracking | **Done for the public side** — headers + CSP, HTTPS redirect, HSTS, cookieless throttle, guest and Livewire limiters. `app_` tables wait for the admin phase. |
 | 6. Analyzer checks views exist | **Done** |
-| 7. Fonts to `.woff2`, icons, tokens | Next |
+| 7. Fonts to `.woff2`, tokens | **Done** — Lato 400/700/900 + Archivo 400 self-hosted, Google Fonts gone from layout and CSP, unused tokens removed. Icon glyphs move to inline SVG with each page port. |
 | 8. Verification harness (§7) | Next |
 
 Found on the way: the Phase 0 migration guard did not run under
@@ -155,12 +155,15 @@ it fully means choosing between two goods.
 | Three slightly different reds (`#BC1818`, `#CF142B`, `#bc1212`) | Parity keeps all three as separate tokens. Merging them would be cleaner but visible. |
 | Dead or broken public URLs (`/about` → 500) | Not ported. A 301 to the live equivalent replaces a 500 — the only visible difference. |
 
-**Avenir — settled, not used.** `layouts/app.blade.php` downloads it from
-`fonts.cdnfonts.com`, and six views link `Avenir LT Std 45 Book.otf` as a
-*favicon* (`rel="shortcut icon"`), which browsers ignore. No stylesheet or view
-sets `font-family` to Avenir, so it is fetched and never drawn. It is dropped,
-along with the `.otf` in `public/fonts`. **Lato is the site's text face**
-(58 views and stylesheets), with Martel for display.
+**Avenir — requested, never loaded.** (Corrected 2026-10-09 after measuring the
+live pages; an earlier version said nothing used it.) `.quote span` in
+`main-new.css` — the decorative “ on `/who-we-are` — and two headings on
+`/projects/family-to-family` ask for `font-family: Avenir`, but no Avenir face
+ever loads, so visitors without Avenir installed see the browser's default
+font. Ported rules keep naming Avenir and nothing is loaded: identical result,
+no licence question. The `.otf` in `public/fonts` and the `fonts.cdnfonts.com`
+link are dropped. **Lato is the site's text face**; Martel is linked but never
+drawn. See §4.4 for the full measurement.
 
 ---
 
@@ -268,6 +271,30 @@ storage/app/media/         user uploads (see §6) — never under public/
   resting state.
 
 ### 4.4 Fonts — `.woff2`, self-hosted, only what is used
+
+**Done (2026-10-09).** Measured on all 28 reachable public pages with
+`document.fonts` and computed styles, including `::before` icon glyphs:
+
+| Face | Live site | New site |
+|---|---|---|
+| Lato 400 / 700 / 900 | Loaded on 24 pages; **not loaded on `/home` and `/projects/disc`** (those fall back to Arial/Helvetica for visitors without Lato) | Self-hosted, every page — decided: fix the two pages |
+| Lato 100 / 500 / 600 / 750 / 800 | Requested by CSS, never loaded; browsers draw the nearest of 400/700/900 | Not added — same rendering |
+| Archivo 400 | `/our-news` and articles | Self-hosted; fetched only on pages that use it |
+| Martel, Caudex, Archivo Black | Linked, never drawn | Dropped |
+| Avenir | Requested, never loaded | Name kept in ported rules, nothing loaded |
+| `system-ui`, Lucida Console, Helvetica Neue | System fonts (`/qr/disc`, a few elements) | Nothing to load |
+| FontAwesome 4.7 (all pages), Font Awesome 6 (articles), bootstrap-icons (404) | Icon fonts | Inline SVG per glyph, ported with each page |
+
+Eight `.woff2` files (Google's own files and `unicode-range` subsets, latin +
+latin-ext; 113 KB, ~69 KB on a typical page), `resources/css/fonts.css`, Lato
+400 preloaded, Google Fonts removed from the layout and the CSP. The body now
+computes as live: `Lato, sans-serif`, `#212529`, no font-smoothing override.
+
+**Testing caveat:** the development PC has every Lato weight installed, so
+pages there can look right while visitors see a fallback. The verification
+harness (§7) must run in a browser profile without locally installed Lato.
+
+Original method, kept for reference:
 
 1. On each live legacy page, list the `font-family` + `font-weight` + `font-style`
    combinations actually rendered (`document.fonts` and computed styles). Lato
@@ -482,7 +509,7 @@ plan most likely to move.
    `app_` tables in `hcsyria_db` and narrow the migration guard (§5.4).
 6. Teach the reachability analyzer to check that the view a method returns
    exists, so dead routes like `/about` are flagged rather than ported.
-7. Fonts to `.woff2` (Lato and Martel first), icon component, design tokens.
+7. Fonts to `.woff2`, design tokens (done — §4.4). Icon glyphs become inline SVG as each page is ported.
 8. Build the verification harness (§7). Run it on the micro-projects page first.
 
 **Exit:** micro-projects passes every check in §7 against today's legacy page.
@@ -597,7 +624,7 @@ Admin screens, additionally:
 | 1 | `/about` | Dead route (500, no view). Not ported; 301 to `/who-we-are`. |
 | 2 | Admin dashboard | Full redesign with the `impeccable` skill; capabilities preserved (Phase 3). |
 | 3 | PHP | 8.4.21 in production. Laravel 13 + Pest 5 both run on it; platform pinned. |
-| 4 | Fonts | Lato (text) and Martel (display). Avenir is fetched but never drawn — dropped. |
+| 4 | Fonts | Lato 400/700/900 on every page (including /home and /projects/disc, which never loaded it), Archivo 400 for news. Martel is never drawn; Avenir is requested but never loaded (§4.4). |
 | 5 | Database | Same `hcsyria_db`; new tables only, `app_` prefix, legacy tables never altered (§5.4). |
 | — | The old website | Not touched: no code, config or file changes. Single cutover; holes close then (§1). |
 
