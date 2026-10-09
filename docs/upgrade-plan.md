@@ -36,7 +36,7 @@ Public side first; the admin dashboard comes after (decided 2026-10-09).
 | 5. Security middleware from Tracking | **Done for the public side** — headers + CSP, HTTPS redirect, HSTS, cookieless throttle, guest and Livewire limiters. `app_` tables wait for the admin phase. |
 | 6. Analyzer checks views exist | **Done** |
 | 7. Fonts to `.woff2`, tokens | **Done** — Lato 400/700/900 + Archivo 400 self-hosted, Google Fonts gone from layout and CSP, unused tokens removed. Icon glyphs move to inline SVG with each page port. |
-| 8. Verification harness (§7) | Next |
+| 8. Verification harness (§7) | **Done** — `npm run parity`: pixel, text, link, font and console checks at 4 widths against a local legacy reference on the same database; approved differences in `docs/parity-allowlist.json`. |
 
 Found on the way: the Phase 0 migration guard did not run under
 `APP_ENV=testing`, so `migrate:fresh` (or `RefreshDatabase`) could have wiped
@@ -451,6 +451,35 @@ Saying the port matches is not enough. Each page is measured.
 | Performance | Lighthouse | not worse than legacy on any metric |
 
 The harness is built once in Phase 1 and reused for every page.
+
+### Running it
+
+`npm run parity -- --paths=/projects/micro-projects` (or no `--paths` to check
+every route the ledger marks `ported`). It writes `storage/parity/report.json`
+and, per page and width, `legacy.png`, `new.png` and `diff.png`. Approved
+differences live in `docs/parity-allowlist.json`, each with its reason; any
+other difference fails.
+
+**Compare against the legacy code on the same database, not production.** The
+local `hcsyria_db` is a snapshot, so production content differs. The reference
+is a throwaway clone — the legacy repository itself is never touched:
+
+```bash
+git clone "E:/03-Website/hcsyria.org Website/hcsyria.org-website" legacy-ref
+cd legacy-ref && composer install --no-dev --no-scripts
+mkdir -p storage/framework/{cache/data,sessions,views} storage/logs bootstrap/cache
+# .env: APP_KEY=, the same DB_* as the new app, and DB_SECOND_HOST=127.0.0.1
+#       so nothing ever connects to the remote studyzone server
+php artisan key:generate --force
+# public/images: a junction to the legacy public/images folder (read-only use)
+php artisan serve --port=8124
+```
+
+First result (2026-10-09), `/projects/micro-projects` at 1440 px: 12% of pixels
+differ, the new page is 2,725 px tall against 4,023 px, 157 text lines and 52
+links differ — the Phase 0 port lacks the hero slider, Project Brief and
+Statistics sections and the new "Our News" link. Confirms that page needs a
+full port.
 
 ---
 

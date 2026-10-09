@@ -1,0 +1,9 @@
+{
+    "_comment": "Differences from the legacy site that were approved on purpose. scripts/parity-check.mjs ignores a text or link diff line that matches an entry exactly. Every entry needs a reason; anything not listed here fails the check.",
+    "text": {
+        "+ Skip to content": "Keyboard skip link, visually hidden until focused (accessibility; upgrade-plan §2.4)."
+    },
+    "links": {
+        "+ a #main": "Target of the skip link above."
+    }
+}

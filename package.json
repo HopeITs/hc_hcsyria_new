@@ -4,12 +4,16 @@
     "type": "module",
     "scripts": {
         "build": "vite build",
-        "dev": "vite"
+        "dev": "vite",
+        "parity": "node scripts/parity-check.mjs"
     },
     "devDependencies": {
         "@tailwindcss/vite": "^4.3.3",
         "concurrently": "^9.0.1",
         "laravel-vite-plugin": "^3.2.0",
+        "pixelmatch": "^7.2.0",
+        "playwright": "^1.64.0",
+        "pngjs": "^7.0.0",
         "tailwindcss": "^4.3.3",
         "vite": "^8.3.4"
     }
