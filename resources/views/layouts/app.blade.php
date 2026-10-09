@@ -1,4 +1,13 @@
-@props(['title' => null, 'description' => null, 'footer' => 'default', 'menu' => 'instant'])
+@props([
+    'title' => null,
+    'description' => null,
+    'keywords' => null,
+    'alternate' => null,
+    'footer' => 'default',
+    'menu' => 'instant',
+    'preloader' => false,
+    'overlayUntil' => null,
+])
 
 {{--
     The one public layout. Full-page Livewire components use it as
@@ -7,7 +16,10 @@
     $footer picks the footer variant: the legacy site had five (default,
     micro-projects, children, DISC, LEAP), each a component under
     components/site/footer/. $menu is how the nav menus open on hover
-    (see site-nav.js).
+    (see site-nav.js). $preloader shows the loading screen; $overlayUntil
+    makes the navbar transparent over a hero (see the header component).
+    $keywords and $alternate are the per-page head tags a few legacy pages
+    had (keywords, and the x-default hreflang link on the home page).
 
     Ported from the legacy page heads: favicon and theme-color. Not ported:
     Google Analytics UA-129097809-1 (Universal Analytics, shut down by Google
@@ -26,6 +38,12 @@
     @if ($description)
         <meta name="description" content="{{ $description }}">
     @endif
+    @if ($keywords)
+        <meta name="keywords" content="{{ $keywords }}">
+    @endif
+    @if ($alternate)
+        <link rel="alternate" hreflang="x-default" href="{{ $alternate }}">
+    @endif
     <link rel="icon" href="/favicon.ico">
 
     {{-- Body text on every page; the other faces are found in the stylesheet. --}}
@@ -34,10 +52,14 @@
     @livewireStyles
 </head>
 <body>
+    @if ($preloader)
+        <x-site.preloader/>
+    @endif
+
     {{-- Lets keyboard and screen-reader users jump past the navigation. --}}
     <a href="#main" class="skip-link">Skip to content</a>
 
-    <x-site.header :$menu/>
+    <x-site.header :$menu :$overlayUntil/>
 
     {{-- A flex item of the body column that grows, as the legacy page content did. --}}
     <main id="main" class="flex shrink-0 grow flex-col">

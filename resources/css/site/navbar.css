@@ -190,7 +190,7 @@
         }
     }
 
-    /* .nav-list-links — bold on hover and while its menu is open (a.show). */
+    /* .nav-list-links — bold while the pointer is on it. */
     .site-nav__link {
         padding: 0;
         font: inherit;
@@ -202,8 +202,7 @@
         border: 0;
         cursor: pointer;
 
-        &:hover,
-        &.is-open {
+        &:hover {
             font-weight: 700;
         }
 
@@ -436,5 +435,70 @@
         border-radius: 0 0.25rem 0.25rem 0;
         cursor: pointer;
         user-select: none;
+    }
+
+    /*
+     * Overlay mode — the legacy .navbar_reverse, measured on the home page
+     * (storage/parity/spec/homenav-*.json): the bar is transparent over a
+     * hero image, with white text. From 576px the search box is a ghost
+     * outline; on phones it keeps its normal look, and the open menu becomes
+     * a frosted panel. (The placeholder stays white on phones too, which on
+     * the white box there is invisible; that is what the legacy site does.)
+     */
+    .site-nav--overlay {
+        background-color: transparent;
+
+        & .site-nav__link,
+        & .site-nav__panel-link,
+        & .site-nav__heading {
+            color: #fff;
+        }
+
+        & .site-nav__divider {
+            background-color: #fff;
+            filter: opacity(0.2);
+
+            @media (width >= 576px) {
+                filter: opacity(0.5);
+            }
+        }
+
+        & .site-nav__search-input {
+            &::placeholder {
+                color: #fff;
+            }
+
+            @media (width >= 576px) {
+                color: #fff;
+                background-color: transparent;
+                border-color: #ffffff5e;
+            }
+        }
+
+        & .site-nav__search-button {
+            @media (width >= 576px) {
+                background-color: transparent;
+                border-color: #ffffff5e;
+            }
+        }
+
+        & .site-nav__panel,
+        & .site-nav__list {
+            background-color: #00000026;
+            background-clip: padding-box;
+            backdrop-filter: blur(10px);
+
+            @media (width >= 576px) {
+                &.site-nav__list {
+                    background-color: transparent;
+                    backdrop-filter: none;
+                }
+            }
+        }
+
+        /* The red hover fill still wins over the white text. */
+        & .site-nav__panel-link:hover {
+            color: #fff;
+        }
     }
 }

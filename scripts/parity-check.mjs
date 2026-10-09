@@ -4,6 +4,11 @@
  *
  *   node scripts/parity-check.mjs [--legacy=http://localhost:8124] [--new=http://localhost:8123]
  *                                 [--paths=/a,/b] [--widths=375,768,1440,1920] [--max-diff=0.5]
+ *                                 [--phone]
+ *
+ * --phone checks as a phone (mobile browser user-agent, touch, device scale
+ * factor 1), for pages whose content depends on the device. Default widths
+ * are then 390 only.
  *
  * Without --paths it checks every route the port ledger marks "ported", at
  * that route's first live example URL.
@@ -41,9 +46,11 @@ const args = Object.fromEntries(process.argv.slice(2).map((a) => {
 
 const legacyBase = (args.legacy ?? 'http://localhost:8124').replace(/\/$/, '');
 const newBase = (args.new ?? 'http://localhost:8123').replace(/\/$/, '');
-const widths = (args.widths ?? '375,768,1440,1920').split(',').map(Number);
+const phone = args.phone === 'true';
+const widths = (args.widths ?? (phone ? '390' : '375,768,1440,1920')).split(',').map(Number);
 const maxDiff = Number(args['max-diff'] ?? 0.5);
 const outRoot = path.resolve('storage/parity');
+const PHONE_USER_AGENT = 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1';
 
 const ledger = JSON.parse(fs.readFileSync('docs/port-ledger.json', 'utf8'));
 
@@ -70,7 +77,10 @@ const freezeCss = `
 
 /* A fresh context per capture: a cold cache, like a first visit, every time. */
 async function capture(browser, url, width) {
-    const context = await browser.newContext({ reducedMotion: 'reduce' });
+    const context = await browser.newContext({
+        reducedMotion: 'reduce',
+        ...(phone && { isMobile: true, hasTouch: true, userAgent: PHONE_USER_AGENT }),
+    });
     const page = await context.newPage();
     const errors = [];
     page.on('pageerror', (e) => errors.push(`pageerror: ${e.message}`));
@@ -101,6 +111,15 @@ async function capture(browser, url, width) {
         }
         window.scrollTo(0, 0);
         await document.fonts.ready;
+    });
+    // Videos autoplay and loop; freeze them on their first frame so two runs compare.
+    await page.evaluate(async () => {
+        await Promise.all([...document.querySelectorAll('video')].map((video) => {
+            video.pause();
+            video.currentTime = 0;
+
+            return new Promise((resolve) => { video.readyState >= 2 ? resolve() : video.addEventListener('loadeddata', resolve, { once: true }); setTimeout(resolve, 3000); });
+        }));
     });
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(500);

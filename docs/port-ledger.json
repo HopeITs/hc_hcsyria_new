@@ -412,9 +412,9 @@
             "action": "PublicController@homepage",
             "name": "new.public.home",
             "order": 51,
-            "status": "pending",
-            "notes": null,
-            "ported_from": null,
+            "status": "ported",
+            "notes": "Counts page_views as page_name=home (once per session, only when COUNT_PAGE_VIEWS is on). Cover image chosen by phone user-agent (Device). Lato now loads here (the legacy page never loaded it) - decided 2026-10-09. GSAP scroller and unused controller data dropped.",
+            "ported_from": "6d45ef9",
             "live_status": "200",
             "examples": [
                 {

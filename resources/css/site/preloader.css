@@ -1,0 +1,33 @@
+/*
+ * The loading screen: a white overlay with the animated logo ring.
+ * .preloader and .preloader-gif in the legacy main-new.css; the gif is
+ * served from /images/preloader.gif with the rest of the site's images.
+ * resources/js/preloader.js decides when it leaves.
+ */
+@layer components {
+    .preloader {
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 9998;
+        width: 100%;
+        height: 120%;
+        background: #fff;
+        transition: opacity 0.5s ease;
+
+        &.is-leaving {
+            opacity: 0;
+            pointer-events: none;
+        }
+    }
+
+    .preloader__gif {
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 9999;
+        width: 100%;
+        height: 100%;
+        background: url('/images/preloader.gif') center / auto no-repeat;
+    }
+}

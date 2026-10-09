@@ -1,0 +1,161 @@
+/*
+ * The home page (/home). Legacy: home_page.css and the <style> block in
+ * new/public/home.blade.php, measured on the running page
+ * (storage/parity/spec/home-*.json). Sizes in vw as on the rest of the site,
+ * with the phone values from 576px down.
+ */
+@layer components {
+    /*
+     * The cover. On desktop it keeps the photo's 3000:1553 shape, anchored to
+     * the bottom so only the top is trimmed (at most a quarter) and the
+     * picture is never stretched; the extra 1.1vw lets the woman's hand end
+     * exactly on the bottom of the window. On phones it is the photo's own
+     * shape.
+     */
+    .home-cover {
+        position: relative;
+        margin-top: -0.2vw;
+    }
+
+    .home-cover--desktop {
+        width: 100%;
+        max-height: max(calc(100vh + 1.1vw), 38.8vw);
+        aspect-ratio: 3000 / 1553;
+        overflow: hidden;
+
+        & .home-cover__frame {
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            left: 0;
+        }
+
+        & .home-cover__magazine {
+            top: 42.82%;
+            left: 75.567%;
+            width: 14.7%;
+        }
+    }
+
+    .home-cover--phone .home-cover__magazine {
+        top: 72.708%;
+        left: 59.074%;
+        width: 32.315%;
+    }
+
+    .home-cover__frame {
+        position: relative;
+    }
+
+    .home-cover__photo,
+    .home-cover__magazine img {
+        display: block;
+        width: 100%;
+        height: auto;
+    }
+
+    /* The Roots of Hope magazine on the cover, nudging side to side until hovered. */
+    .home-cover__magazine {
+        position: absolute;
+        z-index: 2;
+        display: block;
+        cursor: pointer;
+
+        &:focus-visible {
+            outline: 3px solid #c8102e;
+            outline-offset: 4px;
+        }
+
+        & img {
+            backface-visibility: hidden;
+            will-change: transform;
+            animation: home-magazine-shift 2.8s ease-in-out infinite alternate;
+        }
+
+        &:hover img,
+        &:focus-visible img {
+            animation-play-state: paused;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            & img {
+                animation: none;
+            }
+        }
+    }
+
+    @keyframes home-magazine-shift {
+        from {
+            transform: translateX(-4px);
+        }
+
+        to {
+            transform: translateX(4px);
+        }
+    }
+
+    /*
+     * #firstContainer: everything under the cover. Legacy gave it a 3vw bottom
+     * margin, but it collapsed into the footer's larger 5vw top margin (they
+     * were siblings); the footer is outside this page here, so only the 5vw
+     * remains.
+     */
+    .home-intro {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin: 5vw 0 0;
+
+        & > * {
+            align-self: stretch;
+        }
+    }
+
+    .home-intro__welcome {
+        align-self: center;
+        max-width: calc(91.6667% - 24px - 0.5vw);
+        margin: 3vw 0 0 0.5vw;
+        font-size: 3.2vw;
+        text-align: justify;
+        color: #616262;
+
+        & span {
+            font-weight: 900;
+            color: #bc1818;
+        }
+
+        @media (width >= 576px) {
+            max-width: calc(83.3333% - 24px);
+            margin: 1vw 0 0;
+            font-size: 1.2vw;
+            text-align: left;
+        }
+    }
+
+    /* "why it matters?" over the full-width video */
+    .home-matters__head {
+        display: flex;
+        justify-content: center;
+        padding: 0 0.75rem;
+    }
+
+    .home-matters__title {
+        margin-top: 5vw;
+        font-size: 4vw;
+        font-weight: 800;
+        text-align: center;
+        text-transform: uppercase;
+        color: #616262;
+
+        @media (width >= 576px) {
+            font-size: 2vw;
+        }
+    }
+
+    .home-matters__video {
+        display: inline-block;
+        width: 100%;
+        vertical-align: baseline;
+    }
+}

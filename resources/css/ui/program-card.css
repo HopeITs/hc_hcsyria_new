@@ -1,0 +1,72 @@
+/*
+ * A programme tile: photo, year over a rule, red name tag, a few lines of
+ * text and a "read more" link. Legacy .panel > .item on the home page
+ * (home_page.css); the same tile is used wherever the site lists programmes.
+ */
+@layer components {
+    .program-card {
+        padding: 1vw;
+        background: #fff;
+
+        @media (width >= 576px) {
+            padding: 0.5vw;
+        }
+    }
+
+    /* The photo sits on a text line, so it has the small gap under it a line box leaves. */
+    .program-card__photo {
+        display: inline;
+        width: 100%;
+        vertical-align: baseline;
+    }
+
+    .program-card__name {
+        width: fit-content;
+        padding: 1.1vw 1.3vw;
+        font-size: 2.5vw;
+        font-weight: 600;
+        line-height: 3.3vw;
+        text-transform: uppercase;
+        color: #fff;
+        background: #bc1818;
+
+        @media (width >= 576px) {
+            padding: 0.1vw 0.3vw;
+            font-size: 0.9vw;
+            line-height: 1.3vw;
+        }
+    }
+
+    .program-card__text {
+        margin-top: 1.2vw;
+        font-size: 2.3vw;
+        color: #616262;
+
+        @media (width >= 576px) {
+            margin-top: 0.2vw;
+            font-size: 0.6vw;
+        }
+    }
+
+    /* On phones the link is pushed to the right edge. */
+    .program-card__more {
+        display: flex;
+        align-items: center;
+        justify-content: end;
+        font-size: 2.1vw;
+        font-weight: 600;
+        text-transform: capitalize;
+        color: #bc1818;
+        cursor: pointer;
+
+        &:hover {
+            font-weight: 900;
+            color: #bc1818;
+        }
+
+        @media (width >= 576px) {
+            display: inline;
+            font-size: 0.6vw;
+        }
+    }
+}

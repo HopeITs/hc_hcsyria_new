@@ -11,6 +11,9 @@
     "fonts": {
         "- FontAwesome normal normal": "FontAwesome 4.7 icon font replaced by inline SVG of the glyphs used (components/ui/icon.blade.php).",
         "- Font Awesome 6 Free 900 normal": "Font Awesome 6 icon font replaced by inline SVG of the glyphs used.",
-        "- bootstrap-icons normal normal": "Bootstrap Icons font replaced by inline SVG of the glyphs used."
+        "- bootstrap-icons normal normal": "Bootstrap Icons font replaced by inline SVG of the glyphs used.",
+        "+ Lato 400 normal": "The legacy /home and /projects/disc never loaded Lato (the face every other page uses), so visitors without it installed saw Arial there. Decided 2026-10-09: load Lato on every page.",
+        "+ Lato 700 normal": "The legacy /home and /projects/disc never loaded Lato (the face every other page uses), so visitors without it installed saw Arial there. Decided 2026-10-09: load Lato on every page.",
+        "+ Lato 900 normal": "The legacy /home and /projects/disc never loaded Lato (the face every other page uses), so visitors without it installed saw Arial there. Decided 2026-10-09: load Lato on every page."
     }
 }

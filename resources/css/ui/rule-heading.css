@@ -1,0 +1,43 @@
+/*
+ * A heading with a thin rule running through it, the text sitting on a white
+ * patch that breaks the line. Legacy .date (home_page.css): the year on a
+ * programme card and, larger and centred, "our programs".
+ *
+ * The rule is the bottom border of a line-height-0.1vw box; the text is
+ * pulled up through it. Sizes are viewport units, as everywhere on the site,
+ * with the phone values from 576px down.
+ */
+@layer components {
+    .rule-heading {
+        width: 100%;
+        margin: 2vw 0 3.2vw;
+        font-size: 3.4vw;
+        font-weight: 900;
+        line-height: 0.1vw;
+        color: #616262;
+        border-bottom: 1px solid #000;
+
+        @media (width >= 576px) {
+            margin: 0.8vw 0 1vw;
+            font-size: 1.2vw;
+        }
+
+        & > * > span,
+        & > span {
+            padding: 0 0.8vw 0 0;
+            background: #fff;
+        }
+    }
+
+    /* "our programs": the section title */
+    .rule-heading--title {
+        font-size: 3vw;
+        text-align: center;
+
+        & > * > span,
+        & > span {
+            padding: 0 4vw;
+            letter-spacing: 0.1vw;
+        }
+    }
+}

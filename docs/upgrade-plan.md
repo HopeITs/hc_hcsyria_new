@@ -42,6 +42,7 @@ Public side first; the admin dashboard comes after (decided 2026-10-09).
 |---|---|
 | Layout, header, footer (default variant) | **Done** — measured against the running legacy pages at 375/768/1440/1920px; menus, hover fills and the phone menu compared state by state (`npm run parity:nav`, 9 states, all under 0.25% pixel difference) |
 | Every error page (401 403 404 419 429 500 503 + any 4xx/5xx) | **Done** — see §9, Error pages |
+| Home page `/home` | **Done** — matches legacy at 375/768/1440/1920px (≤0.45% of pixels) and as a phone (0.23%); 18 interactive nav states; scroll switch and preloader behaviour checked; 63 tests |
 | Footer variants (micro-projects, children, DISC, LEAP) | Next, with their pages |
 | The 30 public pages | Next |
 
@@ -613,6 +614,45 @@ one component (`x-site.error-page`) for the design.
 Decisions for you: the wording for 401, 403, 419, 429 and the generic pages
 is new (written in the 404's voice) because the legacy site had none — edit
 `lang/en/errors.php` if you want different words.
+
+#### Shared building blocks (built with the home page)
+
+Each page is a thin composition of these, so the next pages reuse them and the
+CSS does not grow with each page. Page-specific CSS goes in
+`resources/css/pages/`; anything two pages need goes in `ui/` or `site/`.
+
+| Piece | Where | Replaces (legacy) | Used by |
+|---|---|---|---|
+| `x-site.preloader` + `preloader.js` | `site/preloader.css` | `.preloader` markup + a jQuery script pushed from the navbar | 19 pages |
+| `x-ui.reveal` + `reveal.js` | `ui/reveal.css` | AOS (`aos.js`, `aos.css`, `data-aos` ×609) | all pages |
+| `x-ui.rule-heading` | `ui/rule-heading.css` | `.date` | home, programme pages |
+| `x-site.program-card` | `ui/program-card.css` | `.panel > .item` | home, programme lists |
+| header `overlayUntil` | `site/navbar.css` | `.navbar_reverse` + scroll script | home (+ pages with a hero) |
+| `.page-margin` | `site/page.css` | `.page-margin` (17 pages) | most pages |
+| `RecordPageView` action | `app/Actions` | 13 copies of the same 8 lines in `PublicController` | every counted page |
+| `Device::isPhone()` | `app/Support` | `jenssegers/agent` | pages with a phone-specific image |
+| `ServeMedia` | route `/images`, `/files`, `/video` | files inside `public/` | everywhere |
+
+#### Images are not in the repository
+
+(Decided 2026-10-09.) The earlier idea of moving design assets into
+`resources/images` is dropped: **no image, video or file is committed.** They
+live on the server and are served at the same URLs from `MEDIA_ROOT`
+(outside `public/`) by `ServeMedia`, which refuses everything but the file
+types the site publishes and never lets a request leave its folder. For local
+work, point `MEDIA_ROOT` at a folder of your own (git-ignored); the home
+cover's four photos are kept in `storage/app/media`.
+
+Side effect worth knowing: `LEAP.jpg` (18 MB) and `matters.mp4` (15 MB) are
+downloaded in full by the home page today. Resizing them is a content change
+for you to decide, not something this port does.
+
+#### Static pages are not Livewire components
+
+Revised from §4.1. A Livewire component is for a page with state (the
+micro-projects filters, news load-more, search). The home page uses one only
+because it needs request data (device, session) at mount; pure content pages
+will be Blade views through `Route::view`.
 
 ### Phase 3 — Admin dashboard, redesigned (≈9–11 weeks)
 

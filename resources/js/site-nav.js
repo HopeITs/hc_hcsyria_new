@@ -7,19 +7,24 @@
  *  - 'instant' (home, who-we-are, the programme pages — 22 of them): a script
  *    pushed by the page adds Bootstrap's .show class the moment the pointer
  *    enters a menu, if the window was wider than 992px when the page loaded.
- *    The menu appears at once and leaves at once, and its link stays bold
- *    while it is open. Narrower than that, hover falls back to the slide.
+ *    The menu appears at once and leaves at once. Narrower than that, hover
+ *    falls back to the slide.
  *
  *  - 'slide' (pages without that script, such as the 404): main.js waits
  *    250ms after the pointer enters, then jQuery slideDown()s the menu;
  *    leaving waits 100ms, then slideUp()s it. A slide is jQuery's default —
  *    400ms, "swing" easing — and animates height and the vertical padding and
  *    margin together, not just height. Moving back in mid-slide jumps the
- *    running slide to its end first (stop(true, true)). The link is bold only
- *    while the pointer is on it.
+ *    running slide to its end first (stop(true, true)).
  *
  * Clicking (touch screens, and the mobile menu) toggles a menu instantly, as
  * Bootstrap did; clicking elsewhere or pressing Escape closes it.
+ *
+ * Overlay mode (the legacy navbar_reverse): over a full-bleed hero the bar is
+ * transparent with a white logo and white links. It stays that way until the
+ * page has scrolled to 300px above the element named by `overlayUntil`
+ * (measured once, when the window loads, as the legacy script did), then
+ * turns solid, and back again when scrolled up.
  *
  * One departure: with prefers-reduced-motion the slides are instant. jQuery
  * ignored that setting.
@@ -47,8 +52,9 @@ function slide(element, direction) {
     });
 }
 
-export default ({ mode = 'instant' } = {}) => ({
+export default ({ mode = 'instant', overlayUntil = null } = {}) => ({
     open: false,
+    overlay: overlayUntil !== null,
     menu: null,
     hover: false,
     pointerHovers: false,
@@ -61,11 +67,25 @@ export default ({ mode = 'instant' } = {}) => ({
         this.pointerHovers = matchMedia('(hover: hover)').matches;
         // The legacy script tested the window width once, when the page loaded.
         this.instant = mode === 'instant' && window.innerWidth > 992;
+
+        if (overlayUntil !== null) {
+            this.watchOverlay(overlayUntil);
+        }
     },
 
-    // Bold link: Bootstrap's .show, which a slide never adds.
-    isOpen(name) {
-        return this.menu === name && (this.instant || ! this.hover);
+    watchOverlay(selector) {
+        const measure = () => {
+            const target = document.querySelector(selector);
+            if (target === null) return;
+
+            const threshold = target.getBoundingClientRect().top + scrollY - 300;
+            // Overlay until the first scroll decides otherwise: on a narrow
+            // screen the threshold can be negative, and the legacy page did
+            // not look at it until the visitor scrolled.
+            addEventListener('scroll', () => { this.overlay = scrollY <= threshold; }, { passive: true });
+        };
+
+        document.readyState === 'complete' ? measure() : addEventListener('load', measure, { once: true });
     },
 
     enter(name) {

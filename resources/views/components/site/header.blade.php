@@ -1,4 +1,4 @@
-@props(['menu' => 'instant'])
+@props(['menu' => 'instant', 'overlayUntil' => null])
 
 @php
     /*
@@ -62,12 +62,20 @@
     is 'instant' (hover opens at once, as on most legacy pages) or 'slide'
     (250ms delay then a slide, as on the legacy 404); a click or tap toggles
     instantly; clicking elsewhere or Escape closes.
+
+    $overlayUntil, a selector, makes the bar transparent with white text and
+    logo over a hero image until the page has scrolled to within 300px of
+    that element (the legacy navbar_reverse; home page).
 --}}
-<nav class="site-nav" aria-label="Main" x-data="siteNav({ mode: '{{ $menu }}' })" @click.outside="close()"
-     @keydown.escape.window="close(); open = false">
+<nav @class(['site-nav', 'site-nav--overlay' => $overlayUntil !== null]) aria-label="Main"
+     :class="{ 'site-nav--overlay': overlay }"
+     x-data="siteNav(@js(['mode' => $menu, 'overlayUntil' => $overlayUntil]))"
+     @click.outside="close()" @keydown.escape.window="close(); open = false">
     <div class="site-nav__inner">
         <a class="site-nav__brand" href="/home">
-            <img class="site-nav__logo" src="/images/logos/hc.svg" alt="Christian Hope Center">
+            <img class="site-nav__logo" alt="Christian Hope Center"
+                 src="{{ $overlayUntil !== null ? '/images/logos/hcreverse.svg' : '/images/logos/hc.svg' }}"
+                 :src="overlay ? '/images/logos/hcreverse.svg' : '/images/logos/hc.svg'">
         </a>
 
         <button class="site-nav__toggler" type="button" @click="open = ! open"
@@ -85,7 +93,7 @@
                 <li class="site-nav__divider" role="separator"></li>
 
                 <li class="site-nav__item" @mouseenter="enter('what')" @mouseleave="leave()">
-                    <a href="#" class="site-nav__link site-nav__link--toggle" :class="{ 'is-open': isOpen('what') }"
+                    <a href="#" class="site-nav__link site-nav__link--toggle"
                        @click.prevent="toggle('what')" aria-haspopup="true"
                        :aria-expanded="(menu === 'what').toString()" aria-expanded="false">@lang('navbar.whatWeDo')</a>
                     <div class="site-nav__panel site-nav__panel--wide" :class="{ 'is-hover': hover }"
@@ -112,7 +120,7 @@
                 <li class="site-nav__divider" role="separator"></li>
 
                 <li class="site-nav__item" @mouseenter="enter('publications')" @mouseleave="leave()">
-                    <a href="#" class="site-nav__link site-nav__link--toggle" :class="{ 'is-open': isOpen('publications') }"
+                    <a href="#" class="site-nav__link site-nav__link--toggle"
                        @click.prevent="toggle('publications')" aria-haspopup="true"
                        :aria-expanded="(menu === 'publications').toString()" aria-expanded="false">Publications</a>
                     <div class="site-nav__panel site-nav__panel--narrow" :class="{ 'is-hover': hover }"

@@ -1,0 +1,14 @@
+/*
+ * Page-level layout shared by the public pages.
+ */
+@layer components {
+    /*
+     * .page-margin (legacy main-new.css): the inset every content block sits
+     * in — 4.7% either side, 1% above and below. Percentages are of the
+     * containing block's width, which is why a page's content is narrower
+     * than its photos on wide screens.
+     */
+    .page-margin {
+        margin: 1% 4.7%;
+    }
+}

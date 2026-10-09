@@ -6,6 +6,7 @@
  *
  *   node scripts/parity-nav-states.mjs [--path=/projects/micro-projects]
  *        [--legacy=http://localhost:8124] [--new=http://localhost:8123] [--max-diff=0.5]
+ *        [--wait=3300]   (pages with the 2.5s loading screen)
  *
  * Only the top 560px (the navigation and what it opens) is compared, so the
  * page below it may differ without failing this check; scripts/parity-check.mjs
@@ -31,6 +32,8 @@ const LEG = (args.legacy ?? 'http://localhost:8124').replace(/\/$/, '') + pagePa
 const NEW = (args.new ?? 'http://localhost:8123').replace(/\/$/, '') + pagePath;
 const maxDiff = Number(args['max-diff'] ?? 0.5);
 const only = args.only;
+// Pages with a loading screen need it out of the way (2.5s) before anything is captured.
+const settle = Number(args.wait ?? 500);
 
 // [name, width, legacy steps, new steps]; a step is hover=sel or click=sel
 const nth = (n) => `ul.navbar-nav > li:nth-child(${n})`;
@@ -48,7 +51,9 @@ const states = [
 const b = await chromium.launch();
 const shot = async (url, width, steps) => {
   const c = await b.newContext({ viewport: { width, height: 900 }, reducedMotion: 'reduce' }); const p = await c.newPage();
-  await p.goto(url, { waitUntil: 'networkidle' }); await p.addStyleTag({ content: '*{animation:none!important;transition:none!important}' }); await p.evaluate(() => document.fonts.ready); await p.waitForTimeout(500);
+  await p.goto(url, { waitUntil: 'networkidle' }); await p.addStyleTag({ content: '*{animation:none!important;transition:none!important}' }); await p.evaluate(() => document.fonts.ready); await p.waitForTimeout(settle);
+  // Autoplaying videos are captured on their first frame, so two runs compare.
+  await p.evaluate(() => document.querySelectorAll('video').forEach((v) => { v.pause(); v.currentTime = 0; })); await p.waitForTimeout(400);
   for (const s of steps) { const i = s.indexOf('='); const [k, sel] = [s.slice(0, i), s.slice(i + 1)]; await (k === 'hover' ? p.hover(sel) : p.click(sel)); await p.waitForTimeout(1300); }
   const buf = await p.screenshot({ clip: { x: 0, y: 0, width, height: 560 } }); await c.close(); return PNG.sync.read(buf);
 };
