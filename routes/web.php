@@ -21,8 +21,8 @@ Route::livewire('/home', 'pages::home')
 Route::livewire('/who-we-are', 'pages::who-we-are')->name('public.who-we-are');
 Route::livewire('/who-we-are/partners', 'pages::who-we-are')->name('public.who-we-are-partners');
 
-Route::livewire('/projects/micro-projects', 'micro-projects')
-    ->name('projects.micro');
+Route::livewire('/projects/micro-projects', 'pages::micro-projects')
+    ->name('new.public.micro_project_test');
 
 // Images, files and video, from MEDIA_ROOT, at the URLs the legacy site used.
 Route::get('/{area}/{path}', ServeMedia::class)

@@ -1,21 +1,27 @@
-@props(['title', 'subtitle'])
+@props(['title', 'subtitle', 'compact' => false])
 
 {{--
     The hero title under the navbar: a red corner with two lines of capitals
-    (resources/css/ui/page-title.css). The right half of the row is empty, as
-    in the legacy markup, and only fixes the frame at half the width.
+    (resources/css/ui/page-title.css). The right half of the row is empty
+    unless the page puts something in the slot (a programme's logo), and
+    otherwise only fixes the frame at half the width, as in the legacy markup.
+    :compact is the smaller type the programme pages use.
 --}}
 <div class="page-margin">
     <div class="px-3">
         <div class="-mx-3 flex">
-            <div class="page-title">
+            <div @class(['page-title', 'page-title--compact' => $compact])>
                 <div class="page-title__frame"></div>
                 <div class="page-title__text">
                     <x-ui.reveal :ms="600" class="page-title__line">{{ $title }}</x-ui.reveal>
                     <x-ui.reveal :ms="1000" class="page-title__line page-title__line--strong">{{ $subtitle }}</x-ui.reveal>
                 </div>
             </div>
-            <div class="flex-1 pl-3"></div>
+            @if ($slot->isEmpty())
+                <div class="flex-1 pl-3"></div>
+            @else
+                <div class="page-title__aside">{{ $slot }}</div>
+            @endif
         </div>
     </div>
 </div>

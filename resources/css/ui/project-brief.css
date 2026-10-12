@@ -1,0 +1,109 @@
+/*
+ * A programme's brief: text on the left half, photos on the right, a long
+ * red bar between them. Legacy #about-section, .padding-screen,
+ * .project-brief, .project-brief-desc and .video (main-new.css,
+ * micro_page_new-test.css), measured on /projects/micro-projects.
+ */
+@layer components {
+    .project-brief {
+        padding-top: 1vw;
+    }
+
+    /* The bar runs from just under the cover down past the photos. On phones
+       legacy put it behind the section's white background, so it never shows. */
+    .project-brief__rule {
+        height: 43vw;
+        margin-top: 1vw;
+        pointer-events: none;
+
+        @media (width < 576px) {
+            display: none;
+        }
+    }
+
+    .project-brief__body {
+        margin-top: 7vw;
+    }
+
+    .project-brief__text {
+        margin-top: 3vw;
+        padding: 0 4.7vw;
+
+        @media (width >= 576px) {
+            margin-top: 0;
+        }
+    }
+
+    .project-brief__logo {
+        display: none;
+        width: 12vw;
+        vertical-align: initial;
+
+        @media (width >= 992px) {
+            display: block;
+        }
+    }
+
+    .project-brief__copy {
+        margin-top: 3vw;
+    }
+
+    .project-brief__heading {
+        font-size: 3.5vw;
+        font-weight: 800;
+        color: #bc1818;
+
+        @media (width >= 576px) {
+            font-size: 1.8vw;
+        }
+    }
+
+    .project-brief__desc {
+        margin-bottom: 4vw;
+        font-size: 3vw;
+        line-height: 3.4vw;
+        color: #676463;
+
+        @media (width >= 576px) {
+            margin-bottom: 0;
+            font-size: 1.2vw;
+            line-height: 1.7vw;
+        }
+    }
+
+    .project-brief__media {
+        @media (width >= 993px) {
+            padding-left: 0.1vw;
+        }
+    }
+
+    /* .video: the photo frame, in front of the red bar */
+    .project-brief__frame {
+        position: relative;
+        z-index: 1000;
+        width: 100%;
+        height: 40vw;
+        margin-bottom: 2vw;
+
+        @media (width >= 576px) {
+            height: 28vw;
+            margin-bottom: 0;
+        }
+    }
+
+    .project-brief__track {
+        height: 40vw;
+
+        @media (width >= 576px) {
+            height: 28vw;
+        }
+    }
+
+    .project-brief__edge {
+        pointer-events: none;
+
+        @media (width < 576px) {
+            bottom: -0.3vw;
+        }
+    }
+}

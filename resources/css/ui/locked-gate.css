@@ -1,0 +1,287 @@
+/*
+ * The members-only gate: a faded photo of the projects with the notice and a
+ * sign-in card laid over it. Legacy .micro-locked-section, .locked-gate and
+ * .gate-login (inline <style> in micro-project-new-test.blade.php), carried
+ * over as written: sized in container units (cqw) so the text and the card
+ * keep their proportions to the photo at any width, with a fixed-size layout
+ * below 610px.
+ */
+@layer components {
+    .locked-section {
+        margin-top: clamp(1.5rem, 3vw, 3.5rem);
+
+        @media (width <= 609px) {
+            margin-top: 1.75rem;
+        }
+    }
+
+    /* A short red bar in the flow, above and below the gate. Legacy gave
+       phones the page's 13vw bar and the in-between widths 56px. */
+    .locked-section__rule {
+        width: 0;
+        height: clamp(58px, 6vw, 190px);
+        margin: 0 auto;
+        border-left: clamp(4px, 0.4vw, 9px) solid #bc1818;
+
+        @media (576px <= width <= 609px) {
+            height: 56px;
+        }
+
+        @media (width < 576px) {
+            height: 13vw;
+            border-left-width: 0.5vw;
+        }
+    }
+
+    .locked-gate {
+        position: relative;
+        container-type: inline-size;
+        width: 100%;
+        max-width: 1392px;
+        margin: clamp(1rem, 2vw, 2.25rem) 1rem;
+
+        @media (width >= 768px) {
+            margin-inline: auto;
+        }
+
+        /* On large monitors it grows with the window; 85vw is 1392px at 1640px. */
+        @media (width >= 1640px) {
+            max-width: 85vw;
+        }
+
+        @media (610px <= width <= 768px) {
+            transform: translateX(-10px);
+        }
+
+        @media (width <= 609px) {
+            width: min(769px, calc(100% - 2rem));
+            max-width: none;
+            margin-block: 1.25rem;
+            overflow: hidden;
+        }
+    }
+
+    .locked-gate__image {
+        display: block;
+        width: 100%;
+        height: auto;
+        opacity: 40%;
+
+        @media (width <= 609px) {
+            width: 769px;
+            max-width: none;
+            margin-left: 50%;
+            transform: translateX(-50%);
+        }
+    }
+
+    .locked-gate__content {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 2cqw 1rem;
+        text-align: center;
+
+        @media (width <= 609px) {
+            right: auto;
+            left: 50%;
+            width: 769px;
+            padding: clamp(1rem, 4vw, 1.9rem) clamp(0.75rem, 3vw, 1.4rem);
+            transform: translateX(-50%);
+        }
+    }
+
+    .locked-gate__notice {
+        margin: 0 auto 0.9cqw;
+        font-size: 1.6cqw;
+        font-weight: 700;
+        line-height: 1.35;
+        color: #c8102e;
+
+        & span {
+            display: block;
+            white-space: nowrap;
+        }
+
+        @media (width <= 609px) {
+            margin: 0 auto clamp(0.45rem, 1.2vw, 0.6rem);
+            font-size: clamp(0.92rem, 2.1vw, 1.02rem);
+        }
+    }
+
+    .locked-gate__hint {
+        margin: 0 auto 1.7cqw;
+        font-size: 1.18cqw;
+        font-weight: 500;
+        line-height: 1.4;
+        color: #3a3a3a;
+        white-space: nowrap;
+
+        @media (width <= 609px) {
+            margin: 0 auto clamp(0.75rem, 2.1vw, 1rem);
+            font-size: clamp(0.5rem, 1.55vw, 0.76rem);
+        }
+    }
+
+    /* The sign-in card */
+    .gate-login {
+        width: 100%;
+        max-width: 26cqw;
+        padding: 2cqw 2.2cqw 1.5cqw;
+        text-align: left;
+        background: #fff;
+        border-radius: 1.6cqw;
+        box-shadow: 0 25px 55px -22px rgb(0 0 0 / 0.4);
+
+        @media (width <= 609px) {
+            max-width: clamp(220px, 32vw, 250px);
+            margin: 0 auto;
+            padding: clamp(1rem, 2.6vw, 1.25rem) clamp(1rem, 2.8vw, 1.35rem) clamp(0.8rem, 2.1vw, 1rem);
+            border-radius: clamp(18px, 3vw, 24px);
+            box-shadow: 0 20px 45px -24px rgb(0 0 0 / 0.45);
+        }
+    }
+
+    .gate-login__title {
+        margin: 0 0 1.4cqw;
+        font-size: 2.35cqw;
+        font-weight: 700;
+        line-height: 1.2;
+        color: #555;
+        text-align: center;
+
+        @media (width <= 609px) {
+            margin: 0 0 clamp(0.8rem, 2vw, 1rem);
+            font-size: clamp(1.35rem, 3.2vw, 1.48rem);
+        }
+    }
+
+    .gate-login__error {
+        margin-bottom: 0.85rem;
+        padding: 0.5rem 0.8rem;
+        font-size: 0.95cqw;
+        font-weight: 500;
+        color: #c8102e;
+        text-align: center;
+        background: #fbeaea;
+        border-radius: 10px;
+
+        @media (width <= 609px) {
+            font-size: clamp(0.68rem, 1.8vw, 0.76rem);
+        }
+    }
+
+    .gate-login__input {
+        display: block;
+        width: 100%;
+        margin-bottom: 0.95cqw;
+        padding: 0.4cqw 0.9cqw;
+        font-size: 1.1cqw;
+        color: #444;
+        background: #fff;
+        border: 1px solid #dcdcdc;
+        border-radius: 999px;
+        outline: none;
+        transition: border-color 0.18s ease;
+
+        &::placeholder {
+            font-size: inherit;
+            color: #b9b9b9;
+        }
+
+        &:focus {
+            border-color: #c8102e;
+        }
+
+        &:-webkit-autofill,
+        &:-webkit-autofill:hover,
+        &:-webkit-autofill:focus,
+        &:-webkit-autofill:active {
+            -webkit-text-fill-color: #444;
+            box-shadow: 0 0 0 1000px #f1f1f1 inset;
+            caret-color: #444;
+            transition: background-color 5000s ease-in-out 0s;
+        }
+
+        @media (width <= 609px) {
+            margin-bottom: clamp(0.58rem, 1.65vw, 0.72rem);
+            padding: clamp(0.55rem, 1.55vw, 0.68rem) clamp(0.9rem, 2.4vw, 1.12rem);
+            font-size: clamp(0.78rem, 2vw, 0.86rem);
+        }
+    }
+
+    .gate-login__button {
+        width: 100%;
+        margin-top: 0.25cqw;
+        padding: 0.4cqw;
+        font-size: 1.15cqw;
+        font-weight: 700;
+        color: #fff;
+        cursor: pointer;
+        background: #bc1818;
+        border: none;
+        border-radius: 999px;
+        transition: background 0.18s ease;
+
+        &:hover {
+            background: #a50d25;
+        }
+
+        @media (width <= 609px) {
+            margin-top: 0.18rem;
+            padding: clamp(0.58rem, 1.65vw, 0.72rem);
+            font-size: clamp(0.8rem, 2.05vw, 0.9rem);
+        }
+    }
+
+    .gate-login__remember {
+        display: flex;
+        gap: clamp(8px, 0.62cqw, 12px);
+        align-items: center;
+        margin: 0.9cqw 0 0;
+        font-size: 0.98cqw;
+        font-weight: 500;
+        line-height: 1;
+        color: #8a8a8a;
+        cursor: pointer;
+
+        & input {
+            position: absolute;
+            pointer-events: none;
+            opacity: 0;
+        }
+
+        @media (width <= 609px) {
+            gap: clamp(0.38rem, 1.15vw, 0.5rem);
+            margin: clamp(0.65rem, 1.8vw, 0.82rem) 0 0;
+            font-size: clamp(0.72rem, 1.85vw, 0.8rem);
+        }
+    }
+
+    /* The round tick. Legacy sized it twice and the more specific rule won
+       for width, height and font size; the minimums came from the other. */
+    .gate-login__check {
+        display: inline-flex;
+        flex-shrink: 0;
+        align-items: center;
+        justify-content: center;
+        width: clamp(15px, 3.6vw, 18px);
+        min-width: clamp(16px, 1.05cqw, 18px);
+        height: clamp(15px, 3.6vw, 18px);
+        min-height: clamp(16px, 1.05cqw, 18px);
+        padding: 0;
+        font-size: clamp(0.5rem, 1.35vw, 0.6rem);
+        line-height: 1;
+        color: #fff;
+        background: #c8102e;
+        border-radius: 50%;
+        transition: background 0.18s ease;
+
+        input:not(:checked) ~ & {
+            background: #ccc;
+        }
+    }
+}

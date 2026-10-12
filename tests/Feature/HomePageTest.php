@@ -47,8 +47,8 @@ it('starts with the loading screen and a transparent navbar over the cover', fun
         ->assertSee('/images/logos/hcreverse.svg', false);
 });
 
-it('leaves the other pages without a loading screen or overlay', function () {
-    $this->get('/projects/micro-projects')->assertDontSee('class="preloader"', false)->assertSee('class="site-nav"', false);
+it('leaves pages that do not ask for one without a loading screen or overlay', function () {
+    $this->get('/no-such-page')->assertDontSee('class="preloader"', false)->assertSee('class="site-nav"', false);
 });
 
 describe('page view counting', function () {

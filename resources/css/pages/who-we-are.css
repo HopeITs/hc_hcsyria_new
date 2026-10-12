@@ -68,27 +68,3 @@
         }
     }
 }
-
-@layer components {
-    /* #HomeCarousel: the cover photo band */
-    .cover-carousel {
-        height: auto;
-        margin-top: -0.2vw;
-    }
-
-    .cover-carousel__track {
-        height: 40vw;
-
-        @media (width >= 576px) {
-            height: 33.5vw;
-        }
-    }
-
-    .cover-carousel .carousel__control {
-        width: 10%;
-    }
-
-    .cover-carousel .carousel__dots {
-        bottom: -1vw;
-    }
-}

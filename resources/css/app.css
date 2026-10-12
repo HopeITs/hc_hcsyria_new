@@ -16,8 +16,14 @@
 @import './ui/showcase.css';
 @import './ui/torn-edge.css';
 @import './ui/partner-logos.css';
+@import './ui/cover-carousel.css';
+@import './ui/project-brief.css';
+@import './ui/radial-gauge.css';
+@import './ui/locked-gate.css';
+@import './ui/funders.css';
 @import './pages/home.css';
 @import './pages/who-we-are.css';
+@import './pages/micro-projects.css';
 
 /* Only our own Blade views: every utility emitted is one a page uses. */
 @source '../views/**/*.blade.php';

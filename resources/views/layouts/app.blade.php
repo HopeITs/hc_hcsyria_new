@@ -34,9 +34,9 @@
     <meta name="theme-color" content="#f6f6f6">
     <meta name="apple-mobile-web-app-status-bar-style" content="#f6f6f6">
 
-    <title>{{ $title ?? config('app.name') }}</title>
+    <title>{{ $title ? __($title) : config('app.name') }}</title>
     @if ($description)
-        <meta name="description" content="{{ $description }}">
+        <meta name="description" content="{{ __($description) }}">
     @endif
     @if ($keywords)
         <meta name="keywords" content="{{ $keywords }}">

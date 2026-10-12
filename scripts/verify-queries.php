@@ -20,6 +20,7 @@ use App\Queries\CategoryQuery;
 use App\Queries\InitiativeTitleListQuery;
 use App\Queries\MicroProjectStatsQuery;
 use App\Queries\PartnerQuery;
+use App\Queries\ProjectPageQuery;
 use App\Queries\ProjectSearch;
 use App\Queries\StudyZoneCenterQuery;
 use App\Queries\TeamMemberQuery;
@@ -297,6 +298,24 @@ check('place slug injection returns nothing',
 /* ===================================================================== */
 echo "\nMicroProjectStatsQuery  vs  micro_project_new_test() aggregates\n";
 /* ===================================================================== */
+echo "\nProjectPageQuery  vs  ProjectDonor / HopeProjects lines in the programme methods\n";
+/* ===================================================================== */
+
+foreach ([[true, 1], [false, 0]] as [$active, $flag]) {
+    $legacyIds = DB::connection('legacy')->table('projects_donors')->where('what_category_id', 10)
+        ->where('isActive', $flag)->orderBy('rank')->pluck('donor_id')->map(fn ($v) => (int) $v)->all();
+    check('micro funders, '.($active ? 'ongoing' : 'previous').', in rank order',
+        ProjectPageQuery::funders(10, $active)->pluck('id')->map(fn ($v) => (int) $v)->all() === $legacyIds);
+}
+
+$legacyBrief = DB::connection('legacy')->table('hope_projects')->where('what_category_id', 10)->first();
+$legacyMedia = DB::connection('legacy')->table('hope_projects_media')->where('project_id', $legacyBrief->id)
+    ->orderBy('mediaOrder')->pluck('mediaURL')->all();
+$brief = ProjectPageQuery::brief(10);
+check('micro brief and its media, in media order',
+    $brief->name === $legacyBrief->name && $brief->hopeProjectMedia->pluck('mediaURL')->all() === $legacyMedia);
+
+/* ===================================================================== */
 
 $legacyCity = collect(DB::connection('legacy')->select(
     'SELECT MPE_City, COUNT(*) as total FROM projects
@@ -311,12 +330,15 @@ $legacyCategories = collect(DB::connection('legacy')->select(
     'SELECT subcategory.Name, COUNT(projects.id) AS project_count FROM projects
      LEFT JOIN subcategory on subcategory.ID = projects.SubCategory_ID
      WHERE projects.MPE_Published in (1,2) AND projects.MPE_Done in (1)
-     AND projects.SubCategory_ID not in (1,2) GROUP BY subcategory.Name'
-))->mapWithKeys(fn ($r) => [(string) $r->Name => (int) $r->project_count])->sortKeys()->all();
-check('per-category counts match',
-    MicroProjectStatsQuery::make()->countsByCategory()
-        ->mapWithKeys(fn ($r) => [(string) $r->Name => (int) $r->project_count])->sortKeys()->all()
-    === $legacyCategories);
+     AND projects.SubCategory_ID not in (1,2) GROUP BY subcategory.Name
+     HAVING subcategory.Name is not null ORDER BY project_count DESC LIMIT 5'
+))->mapWithKeys(fn ($r) => [(string) $r->Name => (int) $r->project_count])->all();
+$newCategories = MicroProjectStatsQuery::make()->topCategories()
+    ->mapWithKeys(fn ($r) => [(string) $r->Name => (int) $r->project_count])->all();
+// Tied counts have no fixed order in legacy, so compare the counts in order and the names as a set.
+check('top five categories match (counts in order, names as a set)',
+    array_values($newCategories) === array_values($legacyCategories)
+    && collect($newCategories)->sortKeys()->all() === collect($legacyCategories)->sortKeys()->all());
 
 $legacyAge = collect(DB::connection('legacy')->select(
     'SELECT age.Name, COUNT(projects.id) AS project_count FROM projects
@@ -329,11 +351,11 @@ check('per-age-band counts match, in order',
     MicroProjectStatsQuery::make()->countsByAgeRange()
         ->mapWithKeys(fn ($r) => [(string) $r->Name => (int) $r->project_count])->all() === $legacyAge);
 
-$legacyRate = (int) DB::connection('legacy')->select(
-    'SELECT ROUND(((SELECT COUNT(id) FROM `projects` WHERE MPE_Published = 1 and MPE_Done = 1
-       and MPE_FundedDate <= DATE_SUB(now(), INTERVAL 9 MONTH)) * 100)
-     / (SELECT COUNT(id) FROM `projects` WHERE MPE_Published <> 0), 0) as number'
-)[0]->number;
+/* Copied from PublicController::getPublishedProjectSustainabilityRate() @ 6d45ef9. */
+$eligible = fn () => DB::connection('legacy')->table('projects')->where('MPE_Published', 1)
+    ->whereDate('MPE_FundedDate', '<=', now()->subMonths(9));
+$legacyTotal = $eligible()->count();
+$legacyRate = $legacyTotal > 0 ? (int) round($eligible()->where('MPE_Done', 1)->count() * 100 / $legacyTotal) : 0;
 check('sustainable rate matches',
     MicroProjectStatsQuery::make()->sustainableRate() === $legacyRate, (string) $legacyRate);
 

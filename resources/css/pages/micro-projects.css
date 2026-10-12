@@ -1,0 +1,488 @@
+/*
+ * /projects/micro-projects: the statistics band. Legacy #statistic-section
+ * and micro_page_new-test.css, measured on the running page. The legacy
+ * stylesheet tunes the photo's height by hand for a dozen width ranges so it
+ * lines up with the cards beside it; those values are kept as they are.
+ */
+@layer components {
+    /* ---- tablets and desktops ---------------------------------------- */
+
+    .micro-stats {
+        display: none;
+        margin: 9vw 0 1rem;
+
+        @media (width >= 576px) {
+            display: block;
+        }
+    }
+
+    .micro-stats__title {
+        padding: 2vw;
+        font-size: 2.8vw;
+        font-weight: 900;
+        color: #414042;
+
+        @media (768px <= width <= 1200px) {
+            font-size: 4vw;
+        }
+    }
+
+    .micro-stats__body {
+        max-width: 72.3vw;
+        margin: 0 auto;
+    }
+
+    /* The photos are grey until the pointer is over them. */
+    .micro-stats__photo {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: 0 center;
+        filter: grayscale(100%);
+        transition: filter 0.5s ease-in-out;
+
+        .micro-stats__photos:hover &,
+        .micro-stats__photos:active & {
+            filter: grayscale(0%);
+        }
+    }
+
+    /* Phones: the photo keeps its own proportions and the track clips it. */
+    .micro-stats__photo--natural {
+        height: auto;
+    }
+
+    .micro-stats__track {
+        height: 25.9vw;
+
+        @media (1850px <= width <= 1999px) { height: 24.6vw; }
+        @media (1700px <= width <= 1849px) { height: 25.2vw; }
+        @media (1500px <= width <= 1699px) { height: 25.9vw; }
+        @media (768px <= width <= 1200px) { height: 44vw; }
+        @media (1201px <= width <= 1300px) { height: 27vw; }
+        @media (1301px <= width <= 1400px) { height: 26.7vw; }
+        @media (1401px <= width <= 1500px) { height: 25.7vw; }
+        @media (width >= 2000px) { height: 22.9vw; }
+        @media (width >= 3500px) { height: 21.5vw; }
+        @media (width >= 3000px) { height: 21.8vw; }
+        @media (2750px <= width <= 2999px) { height: 22.1vw; }
+        @media (2500px <= width <= 2749px) { height: 22.45vw; }
+        @media (2250px <= width <= 2499px) { height: 22.6vw; }
+    }
+
+    /* The total and the sustainability rate */
+    .micro-stats__card {
+        display: flex;
+        flex: 1 0 0%;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 0 0.75rem;
+        text-align: center;
+        background-color: #f1f1f1;
+    }
+
+    .micro-stats__card--red {
+        padding-block: 3.8vw;
+        color: #fff;
+        background-color: #bc1818;
+    }
+
+    .micro-stats__figure {
+        position: relative;
+        margin: 0;
+        font-size: 4.3vw;
+        font-weight: 800;
+        line-height: 1;
+
+        @media (768px <= width <= 1200px) {
+            font-size: 7vw;
+            font-weight: 700;
+        }
+    }
+
+    .micro-stats__figure--red {
+        color: #bc1818;
+    }
+
+    .micro-stats__label {
+        margin-top: 0.5vw;
+        font-size: 1vw;
+        font-weight: 500;
+        line-height: 1;
+
+        @media (768px <= width <= 1200px) {
+            margin-top: 1vw;
+            font-size: 1.7vw;
+        }
+    }
+
+    .micro-stats__label--grey {
+        color: #808285;
+    }
+
+    /* The age gauges */
+    .micro-stats__ages {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        padding: 1rem;
+        background-color: #f1f1f1;
+    }
+
+    .micro-stats__ages-title {
+        width: 100%;
+        font-weight: 700;
+        color: #666;
+
+        @media (width >= 768px) {
+            margin-bottom: 1rem;
+        }
+
+        @media (width >= 1200px) {
+            margin-bottom: 0.5rem;
+        }
+
+        @media (width >= 2000px) {
+            margin-left: 2vw;
+            font-size: 1vw;
+        }
+    }
+
+    .micro-stats__gauge {
+        position: relative;
+        width: 5vw;
+        height: 5vw;
+    }
+
+    .micro-stats__gauge-share {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        display: flex;
+        align-items: baseline;
+        justify-content: center;
+        width: 100%;
+        font-weight: 700;
+        color: #bc1818;
+        transform: translate(-50%, -50%);
+    }
+
+    .micro-stats__gauge-number {
+        font-size: 1.13vw;
+
+        @media (768px <= width <= 1200px) {
+            font-size: 2vw;
+        }
+    }
+
+    .micro-stats__gauge-sign {
+        font-size: 0.7vw;
+
+        @media (768px <= width <= 1200px) {
+            font-size: 0.8vw;
+        }
+    }
+
+    .micro-stats__gauge-range {
+        margin-top: 0.2vw;
+        font-size: 0.85vw;
+        font-weight: 700;
+        letter-spacing: -0.05vw;
+        color: #666;
+
+        @media (768px <= width <= 1200px) {
+            margin-top: 1.4vw;
+            font-size: 1.6vw;
+        }
+    }
+
+    /* A row of city tiles, with a thin grey divider between neighbours */
+    .micro-stats__cities {
+        display: grid;
+        align-items: center;
+        text-align: center;
+    }
+
+    .micro-stats__cities--three {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .micro-stats__cities--four {
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    .micro-stats__city {
+        position: relative;
+        padding: 1.5625vw;
+        background-color: #f1f1f1;
+
+        @media (width >= 2000px) {
+            padding: 1.9vw;
+        }
+    }
+
+    .micro-stats__city-name {
+        font-size: 1.1vw;
+        font-weight: 750;
+        color: #808285;
+        text-transform: uppercase;
+
+        @media (768px <= width <= 1200px) {
+            font-size: 1.4vw;
+        }
+    }
+
+    .micro-stats__city-rule {
+        width: 1.5vw;
+        height: 0.2vw;
+        margin: 0.35vw auto;
+        background-color: #bc1818;
+
+        @media (768px <= width <= 1200px) {
+            width: 1.65vw;
+            height: 0.25vw;
+        }
+    }
+
+    .micro-stats__city-number {
+        font-size: 4vw;
+        font-weight: 800;
+        line-height: 1;
+        color: #808285;
+
+        @media (768px <= width <= 1200px) {
+            font-size: 4.5vw;
+        }
+    }
+
+    .micro-stats__city-projects {
+        font-size: 1vw;
+        font-weight: 700;
+        color: #808285;
+
+        @media (768px <= width <= 1200px) {
+            margin-top: 0.5vw;
+            font-size: 1.3vw;
+        }
+    }
+
+    .micro-stats__city-divider {
+        position: absolute;
+        top: 50%;
+        right: 0;
+        z-index: 1000;
+        width: 0.2vw;
+        height: 4.2vw;
+        background-color: #d8d8d8;
+        transform: translateY(-50%);
+
+        .micro-stats__cities--three & {
+            right: -2%;
+
+            @media (768px <= width <= 1200px) {
+                height: 5vw;
+            }
+        }
+
+        .micro-stats__cities--four > :nth-child(3) & {
+            right: -3%;
+        }
+    }
+
+    .micro-stats__categories {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 1.9vw 0.6vw 1.9vw 2.2vw;
+        color: #666;
+        background-color: #f1f1f1;
+
+        @media (768px <= width <= 1200px) {
+            padding: 1.9vw 0.5vw 1.9vw 1.8vw;
+        }
+
+        @media (width >= 2000px) {
+            padding: 2.2vw 0.6vw 2.2vw 2.4vw;
+        }
+    }
+
+    .micro-stats__categories-title {
+        margin-bottom: 0.2vw;
+        font-size: 0.8vw;
+        font-weight: 700;
+
+        @media (768px <= width <= 1200px) {
+            font-size: 1.1vw;
+        }
+    }
+
+    .micro-stats__categories-list {
+        margin: 0;
+        padding: 0;
+        font-size: 0.8vw;
+        font-weight: 800;
+        list-style: decimal inside;
+
+        @media (768px <= width <= 1200px) {
+            font-size: 1vw;
+        }
+    }
+
+    /* ---- phones -------------------------------------------------------- */
+
+    .micro-stats-phone {
+        margin-top: 13vw;
+        padding: 0 1rem;
+
+        @media (width >= 576px) {
+            display: none;
+        }
+    }
+
+    .micro-stats-phone__title {
+        padding: 1.5rem 2vw 2vw;
+        font-size: calc(1.3rem + 0.6vw);
+        font-weight: 900;
+        line-height: 1.5;
+        color: #414042;
+    }
+
+    .micro-stats-phone__grid {
+        margin: -0.5rem 0 1rem;
+        background-color: #fff;
+    }
+
+    .micro-stats-phone__pair {
+        display: flex;
+        gap: 0.5rem;
+
+        & > * {
+            flex: 1 0 0%;
+        }
+    }
+
+    .micro-stats-phone__pair--cities {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        row-gap: 0;
+
+        & > * {
+            margin-bottom: 0.5rem;
+        }
+    }
+
+    .micro-stats-phone__card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 0.5rem;
+    }
+
+    .micro-stats-phone__figure {
+        font-size: 9vw;
+        font-weight: 700;
+        line-height: 1;
+    }
+
+    .micro-stats-phone__label {
+        margin-top: 0.5rem;
+        font-size: 3.4vw;
+        line-height: 1;
+        text-align: center;
+    }
+
+    .micro-stats-phone__ages {
+        padding: 1rem;
+        background-color: #f1f1f1;
+    }
+
+    .micro-stats-phone__ages-title {
+        margin-bottom: 1rem;
+        font-size: 3.4vw;
+        font-weight: 700;
+        color: #666;
+    }
+
+    .micro-stats-phone__gauge {
+        position: relative;
+        width: 15vw;
+        height: 15vw;
+        margin: 0 auto;
+    }
+
+    .micro-stats-phone__gauge-share {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        font-size: 0.75rem;
+        font-weight: 800;
+        color: #bc1818;
+        transform: translate(-50%, -50%);
+    }
+
+    .micro-stats-phone__small {
+        font-size: 2.8vw;
+        font-weight: 700;
+        color: #666;
+    }
+
+    .micro-stats-phone__city {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+        text-align: center;
+        background-color: #f1f1f1;
+    }
+
+    .micro-stats-phone__city-name {
+        font-size: 4.4vw;
+        font-weight: 750;
+        color: #808285;
+        text-transform: uppercase;
+    }
+
+    .micro-stats-phone__city-rule {
+        width: 5.2vw;
+        height: 0.85vw;
+        margin: 0.8vw 1.2vw 1.8vw;
+        background-color: #bc1818;
+    }
+
+    .micro-stats-phone__city-number {
+        font-size: 8.5vw;
+        font-weight: 800;
+        line-height: 1;
+        color: #808285;
+    }
+
+    .micro-stats-phone__city-projects {
+        font-size: 3vw;
+        font-weight: 700;
+        color: #808285;
+    }
+
+    .micro-stats-phone__categories {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 4vw 2.7vw 4vw 8vw;
+        background-color: #f1f1f1;
+    }
+
+    .micro-stats-phone__list {
+        margin: 0;
+        padding-left: 1rem;
+        font-size: 2.8vw;
+        font-weight: 700;
+        line-height: 1.25;
+        color: #666;
+        list-style: decimal;
+    }
+}

@@ -58,14 +58,17 @@ class MicroProjectStatsQuery
             ->sum('FamilyMembers');
     }
 
+    /** How many categories the page lists. */
+    private const TOP_CATEGORIES = 5;
+
     /**
-     * Project count per sub-category name.
+     * The most used sub-categories, biggest first.
      * Note MPE_Done is 1 only here, unlike the city counts which allow 1 or 2 —
      * that difference is carried over from the legacy queries as-is.
      *
      * @return Collection<int, \stdClass>
      */
-    public function countsByCategory(): Collection
+    public function topCategories(): Collection
     {
         return collect(
             DB::table('projects')
@@ -75,6 +78,11 @@ class MicroProjectStatsQuery
                 ->where('projects.MPE_Done', 1)
                 ->whereNotIn('projects.SubCategory_ID', self::EXCLUDED_SUBCATEGORIES)
                 ->groupBy('subcategory.Name')
+                ->havingRaw('subcategory.Name is not null')
+                ->orderByDesc('project_count')
+                // Tied counts had no fixed order in legacy; name gives them one.
+                ->orderBy('subcategory.Name')
+                ->limit(self::TOP_CATEGORIES)
                 ->get()
         );
     }
@@ -106,19 +114,17 @@ class MicroProjectStatsQuery
     }
 
     /**
-     * Percentage of published projects that were funded long enough ago to
-     * count as sustainable, rounded to a whole number.
+     * Of the published projects funded at least nine months ago, the
+     * percentage still marked done, as a whole number. 0 when none are that old.
      */
     public function sustainableRate(): int
     {
-        $sustainable = Project::query()
+        $eligible = Project::query()
             ->where('MPE_Published', 1)
-            ->where('MPE_Done', 1)
-            ->whereRaw('MPE_FundedDate <= DATE_SUB(now(), INTERVAL ? MONTH)', [self::SUSTAINABLE_AFTER_MONTHS])
-            ->count();
+            ->whereDate('MPE_FundedDate', '<=', now()->subMonths(self::SUSTAINABLE_AFTER_MONTHS));
 
-        $published = Project::query()->where('MPE_Published', '<>', 0)->count();
+        $total = (clone $eligible)->count();
 
-        return $published === 0 ? 0 : (int) round($sustainable * 100 / $published);
+        return $total === 0 ? 0 : (int) round((clone $eligible)->where('MPE_Done', 1)->count() * 100 / $total);
     }
 }

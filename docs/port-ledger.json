@@ -1700,9 +1700,9 @@
             "action": "PublicController@micro_project_new_test",
             "name": "new.public.micro_project_test",
             "order": 15,
-            "status": "pending",
-            "notes": "First port (Phase 0) is behind legacy: search, image order and typeahead changed since. Redo in Phase 1.",
-            "ported_from": null,
+            "status": "ported",
+            "notes": "Visitor view ported: brief, statistics, funders, sign-in gate, micro footer. The member project list and map, and the sign-in itself, come with the members phase (plan Phase 2 step 6).",
+            "ported_from": "6d45ef9",
             "live_status": "200",
             "examples": [
                 {

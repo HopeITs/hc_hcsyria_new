@@ -50,4 +50,48 @@
         font-size: 2.5vw;
         font-weight: 900;
     }
+
+    /* The smaller type of the programme pages (micro-projects, ...). */
+    .page-title--compact {
+        & .page-title__text {
+            @media (width < 576px) {
+                line-height: 2.1vw;
+            }
+        }
+
+        & .page-title__line {
+            font-size: 1.08vw;
+
+            @media (width < 576px) {
+                font-size: 1.2vw;
+            }
+        }
+
+        & .page-title__line--strong {
+            font-size: 2.5vw;
+
+            @media (width < 576px) {
+                font-size: 2.65vw;
+            }
+        }
+    }
+
+    /* The right half, when it holds a logo: pushed to the bottom-right corner. */
+    .page-title__aside {
+        display: flex;
+        flex: 1 1 0%;
+        align-items: flex-end;
+        justify-content: flex-end;
+        padding-right: 0.75rem;
+    }
+
+    .page-title__logo {
+        display: block;
+        width: 12vw;
+        vertical-align: initial;
+
+        @media (width < 576px) {
+            width: 14vw;
+        }
+    }
 }

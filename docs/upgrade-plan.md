@@ -44,7 +44,8 @@ Public side first; the admin dashboard comes after (decided 2026-10-09).
 | Every error page (401 403 404 419 429 500 503 + any 4xx/5xx) | **Done** — see §9, Error pages |
 | Home page `/home` | **Done** — matches legacy at 375/768/1440/1920px (≤0.45% of pixels) and as a phone (0.23%); 18 interactive nav states; scroll switch and preloader behaviour checked; 63 tests |
 | Who we are `/who-we-are` (+ `/who-we-are/partners`) | **Done** — matches legacy at 375/768/1440/1920px (≤0.32%) and as a phone (0.42%); desktop and tablet nav states pass, the phone ones differ only in text anti-aliasing (every box identical); 70 tests. New shared pieces: carousel, page title, red rule, section title, torn edge, showcase, partner logos |
-| Footer variants (micro-projects, children, DISC, LEAP) | Next, with their pages |
+| Micro-projects `/projects/micro-projects` (visitor view) | **Done** — matches legacy at 375/768/1440/1920px (≤0.41%) and as a phone (0.42%); all 9 nav states; 79 tests. Brief, statistics (Chart.js replaced by an SVG ring), funders, sign-in gate and the micro footer. The member project list and map, and the sign-in itself, wait for the members phase |
+| Footer variants (micro-projects done; children, DISC, LEAP) | The shared `site.footer.bar` and `site.footer.centers` are ready for the three that remain, with their pages |
 | The 30 public pages | Next |
 
 Found on the way: the Phase 0 migration guard did not run under

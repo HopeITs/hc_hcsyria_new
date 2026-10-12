@@ -1,0 +1,72 @@
+/*
+ * A programme's funders: "Our Partners", then rows of logos under thin
+ * labelled dividers. Legacy project-partners-section (its inline <style>)
+ * and the donor-logo width classes in main-new.css.
+ */
+@layer components {
+    .funders {
+        margin-top: 13vw;
+
+        @media (width >= 576px) {
+            margin-top: 9vw;
+        }
+    }
+
+    .funders__divider {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 2vw 0;
+    }
+
+    .funders__line {
+        flex-grow: 1;
+        width: 100px;
+        height: 1px;
+        background-color: #ccc;
+    }
+
+    .funders__label {
+        padding: 0 1rem;
+        font-size: 2.4vw;
+        font-weight: 700;
+        color: #aaa;
+
+        @media (width >= 579px) {
+            font-size: 1vw;
+        }
+    }
+
+    .funders__logos {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5vw;
+        align-items: center;
+        justify-content: center;
+
+        @media (width >= 579px) {
+            flex-wrap: nowrap;
+        }
+    }
+
+    .funder-logo {
+        display: flex;
+        width: 9vw;
+        text-align: end;
+
+        @media (width >= 576px) {
+            width: 4vw;
+        }
+    }
+
+    .funder-logo--missio { width: 15vw; @media (width >= 576px) { width: 9.3vw; } }
+    .funder-logo--kerk { width: 17vw; @media (width >= 576px) { width: 6.3vw; } }
+    .funder-logo--louvre { width: 10.3vw; height: 8vw; @media (width >= 576px) { width: 5.3vw; height: auto; } }
+    .funder-logo--hungary { width: 10vw; @media (width >= 576px) { width: 5vw; } }
+
+    /* Under the members-only gate the strip sits closer. */
+    .funders--after-gate {
+        margin-top: clamp(1rem, 2vw, 2.5rem);
+    }
+}

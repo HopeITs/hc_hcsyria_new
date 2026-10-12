@@ -164,4 +164,81 @@
         border: 0;
         cursor: pointer;
     }
+
+    /* The wide screens' footer sits directly under a section title instead of carrying its own top margin. */
+    .site-footer--flush {
+        margin-top: 0;
+    }
+
+    /* .footer-top: the grey strip of centres above the red bands */
+    .site-footer__top {
+        padding: 0 2vw;
+        color: #616262;
+        background-color: #f7f7f7;
+    }
+
+    /* .footer-border: a grey rule down the left of one centre */
+    .site-footer__center {
+        padding-left: 0.5vw;
+        border-left: 2px solid #61606047;
+    }
+
+    .site-footer__center-title,
+    .site-footer__center-phone {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.8vw;
+        color: #616262;
+        column-gap: 0.5vw;
+
+        @media (width >= 576px) {
+            justify-content: flex-start;
+            font-size: 1.1vw;
+        }
+    }
+
+    .site-footer__center-title {
+        font-weight: 900;
+        letter-spacing: 0.01vw;
+    }
+
+    .site-footer__center-phone {
+        font-weight: 700;
+    }
+
+    .site-footer__center-city {
+        font-size: inherit;
+        color: #bc1818;
+    }
+
+    .site-footer__center-link {
+        display: flex;
+        align-items: center;
+        font-weight: 400;
+        letter-spacing: 0.02vw;
+        color: #616262;
+        cursor: pointer;
+    }
+
+    .site-footer__center-icon {
+        width: 2vw;
+        height: 2vw;
+        margin-right: 1vw;
+        cursor: pointer;
+
+        @media (width >= 576px) {
+            width: 0.7vw;
+            height: 0.7vw;
+            margin-right: 0.5vw;
+        }
+    }
+
+    /* footerline.svg: the short rule between centres on phones */
+    .site-footer__rule {
+        display: inline;
+        width: 100%;
+        height: 4vw;
+        vertical-align: baseline;
+    }
 }
