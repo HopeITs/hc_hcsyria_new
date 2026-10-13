@@ -1136,9 +1136,9 @@
             "action": "PublicController@disc",
             "name": "public.disc_home",
             "order": 18,
-            "status": "pending",
-            "notes": null,
-            "ported_from": null,
+            "status": "ported",
+            "notes": "Search box was commented out of the legacy page; ?search= is not ported. Learner rings are SVG (amCharts dropped); figures still come from get_statistics().",
+            "ported_from": "6d45ef9",
             "live_status": "200",
             "examples": [
                 {

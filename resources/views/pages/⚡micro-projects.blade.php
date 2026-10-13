@@ -59,7 +59,7 @@ new #[Layout('layouts::app', [
 };
 ?>
 
-<div id="Micro" class="page-start">
+<div id="Micro" class="page-start" style="--brief-gap: 2vw">
     <x-site.page-title compact title="BE SUCCESSFUL & INSPIRE OTHERS TO BE" subtitle="MICRO PROJECTS">
         <img class="reveal page-title__logo" style="--reveal-ms: 1000ms" x-reveal src="/images/logos/micro.svg" alt="Micro Projects">
     </x-site.page-title>

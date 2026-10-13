@@ -68,6 +68,8 @@
 
     <x-dynamic-component :component="'site.footer.'.$footer"/>
 
+    <x-ui.lightbox/>
+
     @livewireScripts
 </body>
 </html>

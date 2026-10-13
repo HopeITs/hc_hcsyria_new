@@ -1,0 +1,16 @@
+/*
+ * The accent colour of a page: the red of the brand unless a programme has
+ * its own. Components that take the programme's colour (section titles, the
+ * brief's heading, selected tabs, buttons on hover, the footer's town names)
+ * read var(--accent); a page, or a footer, picks its colour with a class.
+ */
+@layer base {
+    :root {
+        --accent: #bc1818;
+    }
+
+    /* DISC (and Study Zone, Children University): the dark blue of the DISC logo */
+    .accent-disc {
+        --accent: #063c54;
+    }
+}

@@ -1,0 +1,208 @@
+/*
+ * A wide photo with round buttons over its bottom edge; pointing at one
+ * darkens the photo and shows that category's text over it. Legacy
+ * #categories-section, .categories-img, .overlay, .categories-content and
+ * .category (main-new.css, disc_new.css), measured on /projects/disc.
+ * The colour of the selected button follows the page's --accent.
+ */
+@layer components {
+    .category-showcase {
+        position: relative;
+        margin: 9vw 0 7vw;
+
+        @media (width < 576px) {
+            height: 55vw;
+            margin: 15vw 0 12vw;
+            padding-bottom: 12vw;
+        }
+    }
+
+    .category-showcase__photo {
+        display: inline;
+        width: 100%;
+        height: 35vw;
+        margin-top: 0.5vw;
+        object-fit: cover;
+        vertical-align: initial;
+
+        @media (width < 576px) {
+            height: 55vw;
+        }
+    }
+
+    .category-showcase__edge {
+        bottom: 0.2vw;
+        z-index: 1;
+    }
+
+    /* The dark gradient that slides over the photo while a button is pointed at */
+    .category-showcase__panel {
+        position: absolute;
+        right: 0;
+        bottom: 0.3vw;
+        left: 0;
+        width: 0;
+        height: 98%;
+        overflow: hidden;
+        background: linear-gradient(to right, rgb(65 64 66 / 0.95) 0%, rgb(65 64 66 / 0.8) 50%, rgb(65 64 66 / 0.4) 100%);
+        transition: 0.5s;
+
+        .category-showcase:has(.category-showcase__item:hover) & {
+            width: 100%;
+        }
+    }
+
+    .category-showcase__heading {
+        position: absolute;
+        top: 5vw;
+        width: 100%;
+        font-size: 2.5vw;
+        font-weight: 900;
+        color: #fff;
+        text-align: center;
+        text-transform: uppercase;
+        visibility: hidden;
+
+        .category-showcase:has(.category-showcase__item:hover) & {
+            visibility: visible;
+        }
+
+        @media (width < 576px) {
+            font-size: 4vw;
+        }
+    }
+
+    .category-showcase__text {
+        position: absolute;
+        top: 21vw;
+        left: 35%;
+        width: stretch;
+        font-size: 1.5rem;
+        color: #fff;
+        white-space: nowrap;
+        transform: translate(-50%, -50%);
+    }
+
+    .category-showcase__text--wide {
+        @media (width < 576px) {
+            display: none;
+        }
+    }
+
+    .category-showcase__text--narrow {
+        top: 31vw;
+        left: 50%;
+
+        @media (width >= 576px) {
+            display: none;
+        }
+    }
+
+    .category-showcase__title {
+        padding-right: 1vw;
+        padding-left: 1vw;
+        font-size: 2vw;
+        font-weight: 900;
+        color: #fff;
+        background: none;
+
+        @media (width < 576px) {
+            font-size: 3vw;
+        }
+    }
+
+    .category-showcase__desc {
+        padding: 1vw;
+        margin-bottom: 2.3vw;
+        font-size: 1vw;
+        line-height: 1.7vw;
+        color: #ccc;
+        background: none;
+
+        @media (width < 576px) {
+            margin-bottom: 4vw;
+            font-size: 2.3vw;
+            line-height: 3.4vw;
+            text-align: center;
+        }
+    }
+
+    .category-showcase__buttons {
+        position: absolute;
+        top: 26vw;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+
+        & ul {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding-left: 0;
+            margin-top: 0.15vw;
+            margin-bottom: 0;
+            line-height: 1.3vw;
+            list-style: none;
+        }
+
+        @media (width < 576px) {
+            top: 42vw;
+        }
+    }
+
+    /* .category: the ring, with a shadow; .inner-circle: the disc inside it */
+    .category-showcase__item {
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 11vw;
+        height: 11vw;
+        margin: 3vw;
+        font-size: 1.2vw;
+        font-weight: 700;
+        color: #616262;
+        text-align: center;
+        cursor: pointer;
+        background: #fff;
+        filter: drop-shadow(0 6px 6px gray);
+        border-radius: 50%;
+
+        &:hover,
+        &.is-selected {
+            color: #fff;
+            background-color: var(--accent);
+        }
+
+        @media (width < 576px) {
+            width: 17vw;
+            height: 17vw;
+            margin: 4vw 1.3vw;
+            font-size: 2vw;
+        }
+    }
+
+    .category-showcase__button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 10vw;
+        height: 10vw;
+        color: inherit;
+        background: #fff;
+        border-radius: 50%;
+
+        .category-showcase__item:hover &,
+        .category-showcase__item.is-selected & {
+            background-color: var(--accent);
+        }
+
+        @media (width < 576px) {
+            width: 16vw;
+            height: 14vw;
+            font-size: 2vw;
+            line-height: 3vw;
+        }
+    }
+}

@@ -1,0 +1,24 @@
+/*
+ * The map of Syria's governorates (legacy #citiesMap and .land, disc_new.css
+ * and the inline <style> of the svg): grey land, the governorates a page
+ * lets you pick in a lighter grey, the chosen one in the page's accent.
+ * Legacy also drew the outline in over five seconds, but with a stroke of
+ * 0px, so that was never seen and is not kept.
+ */
+@layer components {
+    .syria-map {
+        display: block;
+        width: 100%;
+        fill: #616262;
+    }
+
+    .syria-map__land.is-pickable {
+        fill: #b2b2b2;
+        cursor: pointer;
+
+        &.is-active {
+            fill: var(--accent);
+            transition: 0.5s;
+        }
+    }
+}

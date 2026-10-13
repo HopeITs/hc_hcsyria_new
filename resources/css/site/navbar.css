@@ -8,6 +8,11 @@
  */
 @layer components {
     /* .navbar.fixed-top.page-padding */
+    /* Hidden while a page scrolls between two sections (resources/js/hide-nav-between.js) */
+    .site-nav--hidden {
+        display: none;
+    }
+
     .site-nav {
         position: fixed;
         top: 0;

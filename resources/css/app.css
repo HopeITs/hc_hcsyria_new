@@ -13,6 +13,7 @@
 @import './ui/page-title.css';
 @import './ui/red-rule.css';
 @import './ui/section-title.css';
+@import './ui/accent.css';
 @import './ui/showcase.css';
 @import './ui/torn-edge.css';
 @import './ui/partner-logos.css';
@@ -21,6 +22,14 @@
 @import './ui/radial-gauge.css';
 @import './ui/locked-gate.css';
 @import './ui/funders.css';
+@import './ui/pagination.css';
+@import './ui/lightbox.css';
+@import './ui/activity-tabs.css';
+@import './ui/activity-card.css';
+@import './ui/centre-statistics.css';
+@import './ui/syria-map.css';
+@import './ui/testimonials.css';
+@import './ui/category-showcase.css';
 @import './pages/home.css';
 @import './pages/who-we-are.css';
 @import './pages/micro-projects.css';

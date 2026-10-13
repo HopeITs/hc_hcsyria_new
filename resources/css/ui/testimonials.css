@@ -1,0 +1,112 @@
+/*
+ * Testimonies: a grey card per story with the speaker's round photo
+ * straddling its top edge. Legacy #testimonies-body, #carouselTestemonies
+ * and .card-height (main-new.css), measured on /projects/disc. The blue is
+ * the one these cards use on every programme page.
+ */
+@layer components {
+    .testimonials__title {
+        margin-top: 16vw;
+
+        @media (width < 576px) {
+            margin-top: 26vw;
+        }
+    }
+
+    .testimonials {
+        height: auto;
+        margin-top: 5vw;
+        margin-bottom: -3vw;
+
+        & .carousel__dots {
+            bottom: 4vw;
+
+            @media (width < 576px) {
+                bottom: -3vw;
+            }
+        }
+
+        @media (width < 576px) {
+            margin-top: 9vw;
+            margin-bottom: 5vw;
+        }
+    }
+
+    .testimonials__track {
+        height: 35vw;
+
+        @media (width < 576px) {
+            height: 57vw;
+        }
+    }
+
+    .testimonials__profile {
+        position: relative;
+        z-index: 1000;
+
+        & img {
+            display: inline;
+            width: 13vw;
+            padding: 0.5vw;
+            object-fit: cover;
+            vertical-align: initial;
+            background: #fff;
+            border: 3px solid #023c54;
+            border-radius: 50%;
+
+            @media (width < 576px) {
+                width: 20vw;
+            }
+        }
+    }
+
+    .testimonials__card {
+        position: relative;
+        width: 100%;
+        height: 19vw;
+        padding: 0 14vw 3vw;
+        margin-top: 3vw;
+        background: #f4f4f4;
+
+        @media (width < 576px) {
+            height: 45vw;
+        }
+    }
+
+    .testimonials__quote {
+        position: absolute;
+        top: 12.5vw;
+        right: 0;
+        width: 100%;
+        padding: 0 10vw;
+        object-fit: cover;
+        vertical-align: initial;
+
+        @media (width < 576px) {
+            top: 30vw;
+        }
+    }
+
+    .testimonials__name {
+        margin-top: 5vw;
+        margin-bottom: 1vw;
+        font-size: 1.5vw;
+        font-weight: 600;
+        color: #023c54;
+
+        @media (width < 576px) {
+            margin-top: 11vw;
+            font-size: 2.3vw;
+        }
+    }
+
+    .testimonials__text {
+        font-size: 1.2vw;
+        color: #676767;
+        text-align: left;
+
+        @media (width < 576px) {
+            font-size: 2.2vw;
+        }
+    }
+}

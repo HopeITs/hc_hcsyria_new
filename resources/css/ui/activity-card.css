@@ -1,0 +1,114 @@
+/*
+ * One activity in a programme's list: photos on one side, text on the
+ * other, on a grey band. Legacy .card-height, .single-card, .card-title,
+ * .card-content and .readmore-btn (main-new.css, disc_new.css), measured
+ * on /projects/disc. The title and the hover colour follow the page's --accent.
+ */
+@layer components {
+    .activity-card {
+        background: #f4f4f4;
+    }
+
+    .activity-card__inner {
+        margin: 3% 17.5% 1%;
+
+        @media (width < 576px) {
+            padding-bottom: 7vw;
+        }
+    }
+
+    .activity-card__carousel {
+        height: 21vw;
+
+        @media (width < 576px) {
+            height: 40vw;
+        }
+    }
+
+    .activity-card__track {
+        height: 21vw;
+
+        @media (width < 576px) {
+            height: 40vw;
+        }
+    }
+
+    .activity-card__text {
+        padding-left: 0.6vw;
+    }
+
+    .activity-card__text--flipped {
+        padding-right: 0.6vw;
+        padding-left: 0;
+    }
+
+    .activity-card__title {
+        margin-bottom: 0.5rem;
+        font-size: 1.3vw;
+        font-weight: 900;
+        color: var(--accent);
+
+        @media (width < 576px) {
+            margin-top: 1vw;
+            font-size: 3.3vw;
+        }
+    }
+
+    .activity-card__video {
+        display: inline;
+        height: 1.3vw;
+        cursor: pointer;
+
+        &:hover {
+            filter: grayscale(1);
+        }
+
+        @media (width < 576px) {
+            height: 4vw;
+        }
+    }
+
+    .activity-card__rule {
+        height: 0.7vw;
+        margin-bottom: 0.7vw;
+        border-bottom: 1px solid #b2b2b2;
+
+        @media (width < 576px) {
+            margin-bottom: 2vw;
+        }
+    }
+
+    .activity-card__content {
+        font-size: 1.1vw;
+        font-weight: 400;
+        line-height: 1.5vw;
+        color: #616262;
+
+        @media (width < 576px) {
+            font-size: 3vw;
+            line-height: 4vw;
+        }
+    }
+
+    .activity-card__more {
+        position: absolute;
+        bottom: 1vw;
+        padding: 0.5% 3%;
+        font-size: 1vw;
+        color: #616262;
+        background: transparent;
+        border: 0.15vw solid #b2b2b2;
+
+        &:hover,
+        &:focus {
+            color: #fff;
+            background: var(--accent);
+            border: 2px solid var(--accent);
+        }
+
+        @media (width < 576px) {
+            bottom: -6vw;
+            font-size: 2.2vw;
+        }
+    }
+}

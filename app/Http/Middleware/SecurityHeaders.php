@@ -79,7 +79,8 @@ class SecurityHeaders
             'img-src' => ["'self'", 'data:', 'blob:'],
             'font-src' => array_filter(["'self'", 'data:', $devServer]),
             'connect-src' => array_filter(["'self'", $devServer, $this->webSocketOrigin($devServer)]),
-            'frame-src' => ["'self'"],
+            // Programme videos, embedded from YouTube's cookieless host.
+            'frame-src' => ["'self'", 'https://www.youtube-nocookie.com'],
             'worker-src' => ["'self'"],
             'manifest-src' => ["'self'"],
             'object-src' => ["'none'"],

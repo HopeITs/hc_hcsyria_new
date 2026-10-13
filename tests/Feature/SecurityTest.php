@@ -25,10 +25,12 @@ it('sends the headers on error responses too', function () {
     $this->get('/no-such-page')->assertNotFound()->assertHeader('X-Content-Type-Options', 'nosniff');
 });
 
-it('allows no third-party origin in the CSP', function () {
-    $csp = $this->get('/projects/micro-projects')->headers->get('Content-Security-Policy');
+it('allows no third-party origin in the CSP but YouTube\'s cookieless player, in frames only', function () {
+    $csp = (string) $this->get('/projects/micro-projects')->headers->get('Content-Security-Policy');
+    $frames = "frame-src 'self' https://www.youtube-nocookie.com;";
 
-    expect((string) $csp)->not->toMatch('#https?://#');
+    expect($csp)->toContain($frames)
+        ->and(str_replace($frames, '', $csp))->not->toMatch('#https?://#');
 });
 
 it('serves fonts from this origin only, preloading body text', function () {

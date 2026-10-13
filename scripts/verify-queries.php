@@ -17,12 +17,14 @@ use App\Models\WhatCategory;
 use App\Queries\ActivityLogQuery;
 use App\Queries\AdminProjectListQuery;
 use App\Queries\CategoryQuery;
+use App\Queries\InitiativeListQuery;
 use App\Queries\InitiativeTitleListQuery;
 use App\Queries\MicroProjectStatsQuery;
 use App\Queries\PartnerQuery;
 use App\Queries\ProjectPageQuery;
 use App\Queries\ProjectSearch;
 use App\Queries\StudyZoneCenterQuery;
+use App\Queries\SuccessQuery;
 use App\Queries\TeamMemberQuery;
 use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Support\Facades\DB;
@@ -314,6 +316,23 @@ $legacyMedia = DB::connection('legacy')->table('hope_projects_media')->where('pr
 $brief = ProjectPageQuery::brief(10);
 check('micro brief and its media, in media order',
     $brief->name === $legacyBrief->name && $brief->hopeProjectMedia->pluck('mediaURL')->all() === $legacyMedia);
+
+/* ===================================================================== */
+echo "\nInitiativeListQuery, SuccessQuery  vs  PublicController::disc()\n";
+/* ===================================================================== */
+
+foreach ([[3, 'ini_A', true], [1, 'ini_H', false], [2, 'ini_D', false]] as [$place, $page, $byDate]) {
+    $legacyIds = DB::connection('legacy')->table('initiatives')->where('what_category_id', '5')->where('sub_what_category_id', '8')
+        ->where('online', '1')->where('place_id', $place)
+        ->orderByDesc($byDate ? 'created_at' : 'id')->limit(5)->pluck('id')->map(fn ($v) => (int) $v)->all();
+    check("DISC activities, place $place, first page in legacy order",
+        InitiativeListQuery::forPlace(5, 8, $place, $page, $byDate)->pluck('id')->map(fn ($v) => (int) $v)->all() === $legacyIds);
+}
+
+$legacyStories = DB::connection('legacy')->table('successes')->where('Sub_what_category_id', 16)->where('what_category_id', '5')
+    ->where('online', '1')->orderByDesc('id')->limit(4)->pluck('id')->map(fn ($v) => (int) $v)->all();
+check('DISC testimonies, newest four',
+    SuccessQuery::latest(5, 16, 4)->pluck('id')->map(fn ($v) => (int) $v)->all() === $legacyStories);
 
 /* ===================================================================== */
 

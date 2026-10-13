@@ -1,0 +1,31 @@
+/*
+ * The pager under a list of activities. Legacy: Laravel's Bootstrap pager
+ * with .page-link restyled in main-new.css (grey numbers, the current one
+ * in the page's accent colour).
+ */
+@layer components {
+    .pager {
+        display: flex;
+        padding-left: 0;
+        list-style: none;
+
+        @media (width < 576px) {
+            margin-top: 9vw;
+        }
+    }
+
+    .pager__link {
+        display: block;
+        padding: 0 0.3vw;
+        font-size: 1vw;
+        color: #616262;
+
+        @media (width < 576px) {
+            font-size: 2.5vw;
+        }
+
+        .pager__item.is-current & {
+            color: var(--accent);
+        }
+    }
+}

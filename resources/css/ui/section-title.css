@@ -1,13 +1,15 @@
 /*
  * A section's name in bold red, sitting on a white patch over the bottom of
- * the red bar above it. Legacy .section-title (main-new.css, 14 pages).
+ * the red bar above it. Legacy .section-title (main-new.css, 14 pages). The
+ * z-index only counts where the title is a flex item (it usually is), as there.
  */
 @layer components {
     .section-title {
         padding: 2.3vw;
         font-size: 3.8vw;
         font-weight: 900;
-        color: #bc1818;
+        z-index: 1000;
+        color: var(--accent);
         background: #fff;
 
         @media (width >= 576px) {

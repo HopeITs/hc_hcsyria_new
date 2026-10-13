@@ -209,7 +209,7 @@
 
     .site-footer__center-city {
         font-size: inherit;
-        color: #bc1818;
+        color: var(--accent);
     }
 
     .site-footer__center-link {

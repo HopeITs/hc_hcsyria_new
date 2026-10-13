@@ -28,7 +28,12 @@ export default ({ count, interval = 5000, pause = true, keys = false } = {}) => 
     leaveTimer: null,
 
     init() {
-        this.restart();
+        // Bootstrap's data-api started the timer when the window had loaded, not before.
+        if (document.readyState === 'complete') {
+            this.restart();
+        } else {
+            addEventListener('load', () => this.restart(), { once: true });
+        }
     },
 
     restart() {

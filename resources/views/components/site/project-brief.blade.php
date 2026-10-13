@@ -9,11 +9,16 @@
     The description is plain text in the database; tags are stripped rather
     than trusted, so an editor's stray markup cannot reach the page.
 
-    Not ported yet: the YouTube variant (a programme whose media is a video)
-    and Family to Family's mirrored layout, which come with those pages.
+    A programme whose media includes a video shows the video instead of the
+    photos, from YouTube's cookieless host (the address in the database is
+    youtube.com; the page it is allowed to frame is the privacy one).
+
+    Not ported yet: Family to Family's mirrored layout, which comes with that page.
 --}}
 @php
     $photos = $project->hopeProjectMedia->where('mediaType', 'image')->values();
+    $video = $project->hopeProjectMedia->firstWhere('mediaType', 'video')?->mediaURL;
+    $video = $video ? str_replace('://www.youtube.com/', '://www.youtube-nocookie.com/', $video) : null;
 @endphp
 
 <section class="project-brief">
@@ -40,19 +45,25 @@
 
                 <div class="project-brief__media flex w-full justify-start sm:w-1/2">
                     <x-ui.reveal :ms="600" class="project-brief__frame">
-                        <x-ui.carousel :count="$photos->count()" :interval="5000">
-                            <x-ui.carousel.track class="project-brief__track">
-                                @foreach ($photos as $i => $photo)
-                                    <x-ui.carousel.item :i="$i" slide>
-                                        <img class="block h-full w-full object-cover" src="{{ $photo->mediaURL }}" alt="">
-                                    </x-ui.carousel.item>
-                                @endforeach
+                        @if ($video)
+                            <iframe class="project-brief__video" src="{{ $video }}" title="{{ $project->name }}" loading="lazy"
+                                    allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                    allowfullscreen></iframe>
+                        @else
+                            <x-ui.carousel :count="$photos->count()" :interval="5000">
+                                <x-ui.carousel.track class="project-brief__track">
+                                    @foreach ($photos as $i => $photo)
+                                        <x-ui.carousel.item :i="$i" slide>
+                                            <img class="block h-full w-full object-cover" src="{{ $photo->mediaURL }}" alt="">
+                                        </x-ui.carousel.item>
+                                    @endforeach
 
-                                <x-ui.carousel.controls/>
-                            </x-ui.carousel.track>
+                                    <x-ui.carousel.controls/>
+                                </x-ui.carousel.track>
 
-                            <x-ui.carousel.dots :count="$photos->count()"/>
-                        </x-ui.carousel>
+                                <x-ui.carousel.dots :count="$photos->count()"/>
+                            </x-ui.carousel>
+                        @endif
 
                         <img class="torn-edge project-brief__edge" src="/images/home/image-mask.png" alt="">
                     </x-ui.reveal>

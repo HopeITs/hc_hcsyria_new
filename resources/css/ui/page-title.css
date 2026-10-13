@@ -76,6 +76,17 @@
         }
     }
 
+    /* No first line: one line, a little smaller than the usual second. */
+    .page-title--solo {
+        & .page-title__text {
+            line-height: 1.8vw;
+        }
+
+        & .page-title__line--strong {
+            font-size: 1.9vw;
+        }
+    }
+
     /* The right half, when it holds a logo: pushed to the bottom-right corner. */
     .page-title__aside {
         display: flex;
@@ -85,13 +96,14 @@
         padding-right: 0.75rem;
     }
 
+    /* A page that wants another size sets --logo-width (and --logo-width-phone) on its wrapper. */
     .page-title__logo {
         display: block;
-        width: 12vw;
+        width: var(--logo-width, 12vw);
         vertical-align: initial;
 
         @media (width < 576px) {
-            width: 14vw;
+            width: var(--logo-width-phone, 14vw);
         }
     }
 }
