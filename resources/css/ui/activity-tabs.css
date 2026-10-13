@@ -39,8 +39,9 @@
         color: #676463;
         cursor: pointer;
         background: none;
-        border: 1px solid transparent;
-        border-bottom-color: #dee2e600;
+        border: 1px solid;
+        border-color: #dee2e6 #dee2e6 #dee2e600;
+        border-radius: 0.25rem 0.25rem 0 0;
 
         &.is-active {
             font-weight: 700;
