@@ -14,8 +14,10 @@ use Livewire\Component;
  * PublicController::micro_project_new_test() at legacy commit 6d45ef9.
  *
  * Visitors get the brief, the statistics and, where members see the project
- * list and map, a sign-in gate. The list, the map and the sign-in itself come
- * with the members' phase (upgrade plan, Phase 2 step 6).
+ * list and map, a sign-in gate (Fortify's POST /login; an account sees the
+ * members' section when it passes the 'view-micro-projects' gate). The list
+ * and map themselves are still to port (upgrade plan, Phase 2 step 6), so for
+ * a member the gate is simply gone for now.
  *
  * Not ported: the Facebook SDK the page loaded and never used, the edition
  * and donor lists the controller passed and the view ignored, and the three
@@ -76,7 +78,9 @@ new #[Layout('layouts::app', [
 
     <div class="locked-section">
         <div class="locked-section__rule"></div>
-        <x-site.locked-gate/>
+        @cannot('view-micro-projects')
+            <x-site.locked-gate/>
+        @endcannot
         <div class="locked-section__rule"></div>
         <x-site.funders :ongoing="$ongoing" :previous="$previous" class="funders--after-gate"/>
     </div>

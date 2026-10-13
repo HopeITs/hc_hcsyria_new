@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Queries\MemberAccessQuery;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Console\Events\CommandStarting;
 use Illuminate\Contracts\Console\Kernel as ConsoleKernel;
@@ -9,6 +10,7 @@ use Illuminate\Database\Events\MigrationsStarted;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
@@ -64,6 +66,13 @@ class AppServiceProvider extends ServiceProvider
         $this->configureRateLimiting();
         $this->throttleLivewireUpdates();
         $this->guardLiveDatabases();
+        $this->defineGates();
+    }
+
+    /* The members' section of /projects/micro-projects (the project list and map). */
+    private function defineGates(): void
+    {
+        Gate::define('view-micro-projects', MemberAccessQuery::mayViewMicroProjects(...));
     }
 
     /*
