@@ -1789,9 +1789,9 @@
             "action": "PublicController@school_to_school",
             "name": "new.public.school2school",
             "order": 12,
-            "status": "pending",
-            "notes": null,
-            "ported_from": null,
+            "status": "ported",
+            "notes": "The statistics scene (5.7 MB of inline SVG in legacy, with two embedded PNGs) is public/images/home/school-statistics.svg, a media file to ship with the images (not in git); the hover areas are the five characters' outlines over it. Figures are hand-typed in legacy and kept. Legacy's phone list of the same figures (with a duplicated 4098 Students) sat inside a hidden box and never showed, so it is not ported. Keywords were Family to Family's copy; they name this programme now.",
+            "ported_from": "6d45ef9",
             "live_status": "200",
             "examples": [
                 {

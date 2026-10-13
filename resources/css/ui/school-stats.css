@@ -1,0 +1,143 @@
+/*
+ * The School to School statistics: a drawn scene with five cards that open
+ * over it, and a plain list for phones. Legacy .school-statistics-container,
+ * the *-overlay-* ids and .statistics-num/-title (school.css, main-new.css),
+ * measured on /projects/school-to-school.
+ */
+@layer components {
+    /* The figure on a card counts up over two seconds; the registered property lets CSS count integers. */
+    @property --stat-num {
+        syntax: '<integer>';
+        initial-value: 0;
+        inherits: false;
+    }
+
+    @keyframes school-stats-count {
+        from { --stat-num: 0; }
+        to { --stat-num: var(--stat-to); }
+    }
+
+    @keyframes school-stats-fade {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    .school-stats__scene {
+        position: relative;
+        display: none;
+        height: 35vw;
+        cursor: url('/images/ico/brush1.png'), auto;
+
+        @media (width >= 576px) {
+            display: block;
+        }
+    }
+
+    .school-stats__art {
+        display: block;
+        width: 100%;
+    }
+
+    .school-stats__hits {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+
+        & polygon {
+            fill: transparent;
+        }
+    }
+
+    .school-stats__card {
+        display: contents;
+    }
+
+    .school-stats__figure {
+        position: absolute;
+        font-size: 1.4vw;
+        font-weight: 800;
+        color: #676766;
+        text-transform: capitalize;
+        counter-reset: stat var(--stat-num);
+        animation: school-stats-count 2s alternate ease-in-out;
+
+        &::before {
+            content: counter(stat);
+        }
+
+        & span {
+            color: var(--color-brand-600);
+        }
+    }
+
+    .school-stats__picture {
+        position: absolute;
+        animation: school-stats-fade 2s;
+    }
+
+    .school-stats__card--students {
+        & .school-stats__figure {
+            top: 30%;
+            left: 34%;
+        }
+
+        & .school-stats__picture {
+            top: 0;
+            left: 0;
+            width: 44.6%;
+        }
+    }
+
+    .school-stats__card--schools {
+        & .school-stats__figure {
+            top: 24%;
+            right: 33.5%;
+        }
+
+        & .school-stats__picture {
+            top: 0;
+            right: 0;
+            width: 44.6%;
+        }
+    }
+
+    .school-stats__card--high {
+        & .school-stats__figure {
+            top: 62%;
+            left: 12%;
+        }
+
+        & .school-stats__picture {
+            bottom: 0.7vw;
+            left: 0;
+            width: 24.7%;
+        }
+    }
+
+    .school-stats__card--kindergarten {
+        & .school-stats__figure {
+            top: 59%;
+            left: 45%;
+        }
+
+        & .school-stats__picture {
+            bottom: 0.7vw;
+            left: 46.1%;
+            width: 9.4%;
+        }
+    }
+
+    .school-stats__card--elementary {
+        & .school-stats__figure {
+            top: 62%;
+            left: 77%;
+            font-size: 1.46vw;
+        }
+
+        & .school-stats__picture {
+            right: 0;
+            bottom: 0.7vw;
+            width: 22.6%;
+        }
+    }
+}

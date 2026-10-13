@@ -1,0 +1,78 @@
+/*
+ * The Students Mailbox of School to School. Legacy .message and
+ * #message-section (school.css), measured on /projects/school-to-school.
+ * Each letter's band sticks a little lower than the one before and its photo
+ * is tipped a different way, so the stack reads as letters dropped on a desk.
+ */
+@layer components {
+    .mailbox__letters {
+        margin-top: 5vw;
+    }
+
+    .mailbox__letter {
+        position: sticky;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100vh;
+
+        & img {
+            width: 33vw;
+            height: 23vw;
+            margin-top: -15vw;
+            object-fit: cover;
+            background: #fff;
+            box-shadow: 4px 0 7px 2px #6261614f;
+        }
+
+        &:nth-child(1) {
+            top: 0;
+
+            & img {
+                transform: scale(0.8) rotate(-12.5deg) translateX(-13vw);
+            }
+        }
+
+        &:nth-child(2) {
+            top: 5vw;
+
+            & img {
+                transform: scale(0.8) rotate(10deg) translateX(18vw) translateY(1vw);
+            }
+        }
+
+        &:nth-child(3) {
+            top: 10vw;
+            height: 12vw;
+
+            & img {
+                transform: scale(0.8) rotate(-6.9444444444deg);
+            }
+        }
+
+        @media (width <= 768px) {
+            height: 30vh;
+
+            & img {
+                width: 65vw;
+                height: 43vw;
+                margin-top: unset;
+            }
+
+            &:nth-child(1),
+            &:nth-child(2) {
+                top: 0;
+            }
+
+            &:nth-child(3) {
+                top: 0;
+                height: unset;
+            }
+        }
+
+        @media (768px <= width <= 992px) {
+            height: 40vh;
+        }
+    }
+}

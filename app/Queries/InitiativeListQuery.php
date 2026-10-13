@@ -3,6 +3,7 @@
 namespace App\Queries;
 
 use App\Models\Initiative;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 /*
@@ -47,6 +48,25 @@ final class InitiativeListQuery
             ->when($byDate, fn ($query) => $query->orderByDesc('created_at'), fn ($query) => $query->orderByDesc('id'))
             ->orderByDesc('id')
             ->paginate(self::PER_PAGE, ['*'], $pageName);
+    }
+
+    /**
+     * Every online activity of a programme that has no towns or tabs, in the
+     * order its editors ranked them (School to School).
+     *
+     * @return Collection<int, Initiative>
+     */
+    public static function ranked(int $categoryId): Collection
+    {
+        return Initiative::query()
+            ->with([
+                'content',
+                'initiativeImages' => fn ($images) => $images->orderBy('image_order')->orderBy('id'),
+            ])
+            ->where('what_category_id', $categoryId)
+            ->where('online', '1')
+            ->orderBy('rank')
+            ->get();
     }
 
     /** A search term as a LIKE pattern body: the wildcards a visitor types mean themselves. */

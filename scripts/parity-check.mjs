@@ -102,7 +102,16 @@ async function capture(browser, url, width) {
     // Images are not in git, and the local copy of them is older than the live
     // site's. Both pages draw their /images from the legacy server, so only the
     // page itself is compared.
-    await page.route(`${newBase}/images/**`, (route) => route.continue({ url: route.request().url().replace(newBase, legacyBase) }));
+    // An image only the new site has (a redrawn asset) is served from the new site.
+    await page.route(`${newBase}/images/**`, async (route) => {
+        const legacy = await route.fetch({ url: route.request().url().replace(newBase, legacyBase) });
+
+        if (legacy.status() !== 404) return route.fulfill({ response: legacy });
+
+        const own = await route.fetch();
+
+        return route.fulfill({ response: own.status() === 404 ? legacy : own });
+    });
 
     await page.setViewportSize({ width, height: 900 });
     // Some legacy pages never go quiet (map tiles, chart scripts): wait for the load, then a while for the network, and go on.
