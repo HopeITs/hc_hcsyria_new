@@ -20,12 +20,13 @@
 
     .centre-stats__map {
         width: 25rem;
+        max-width: 100%;
         padding-top: 3vw;
         filter: drop-shadow(2px 4px 6px gray);
 
         @media (width < 576px) {
             width: 70vw;
-            margin-bottom: 25vw;
+            margin-bottom: 4vw;
         }
     }
 
@@ -47,6 +48,7 @@
         padding-top: 4rem;
 
         @media (width < 576px) {
+            width: 100%;
             padding-top: 0;
         }
 
@@ -99,20 +101,33 @@
         transform: translate(-50%, calc(-100% - 12px));
     }
 
-    /* .date: the start year and the centre's logo, drawn up over the map's foot */
+    /* .date: the start year and the centre's logo. Wide screens draw it up over the map's foot,
+       as legacy did; on phones legacy hung it 95vw up the page, over the section's title,
+       so there it sits under the map instead. */
     .centre-stats__start {
+        font-weight: 900;
+        color: var(--accent);
+    }
+
+    .centre-stats__start--wide {
         position: relative;
         bottom: 4vw;
         font-size: 2.7vw;
-        font-weight: 900;
         line-height: 1.7vw;
-        color: var(--accent);
 
         @media (width < 576px) {
-            bottom: 95vw;
-            left: -5vw;
-            font-size: 8vw;
-            line-height: 5vw;
+            display: none !important;
+        }
+    }
+
+    .centre-stats__start--phone {
+        width: 100%;
+        margin-bottom: 6vw;
+        font-size: 8vw;
+        line-height: 8vw;
+
+        @media (width >= 576px) {
+            display: none !important;
         }
     }
 
@@ -123,6 +138,7 @@
         text-align: end;
 
         @media (width < 576px) {
+            left: 0;
             font-size: 3.7vw;
         }
     }

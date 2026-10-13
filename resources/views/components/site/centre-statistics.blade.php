@@ -49,8 +49,23 @@
             <div class="px-3">
                 <x-ui.reveal :ms="600" class="-mx-3 flex flex-wrap items-center justify-center">
                     <div class="relative flex w-full items-center justify-center px-3 sm:w-1/3 md:w-1/2 lg:w-7/12">
+                        <div class="flex min-w-0 flex-col items-center">
                         <div class="centre-stats__map">
                             <x-ui.syria-map :cities="$cities"/>
+                        </div>
+                @foreach ($centres as $i => $centre)
+                            <div class="centre-stats__start centre-stats__start--phone" x-show="city === {{ $i }}" @if ($i > 0) x-cloak @endif>
+                                <div class="-mx-3 flex">
+                                    <div class="flex-1 px-3 text-right">
+                                        <div class="centre-stats__since">Start Date</div>
+                                        {{ $centre['year'] }}
+                                    </div>
+                                    <div class="flex flex-1 px-3">
+                                        <img class="centre-stats__logo" src="{{ $centre['logo'] }}" alt="">
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
                         </div>
                     </div>
 
@@ -86,7 +101,7 @@
                 </x-ui.reveal>
 
                 @foreach ($centres as $i => $centre)
-                    <div class="centre-stats__start" x-show="city === {{ $i }}" @if ($i > 0) x-cloak @endif>
+                    <div class="centre-stats__start centre-stats__start--wide" x-show="city === {{ $i }}" @if ($i > 0) x-cloak @endif>
                         <div class="-mx-3 flex">
                             <div class="flex-1 px-3 text-right">
                                 <div class="centre-stats__since">Start Date</div>

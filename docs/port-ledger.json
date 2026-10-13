@@ -1137,7 +1137,7 @@
             "name": "public.disc_home",
             "order": 18,
             "status": "ported",
-            "notes": "Search box was commented out of the legacy page; ?search= is not ported. Learner rings are SVG (amCharts dropped); figures still come from get_statistics().",
+            "notes": "Search box was commented out of the legacy page; ?search= is not ported. Learner rings are SVG (amCharts dropped); figures still come from get_statistics(). Deliberate difference below 576px, asked for by the owner: the statistics band no longer hangs the start date 95vw up over its own title; map, start date, heading and rings stack.",
             "ported_from": "6d45ef9",
             "live_status": "200",
             "examples": [
