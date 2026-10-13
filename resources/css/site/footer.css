@@ -12,7 +12,7 @@
         position: relative;
         z-index: 1000;
         margin-top: 5vw;
-        background-color: #bc1818;
+        background-color: var(--color-brand-600);
     }
 
     /* .seperator-line */
@@ -27,7 +27,7 @@
         font-size: 3.3vw;
         text-align: center;
         color: #fff;
-        background-color: #bc1818;
+        background-color: var(--color-brand-600);
 
         @media (width >= 576px) {
             font-size: 1vw;
@@ -40,7 +40,7 @@
         margin: 0 2vw;
         font-size: 2.4vw;
         color: #fff;
-        background-color: #bc1818;
+        background-color: var(--color-brand-600);
         border-top: 0.12vw solid #fff;
 
         @media (width >= 576px) {
@@ -120,7 +120,7 @@
         line-height: 4vw;
         text-align: center;
         color: #fff;
-        background-color: var(--social-bg, #bc1818);
+        background-color: var(--social-bg, var(--color-brand-600));
         border: 1px solid #fff;
         border-radius: 50%;
         transition: all 0.7s ease-in-out;
@@ -173,7 +173,7 @@
     /* .footer-top: the grey strip of centres above the red bands */
     .site-footer__top {
         padding: 0 2vw;
-        color: #616262;
+        color: var(--color-ink-600);
         background-color: #f7f7f7;
     }
 
@@ -189,7 +189,7 @@
         align-items: center;
         justify-content: center;
         font-size: 2.8vw;
-        color: #616262;
+        color: var(--color-ink-600);
         column-gap: 0.5vw;
 
         @media (width >= 576px) {
@@ -217,7 +217,7 @@
         align-items: center;
         font-weight: 400;
         letter-spacing: 0.02vw;
-        color: #616262;
+        color: var(--color-ink-600);
         cursor: pointer;
     }
 

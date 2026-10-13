@@ -67,7 +67,7 @@
         height: 19vw;
         padding: 0 14vw 3vw;
         margin-top: 3vw;
-        background: #f4f4f4;
+        background: var(--color-surface-100);
 
         @media (width < 576px) {
             height: 45vw;

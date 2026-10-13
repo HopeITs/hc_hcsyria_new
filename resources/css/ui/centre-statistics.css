@@ -15,7 +15,7 @@
 
     .centre-stats__band {
         position: relative;
-        background: #f4f4f4;
+        background: var(--color-surface-100);
     }
 
     .centre-stats__map {

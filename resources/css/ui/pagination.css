@@ -28,7 +28,7 @@
         display: block;
         padding: 0 0.3vw;
         font-size: 1vw;
-        color: #616262;
+        color: var(--color-ink-600);
 
         @media (width < 576px) {
             font-size: 2.5vw;

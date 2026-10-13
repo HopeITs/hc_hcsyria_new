@@ -6,11 +6,11 @@
  */
 @layer base {
     :root {
-        --accent: #bc1818;
+        --accent: var(--color-brand-600);
     }
 
     /* DISC (and Study Zone, Children University): the dark blue of the DISC logo */
     .accent-disc {
-        --accent: #063c54;
+        --accent: var(--color-navy-900);
     }
 }

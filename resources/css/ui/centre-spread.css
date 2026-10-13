@@ -17,7 +17,7 @@
         justify-content: center;
         padding: 1.2vw;
         margin: 0 17.5%;
-        background: #f4f4f4;
+        background: var(--color-surface-100);
 
         @media (width < 576px) {
             padding: 3.2vw;
@@ -31,7 +31,7 @@
         margin-bottom: 0;
         font-size: 0.9vw;
         line-height: 1.3vw;
-        color: #616262;
+        color: var(--color-ink-600);
         cursor: pointer;
         list-style: disc;
 
@@ -58,7 +58,7 @@
         margin-left: -1vw;
         font-size: 1.1vw;
         font-weight: 700;
-        color: #063c54;
+        color: var(--color-navy-900);
         cursor: default;
 
         &:first-child {
@@ -87,7 +87,7 @@
         color: #bebebe;
 
         &.is-closed {
-            color: #616262;
+            color: var(--color-ink-600);
         }
 
         @media (width < 576px) {
@@ -102,7 +102,7 @@
     }
 
     .spread__social {
-        --social-bg: #063c54;
+        --social-bg: var(--color-navy-900);
     }
 
     .spread__panel {
@@ -113,11 +113,11 @@
 
     .spread__info {
         font-size: 1vw;
-        color: #616262;
+        color: var(--color-ink-600);
 
         & a {
             font-size: 1vw;
-            color: #616262;
+            color: var(--color-ink-600);
 
             &:hover {
                 font-weight: 600;
@@ -126,7 +126,7 @@
 
         & div > span:first-child {
             font-weight: 600;
-            color: #063c54;
+            color: var(--color-navy-900);
         }
 
         & ul {

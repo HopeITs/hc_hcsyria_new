@@ -86,7 +86,7 @@
     .micro-stats__card--red {
         padding-block: 3.8vw;
         color: #fff;
-        background-color: #bc1818;
+        background-color: var(--color-brand-600);
     }
 
     .micro-stats__figure {
@@ -103,7 +103,7 @@
     }
 
     .micro-stats__figure--red {
-        color: #bc1818;
+        color: var(--color-brand-600);
     }
 
     .micro-stats__label {
@@ -119,7 +119,7 @@
     }
 
     .micro-stats__label--grey {
-        color: #808285;
+        color: var(--color-ink-500);
     }
 
     /* The age gauges */
@@ -167,7 +167,7 @@
         justify-content: center;
         width: 100%;
         font-weight: 700;
-        color: #bc1818;
+        color: var(--color-brand-600);
         transform: translate(-50%, -50%);
     }
 
@@ -228,7 +228,7 @@
     .micro-stats__city-name {
         font-size: 1.1vw;
         font-weight: 750;
-        color: #808285;
+        color: var(--color-ink-500);
         text-transform: uppercase;
 
         @media (768px <= width <= 1200px) {
@@ -240,7 +240,7 @@
         width: 1.5vw;
         height: 0.2vw;
         margin: 0.35vw auto;
-        background-color: #bc1818;
+        background-color: var(--color-brand-600);
 
         @media (768px <= width <= 1200px) {
             width: 1.65vw;
@@ -252,7 +252,7 @@
         font-size: 4vw;
         font-weight: 800;
         line-height: 1;
-        color: #808285;
+        color: var(--color-ink-500);
 
         @media (768px <= width <= 1200px) {
             font-size: 4.5vw;
@@ -262,7 +262,7 @@
     .micro-stats__city-projects {
         font-size: 1vw;
         font-weight: 700;
-        color: #808285;
+        color: var(--color-ink-500);
 
         @media (768px <= width <= 1200px) {
             margin-top: 0.5vw;
@@ -421,7 +421,7 @@
         left: 50%;
         font-size: 0.75rem;
         font-weight: 800;
-        color: #bc1818;
+        color: var(--color-brand-600);
         transform: translate(-50%, -50%);
     }
 
@@ -444,7 +444,7 @@
     .micro-stats-phone__city-name {
         font-size: 4.4vw;
         font-weight: 750;
-        color: #808285;
+        color: var(--color-ink-500);
         text-transform: uppercase;
     }
 
@@ -452,20 +452,20 @@
         width: 5.2vw;
         height: 0.85vw;
         margin: 0.8vw 1.2vw 1.8vw;
-        background-color: #bc1818;
+        background-color: var(--color-brand-600);
     }
 
     .micro-stats-phone__city-number {
         font-size: 8.5vw;
         font-weight: 800;
         line-height: 1;
-        color: #808285;
+        color: var(--color-ink-500);
     }
 
     .micro-stats-phone__city-projects {
         font-size: 3vw;
         font-weight: 700;
-        color: #808285;
+        color: var(--color-ink-500);
     }
 
     .micro-stats-phone__categories {

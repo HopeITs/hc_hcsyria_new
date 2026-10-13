@@ -118,11 +118,11 @@
         margin: 3vw 0 0 0.5vw;
         font-size: 3.2vw;
         text-align: justify;
-        color: #616262;
+        color: var(--color-ink-600);
 
         & span {
             font-weight: 900;
-            color: #bc1818;
+            color: var(--color-brand-600);
         }
 
         @media (width >= 576px) {
@@ -146,7 +146,7 @@
         font-weight: 800;
         text-align: center;
         text-transform: uppercase;
-        color: #616262;
+        color: var(--color-ink-600);
 
         @media (width >= 576px) {
             font-size: 2vw;

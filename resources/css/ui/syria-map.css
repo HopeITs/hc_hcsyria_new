@@ -9,7 +9,7 @@
     .syria-map {
         display: block;
         width: 100%;
-        fill: #616262;
+        fill: var(--color-ink-600);
     }
 
     .syria-map__land.is-pickable {

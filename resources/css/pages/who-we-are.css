@@ -26,7 +26,7 @@
     .about-card {
         margin: 9vw 0 1rem;
         padding: 3vw;
-        background-color: #f4f4f4;
+        background-color: var(--color-surface-100);
 
         @media (width >= 576px) {
             margin-top: 5vw;

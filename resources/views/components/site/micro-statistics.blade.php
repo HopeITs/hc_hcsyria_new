@@ -149,8 +149,8 @@
                 <div class="micro-stats-phone__label">Total Projects in <strong>Syria</strong></div>
             </div>
             <div class="micro-stats-phone__card min-h-[30vw] bg-[#f1f1f1]">
-                <div class="micro-stats-phone__figure text-[#bc1818]">{{ $rate }}%</div>
-                <div class="micro-stats-phone__label text-[#808285]">Project Sustainability rate</div>
+                <div class="micro-stats-phone__figure text-brand-600">{{ $rate }}%</div>
+                <div class="micro-stats-phone__label text-ink-500">Project Sustainability rate</div>
             </div>
         </div>
 

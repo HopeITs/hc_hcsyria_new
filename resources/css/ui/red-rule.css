@@ -15,7 +15,7 @@
         width: 50%;
         height: 13vw;
         text-align: center;
-        border-left: 0.5vw solid #bc1818;
+        border-left: 0.5vw solid var(--color-brand-600);
 
         @media (width >= 576px) {
             height: 9vw;

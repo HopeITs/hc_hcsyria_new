@@ -67,7 +67,7 @@
     .activity-tabs__empty {
         margin: 3vw 0;
         font-size: 1.3vw;
-        color: #616262;
+        color: var(--color-ink-600);
 
         @media (width < 576px) {
             font-size: 2.3vw;

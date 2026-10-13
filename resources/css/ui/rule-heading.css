@@ -14,7 +14,7 @@
         font-size: 3.4vw;
         font-weight: 900;
         line-height: 0.1vw;
-        color: #616262;
+        color: var(--color-ink-600);
         border-bottom: 1px solid #000;
 
         @media (width >= 576px) {

@@ -35,7 +35,7 @@
         color: #fff;
         pointer-events: none;
         white-space: nowrap;
-        background: #063c54;
+        background: var(--color-navy-900);
         border-radius: 5px;
         opacity: 0;
         transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
@@ -63,7 +63,7 @@
         left: -6vw;
         width: 12vw;
         margin-top: 2vw;
-        fill: #063c54;
+        fill: var(--color-navy-900);
         visibility: hidden;
 
         &.is-shown {

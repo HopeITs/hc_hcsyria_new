@@ -21,7 +21,7 @@
         width: 0;
         height: clamp(58px, 6vw, 190px);
         margin: 0 auto;
-        border-left: clamp(4px, 0.4vw, 9px) solid #bc1818;
+        border-left: clamp(4px, 0.4vw, 9px) solid var(--color-brand-600);
 
         @media (576px <= width <= 609px) {
             height: 56px;
@@ -221,7 +221,7 @@
         font-weight: 700;
         color: #fff;
         cursor: pointer;
-        background: #bc1818;
+        background: var(--color-brand-600);
         border: none;
         border-radius: 999px;
         transition: background 0.18s ease;

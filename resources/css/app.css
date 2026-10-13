@@ -66,7 +66,15 @@
        micro_page_new.css and four other legacy stylesheets. */
     --color-brand-600: #bc1818;
 
+    /* The programme colours: the blue of DISC and Study Zone, the amber of Social Zone. */
+    --color-navy-900: #063c54;
+    --color-amber-500: #f99d1c;
+
+    /* Backgrounds of the grey bands. */
+    --color-surface-100: #f4f4f4;
+
     /* Greys in use on the ported pages. */
+    --color-ink-500: #808285;
     --color-ink-100: #ededed;
     --color-ink-200: #cdcdcd;
     --color-ink-600: #616262;

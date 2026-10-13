@@ -16,7 +16,7 @@
         position: relative;
         padding: 4rem 0;
         margin-bottom: 1vw;
-        background: #f4f4f4;
+        background: var(--color-surface-100);
 
         @media (width < 576px) {
             height: auto;
@@ -28,7 +28,7 @@
         left: -8vw;
         font-size: 1.3vw;
         font-weight: 800;
-        color: #063c54;
+        color: var(--color-navy-900);
 
         @media (768px <= width <= 992px) {
             left: -10rem;
@@ -54,11 +54,11 @@
         bottom: 0;
         left: 47%;
         font-size: 0.7vw;
-        color: #616262;
+        color: var(--color-ink-600);
 
         & span {
             font-weight: 700;
-            color: #063c54;
+            color: var(--color-navy-900);
         }
 
         @media (width < 576px) {
@@ -117,11 +117,11 @@
     }
 
     .zone-stats__gender--male {
-        color: #f99d1c;
+        color: var(--color-amber-500);
     }
 
     .zone-stats__gender--female {
-        color: #063c54;
+        color: var(--color-navy-900);
     }
 
     .zone-stats__percent {
