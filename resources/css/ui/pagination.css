@@ -5,13 +5,23 @@
  */
 @layer components {
     .pager {
+        position: relative;
+        z-index: 1000;
         display: flex;
-        padding-left: 0;
+        justify-content: center;
+        padding: 1rem;
+        margin-top: 5vw;
+        line-height: 1.3vw;
         list-style: none;
+        background: #fff;
 
         @media (width < 576px) {
             margin-top: 9vw;
         }
+    }
+
+    .pager__item:not(:first-child) .pager__link {
+        margin-left: -1px;
     }
 
     .pager__link {

@@ -1,8 +1,7 @@
 @props([
     'title' => null,
-    'description' => null,
-    'keywords' => null,
-    'alternate' => null,
+    'keywords' => 'aleppo syria, hope, center',
+    'alternate' => 'https://www.hcsyria.org',
     'footer' => 'default',
     'menu' => 'instant',
     'preloader' => false,
@@ -18,8 +17,9 @@
     components/site/footer/. $menu is how the nav menus open on hover
     (see site-nav.js). $preloader shows the loading screen; $overlayUntil
     makes the navbar transparent over a hero (see the header component).
-    $keywords and $alternate are the per-page head tags a few legacy pages
-    had (keywords, and the x-default hreflang link on the home page).
+    $keywords and $alternate are head tags every page carries: the keywords
+    default to the organisation's, a page names its own where legacy did, and
+    the x-default hreflang link points at the main address.
 
     Ported from the legacy page heads: favicon and theme-color. Not ported:
     Google Analytics UA-129097809-1 (Universal Analytics, shut down by Google
@@ -35,9 +35,6 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="#f6f6f6">
 
     <title>{{ $title ? __($title) : config('app.name') }}</title>
-    @if ($description)
-        <meta name="description" content="{{ __($description) }}">
-    @endif
     @if ($keywords)
         <meta name="keywords" content="{{ $keywords }}">
     @endif

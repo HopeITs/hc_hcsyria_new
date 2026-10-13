@@ -1,6 +1,6 @@
 /*
- * A ring gauge: a grey track with a red arc that fills clockwise from nine
- * o'clock. Legacy: a Chart.js radialGauge canvas (track #BABABA, ring 18% of
+ * A ring gauge: a grey track with a coloured arc that fills clockwise from nine
+ * o'clock (or twelve). Legacy: a Chart.js radialGauge canvas (track #BABABA, ring 18% of
  * the radius, rounded ends, 1.5s fill, rotation = half a turn).
  */
 @layer components {
@@ -12,17 +12,17 @@
     }
 
     .radial-gauge__track {
-        stroke: #bababa;
-        stroke-width: 8.73;
+        stroke: var(--gauge-track);
+        stroke-width: var(--gauge-width);
     }
 
     .radial-gauge__fill {
-        stroke: #bc1818;
-        stroke-width: 8.73;
+        stroke: var(--gauge-color);
+        stroke-width: var(--gauge-width);
         stroke-linecap: round;
         stroke-dasharray: var(--gauge-share) 100;
-        /* A circle's stroke starts at three o'clock; turn it to nine. */
-        transform: rotate(180deg);
+        /* A circle's stroke starts at three o'clock; turn it to where the gauge starts. */
+        transform: rotate(var(--gauge-turn));
         transform-origin: center;
         animation: radial-gauge-fill 1.5s ease-out;
     }

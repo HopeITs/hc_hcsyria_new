@@ -172,7 +172,7 @@
         &:hover,
         &.is-selected {
             color: #fff;
-            background-color: var(--accent);
+            background-color: var(--category-color, var(--accent));
         }
 
         @media (width < 576px) {
@@ -195,7 +195,8 @@
 
         .category-showcase__item:hover &,
         .category-showcase__item.is-selected & {
-            background-color: var(--accent);
+            color: #fff;
+            background-color: var(--category-color, var(--accent));
         }
 
         @media (width < 576px) {
@@ -203,6 +204,58 @@
             height: 14vw;
             font-size: 2vw;
             line-height: 3vw;
+        }
+    }
+
+    /*
+     * The Study Zone look (legacy #Study overrides in study_new.css): a taller block with
+     * room for the buttons beneath, larger dark-blue labels, and the torn edge
+     * hanging off the bottom of the photo on phones.
+     */
+    .category-showcase--zones {
+        height: 35vw;
+        margin-top: 10vw;
+        padding-bottom: 7vw;
+
+        @media (width < 576px) {
+            height: 55vw;
+            margin-top: 15vw;
+            padding-bottom: 12vw;
+        }
+
+        & .category-showcase__photo {
+            margin-top: 0;
+        }
+
+        & .category-showcase__heading {
+            visibility: visible;
+        }
+
+        & .category-showcase__edge {
+            bottom: -0.1vw;
+
+            @media (width < 576px) {
+                bottom: -22vw;
+            }
+        }
+
+        & .category-showcase__panel {
+            bottom: 0;
+            height: 100%;
+
+            @media (width < 576px) {
+                background: linear-gradient(to right, rgb(65 64 66 / 0.4) 0%, rgb(65 64 66 / 0.95) 50%, rgb(65 64 66 / 0.4) 100%);
+            }
+        }
+
+        & .category-showcase__button {
+            font-size: 1.7vw;
+            font-weight: 900;
+            color: #063c54;
+
+            @media (width < 576px) {
+                font-size: 3vw;
+            }
         }
     }
 }

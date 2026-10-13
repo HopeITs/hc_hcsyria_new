@@ -76,7 +76,8 @@ class SecurityHeaders
             'default-src' => ["'self'"],
             'script-src' => array_filter(["'self'", "'unsafe-inline'", "'unsafe-eval'", $devServer]),
             'style-src' => array_filter(["'self'", "'unsafe-inline'", $devServer]),
-            'img-src' => ["'self'", 'data:', 'blob:'],
+            // Map tiles come from one server (config/hcsyria.php).
+            'img-src' => ["'self'", 'data:', 'blob:', config('hcsyria.map_tiles.origin')],
             'font-src' => array_filter(["'self'", 'data:', $devServer]),
             'connect-src' => array_filter(["'self'", $devServer, $this->webSocketOrigin($devServer)]),
             // Programme videos, embedded from YouTube's cookieless host.

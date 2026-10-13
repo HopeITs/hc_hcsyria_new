@@ -50,7 +50,7 @@ const browser = await chromium.launch();
 for (const width of widths) {
     const context = await browser.newContext({ reducedMotion: 'reduce', viewport: { width, height: 900 } });
     const page = await context.newPage();
-    await page.goto(args.url, { waitUntil: 'networkidle' });
+    await page.goto(args.url, { waitUntil: 'networkidle', timeout: 120000 });
     await page.addStyleTag({ content: '*,*::before,*::after{animation:none!important;transition:none!important}[data-aos]{opacity:1!important;transform:none!important}' });
     await page.evaluate(() => document.fonts.ready);
     if (args.hover) {

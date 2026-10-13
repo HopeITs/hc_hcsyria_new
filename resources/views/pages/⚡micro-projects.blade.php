@@ -24,7 +24,6 @@ use Livewire\Component;
 new #[Layout('layouts::app', [
     'title' => 'main.micro',
     'keywords' => 'aleppo syria, hope, center, micro project, projects, caritas poland',
-    'alternate' => 'https://www.hcsyria.org',
     'footer' => 'micro',
     'preloader' => true,
 ])] class extends Component

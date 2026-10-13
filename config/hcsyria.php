@@ -28,4 +28,22 @@ return [
 
     'media_root' => env('MEDIA_ROOT'),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Map tiles
+    |--------------------------------------------------------------------------
+    |
+    | The tile server behind the Leaflet maps (Study Zone's "Our Spread").
+    | Legacy put its API key in the page source; here it is read from the
+    | environment. The tiles' origin is allowed in the content security policy
+    | (App\Http\Middleware\SecurityHeaders) and nothing else is.
+    |
+    */
+
+    'map_tiles' => [
+        'origin' => 'https://tiles.stadiamaps.com',
+        'url' => 'https://tiles.stadiamaps.com/tiles/outdoors/{z}/{x}/{y}{r}.png',
+        'key' => env('STADIA_API_KEY'),
+    ],
+
 ];

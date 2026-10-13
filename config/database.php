@@ -107,6 +107,34 @@ return [
             'engine' => null,
         ],
 
+        /*
+        |----------------------------------------------------------------------
+        | The Study Zone attendance database
+        |----------------------------------------------------------------------
+        |
+        | A separate system's database (hcsz_* tables) on another server; the
+        | public Study Zone page reads three figures from it, read-only
+        | (App\Queries\StudyZoneStatisticsQuery). Legacy hardcoded this
+        | server's address and password as defaults in the repository; there is
+        | no default here, so a host without these variables simply has no
+        | statistics section.
+        */
+        'studyzone' => [
+            'driver' => 'mysql',
+            'host' => env('DB_STUDYZONE_HOST'),
+            'port' => env('DB_STUDYZONE_PORT', '3306'),
+            'database' => env('DB_STUDYZONE_DATABASE'),
+            'username' => env('DB_STUDYZONE_USERNAME'),
+            'password' => env('DB_STUDYZONE_PASSWORD'),
+            'unix_socket' => '',
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'strict' => false,
+            'engine' => null,
+        ],
+
         'pgsql' => [
             'driver' => 'pgsql',
             'url' => env('DB_URL'),

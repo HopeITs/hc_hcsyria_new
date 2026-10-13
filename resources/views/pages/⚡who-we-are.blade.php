@@ -19,10 +19,7 @@ use Livewire\Component;
  */
 new #[Layout('layouts::app', [
     'title' => 'Who We Are',
-    // The legacy page really used the Family to Family blurb here; kept.
-    'description' => 'family2family.description',
     'keywords' => 'aleppo syria, hope, center, micro project, projects, caritas poland',
-    'alternate' => 'https://www.hcsyria.org',
     'preloader' => true,
 ])] class extends Component
 {

@@ -77,7 +77,7 @@ const freezeCss = `
 
 /* A fresh context per capture: a cold cache, like a first visit, every time. */
 async function capture(browser, url, width) {
-    const context = await browser.newContext({
+    const context = await browser.newContext({ locale: 'en-US',
         reducedMotion: 'reduce',
         ...(phone && { isMobile: true, hasTouch: true, userAgent: PHONE_USER_AGENT }),
     });
@@ -105,7 +105,9 @@ async function capture(browser, url, width) {
     await page.route(`${newBase}/images/**`, (route) => route.continue({ url: route.request().url().replace(newBase, legacyBase) }));
 
     await page.setViewportSize({ width, height: 900 });
-    const response = await page.goto(url, { waitUntil: 'networkidle', timeout: 60000 });
+    // Some legacy pages never go quiet (map tiles, chart scripts): wait for the load, then a while for the network, and go on.
+    const response = await page.goto(url, { waitUntil: 'load', timeout: 90000 });
+    await page.waitForLoadState('networkidle', { timeout: 15000 }).catch(() => {});
     // Pages with a loading screen keep it up for 2.5s; capture what is under it.
     await page.waitForSelector('.preloader', { state: 'detached', timeout: 10000 }).catch(() => {});
     await page.addStyleTag({ content: freezeCss });
@@ -128,7 +130,7 @@ async function capture(browser, url, width) {
             return new Promise((resolve) => { video.readyState >= 2 ? resolve() : video.addEventListener('loadeddata', resolve, { once: true }); setTimeout(resolve, 3000); });
         }));
     });
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {});
     await page.waitForTimeout(500);
 
     const facts = await page.evaluate(() => {

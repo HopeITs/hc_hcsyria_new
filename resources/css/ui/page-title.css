@@ -29,7 +29,7 @@
 
     .page-title__text {
         position: absolute;
-        line-height: 2.2vw;
+        line-height: var(--title-lh-phone, 2.2vw);
 
         @media (width >= 576px) {
             line-height: 2vw;
@@ -49,6 +49,10 @@
     .page-title__line--strong {
         font-size: 2.5vw;
         font-weight: 900;
+
+        @media (width < 576px) {
+            font-size: var(--title-strong-phone, 2.5vw);
+        }
     }
 
     /* The smaller type of the programme pages (micro-projects, ...). */
@@ -96,7 +100,7 @@
         padding-right: 0.75rem;
     }
 
-    /* A page that wants another size sets --logo-width (and --logo-width-phone) on its wrapper. */
+    /* A page that wants another size sets --logo-width (and --logo-width-phone) on its wrapper; likewise --title-strong-phone and --title-lh-phone for its title's phone type. */
     .page-title__logo {
         display: block;
         width: var(--logo-width, 12vw);

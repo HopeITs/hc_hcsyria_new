@@ -5,11 +5,12 @@
  * the one these cards use on every programme page.
  */
 @layer components {
+    /* A page that wants less room above sets --testimonials-top (and --testimonials-top-phone). */
     .testimonials__title {
-        margin-top: 16vw;
+        margin-top: var(--testimonials-top, 16vw);
 
         @media (width < 576px) {
-            margin-top: 26vw;
+            margin-top: var(--testimonials-top-phone, 26vw);
         }
     }
 

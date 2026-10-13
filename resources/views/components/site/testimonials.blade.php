@@ -1,4 +1,4 @@
-@props(['stories', 'title' => 'Testemonies'])
+@props(['stories', 'title' => 'Testemonies', 'spaced' => false])
 
 {{--
     A programme's testimonies: a title and a grey card per story, with the
@@ -13,7 +13,7 @@
 
 <div id="testimonies-section" class="testimonials__title">
     <div class="flex flex-col items-center justify-center">
-        <x-ui.section-title>{{ $title }}</x-ui.section-title>
+        <x-ui.section-title :class="$spaced ? 'mt-4' : ''">{{ $title }}</x-ui.section-title>
     </div>
 </div>
 <x-ui.red-rule short :ms="800"/>

@@ -18,7 +18,6 @@ use Livewire\Component;
 new #[Layout('layouts::app', [
     'title' => 'Home',
     'keywords' => 'aleppo syria, hope, center, children, university',
-    'alternate' => 'https://www.hcsyria.org',
     'preloader' => true,
     'overlayUntil' => '#firstContainer',
 ])] class extends Component

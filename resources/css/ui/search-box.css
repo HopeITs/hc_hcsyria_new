@@ -1,0 +1,99 @@
+/*
+ * The search box under a list's title. Legacy .search-container, #search-input
+ * (study_new.css) and typeahead.js's menu (typeahead.css), measured on
+ * /projects/study-zone.
+ */
+@layer components {
+    .search-box {
+        position: relative;
+        z-index: 999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .search-box__button {
+        display: flex;
+        padding: 0.95vw;
+        margin-right: 0.5vw;
+        color: #063c54;
+        cursor: pointer;
+        background-color: #fbfbfd;
+        border: none;
+
+        & img {
+            width: 1.5vw;
+            height: 1.5vw;
+        }
+    }
+
+    .search-box__field {
+        position: relative;
+    }
+
+    .search-box__input {
+        display: block;
+        width: 25vw;
+        padding: 1vw;
+        font-size: 1vw;
+        font-weight: 100;
+        color: #b2b2b2;
+        background-color: #f7f7f7;
+        border: none;
+
+        @media (width < 576px) {
+            width: 26vw;
+            font-size: 2.4vw;
+        }
+
+        @media (576px <= width <= 991px), (993px <= width <= 1280px) {
+            width: 21vw;
+        }
+
+        &::placeholder {
+            color: #b2b2b2;
+        }
+
+        &:focus-visible {
+            outline: none;
+        }
+    }
+
+    .search-box__menu {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        z-index: 1000;
+        width: 100%;
+        padding: 5px 0;
+        text-align: left;
+        background: #fff;
+        border: 1px solid rgb(0 0 0 / 0.15);
+        border-radius: 4px;
+        box-shadow: 0 6px 12px rgb(0 0 0 / 0.176);
+    }
+
+    .search-box__heading {
+        padding: 5px 0 2px;
+        margin: 0 20px 5px;
+        font-size: 14.4px;
+        font-weight: 500;
+        color: #063c54;
+        cursor: default;
+        border-bottom: 1px solid #063c54;
+    }
+
+    .search-box__suggestion {
+        padding: 3px 20px;
+        font-size: 0.85vw;
+        line-height: 1.42857143;
+        color: #616262;
+        white-space: nowrap;
+        cursor: pointer;
+
+        &.is-current {
+            color: #fff;
+            background: #063c54;
+        }
+    }
+}

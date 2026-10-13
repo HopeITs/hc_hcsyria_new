@@ -7,7 +7,8 @@
  * Until a button is first used, the panel shows `intro`, a title and text
  * the legacy pages wrote into the markup (separately for wide and narrow
  * screens) that differ from what the buttons then show. The first category
- * is the one marked as selected.
+ * is the one marked as selected. A category may give its own text for narrow
+ * screens (`narrow`), and its own colour.
  */
 export default ({ categories, intro }) => ({
     categories,
@@ -22,6 +23,10 @@ export default ({ categories, intro }) => ({
 
     /** What the panel shows: `size` is 'wide' or 'narrow', the two layouts the legacy markup had. */
     panel(size) {
-        return this.used ? this.categories[this.selected] : this.intro[size];
+        if (! this.used) return this.intro[size];
+
+        const category = this.categories[this.selected];
+
+        return { title: category.title, color: category.color, lines: (size === 'narrow' && category.narrow) || category.lines };
     },
 });

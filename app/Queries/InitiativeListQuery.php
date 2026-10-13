@@ -19,10 +19,12 @@ final class InitiativeListQuery
     public const PER_PAGE = 5;
 
     /**
+     * @param  int|list<int>  $placeId  one town, or several shown as one (Homs and its countryside)
      * @param  string  $pageName  the query-string key of this list's page number
+     * @param  string|null  $search  only activities whose title, text or summary contain this
      * @return LengthAwarePaginator<int, Initiative>
      */
-    public static function forPlace(int $categoryId, int $subCategoryId, int $placeId, string $pageName, bool $byDate = false): LengthAwarePaginator
+    public static function forPlace(int $categoryId, int $subCategoryId, int|array $placeId, string $pageName, bool $byDate = false, ?string $search = null): LengthAwarePaginator
     {
         return Initiative::query()
             ->with([
@@ -31,10 +33,25 @@ final class InitiativeListQuery
             ])
             ->where('what_category_id', $categoryId)
             ->where('sub_what_category_id', $subCategoryId)
-            ->where('place_id', $placeId)
+            ->whereIn('place_id', (array) $placeId)
             ->where('online', '1')
+            ->when(filled($search), function ($query) use ($search) {
+                $like = '%'.self::escapeLike(mb_strtolower($search)).'%';
+
+                // One group, so the three alternatives stay inside the relation's own constraint.
+                $query->whereHas('content', fn ($content) => $content->where(fn ($any) => $any
+                    ->where('title', 'like', $like)
+                    ->orWhere('content', 'like', $like)
+                    ->orWhere('description', 'like', $like)));
+            })
             ->when($byDate, fn ($query) => $query->orderByDesc('created_at'), fn ($query) => $query->orderByDesc('id'))
             ->orderByDesc('id')
             ->paginate(self::PER_PAGE, ['*'], $pageName);
+    }
+
+    /** A search term as a LIKE pattern body: the wildcards a visitor types mean themselves. */
+    private static function escapeLike(string $term): string
+    {
+        return addcslashes($term, '\%_');
     }
 }

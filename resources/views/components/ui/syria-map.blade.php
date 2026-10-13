@@ -1,13 +1,15 @@
-@props(['cities' => []])
+@props(['cities' => [], 'light' => false, 'interactive' => true])
 
 {{--
     The map of Syria's governorates (the legacy "citiesMap" svg, with the
     outline drawing itself in as it always did): resources/css/ui/syria-map.css.
 
     $cities names the governorates a page lets you pick, as id => number
-    ('SY-HI' => 0). They are drawn in a darker grey and, clicked, set `city`
+    ('SY-HI' => 0). They are drawn in a lighter grey and, clicked, set `pick`
     in the Alpine scope around the map to their number; the one equal to
-    `city` is drawn in the page's accent colour.
+    `pick` is drawn in the page's accent colour. :interactive false only
+    marks them, with no clicking. :light is the pale map of the Study Zone
+    statistics, with white outlines that draw themselves in.
 --}}
 @php
     $governorates = [
@@ -28,12 +30,14 @@
     ];
 @endphp
 
-<svg {{ $attributes->class('syria-map') }} viewBox="0 0 680.69 590.49" aria-hidden="true">
+<svg {{ $attributes->class(['syria-map', 'syria-map--light' => $light]) }} viewBox="0 0 680.69 590.49" aria-hidden="true">
     <path class="syria-map__outline" d="M21.92,162.97s9-5.19,1.63-17.33c-7.37-12.14-14.04-24.42-16.9-26.22s7.59-6.5,7.59-6.5l2.07-3.55,2.05-1.22s1.45-4.06,3.07-5.15,5.82-2,5.82-2l4.77-6.72s5.88-2.1,6.62-2.75,5.3-3.13,7.2-3.9,3.27-2.61,2.96-4.7,.57-4.75,.57-4.75c0,0-.33-4.38-.71-6.17s-1.2-5.65,2.3-7.92,12.07-3.21,21.8,.5c0,0,18-8.01,24.86-6.9l3.08-.64,10.79,25.35s14.19,21.15,15.26,27.61c1.06,6.46,4.26,34.84,4.26,34.84l-24.48,36.9s-36.19,17.03-39.03,17.39-37.77-7.45-37.77-7.45c0,0-2.68-8.52-3.74-12.06s-4.04-16.66-4.04-16.66Z"/>
     <g>
         @foreach ($governorates as $id => $path)
-            @if (isset($cities[$id]))
-                <path class="syria-map__land is-pickable" :class="{ 'is-active': city === {{ $cities[$id] }} }" @click="city = {{ $cities[$id] }}" d="{{ $path }}"/>
+            @if (isset($cities[$id]) && $interactive)
+                <path class="syria-map__land is-pickable" :class="{ 'is-active': pick === {{ $cities[$id] }} }" @click="pick = {{ $cities[$id] }}" d="{{ $path }}"/>
+            @elseif (isset($cities[$id]))
+                <path class="syria-map__land is-marked" d="{{ $path }}"/>
             @else
                 <path class="syria-map__land" d="{{ $path }}"/>
             @endif

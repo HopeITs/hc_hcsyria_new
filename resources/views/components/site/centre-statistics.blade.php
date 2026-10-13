@@ -4,7 +4,7 @@
     A grey band with the map of Syria on one side: pick a centre on it (or
     leave the first) and its start date and logo show under the map and, when
     there are figures, its learners as radial bars on the other side
-    (resources/css/ui/centre-statistics.css, resources/js/centre-statistics.js).
+    (resources/css/ui/centre-statistics.css; the rings are ui.radial-bars).
 
     Each centre is ['title' (the heading over the bars), 'year', 'logo',
     'figures'], figures being ['applied' => n, 'completed' => n, 'employed' => n]
@@ -18,13 +18,6 @@
         ['key' => 'applied', 'label' => 'Applied Learners', 'color' => '#F99D1C'],
     ];
 
-    // Bars are round-ended inside their length: half a bar's width, in hundredths of its ring.
-    $barWidth = 21.3;
-    $measures = collect($measures)->map(fn ($measure, $i) => $measure + [
-        'radius' => $radius = 51.6 + $i * 26.7,
-        'cap' => round($barWidth / 2 / (2 * M_PI * $radius) * 100, 4),
-    ])->all();
-
     $hasFigures = collect($centres)->contains(fn ($centre) => collect($centre['figures'] ?? [])->filter(fn ($n) => $n !== null)->isNotEmpty());
 
     $data = collect($centres)->map(fn ($centre) => [
@@ -35,7 +28,7 @@
 @endphp
 
 <x-ui.reveal :ms="800" id="statistics-section" class="centre-stats">
-<div x-data="centreStatistics(@js(['measures' => $measures, 'centres' => $data, 'max' => $max]))">
+<div x-data="radialBars(@js(['bars' => App\Support\RadialBars::variants($measures, 296), 'sets' => $data, 'max' => $max]))">
     <div class="px-3">
         <x-ui.reveal :ms="600" class="-mx-3 flex">
             <div class="flex w-full flex-col items-center justify-center px-3">
@@ -54,7 +47,7 @@
                             <x-ui.syria-map :cities="$cities"/>
                         </div>
                 @foreach ($centres as $i => $centre)
-                            <div class="centre-stats__start centre-stats__start--phone" x-show="city === {{ $i }}" @if ($i > 0) x-cloak @endif>
+                            <div class="centre-stats__start centre-stats__start--phone" x-show="pick === {{ $i }}" @if ($i > 0) x-cloak @endif>
                                 <div class="-mx-3 flex">
                                     <div class="flex-1 px-3 text-right">
                                         <div class="centre-stats__since">Start Date</div>
@@ -73,35 +66,17 @@
                         @if ($hasFigures)
                             <div class="-mx-3 flex flex-wrap">
                                 @foreach ($centres as $i => $centre)
-                                    <div class="centre-stats__heading" x-show="city === {{ $i }}" @if ($i > 0) x-cloak @endif>{{ $centre['title'] }}</div>
+                                    <div class="centre-stats__heading" x-show="pick === {{ $i }}" @if ($i > 0) x-cloak @endif>{{ $centre['title'] }}</div>
                                 @endforeach
                             </div>
 
-                            <div class="centre-stats__chart" x-ref="chart">
-                                <svg viewBox="-116 -148 232 296" aria-hidden="true">
-                                    @foreach ($measures as $measure)
-                                        <g style="--cap: {{ $measure['cap'] }}">
-                                        <circle class="centre-stats__track" cx="0" cy="0" r="{{ $measure['radius'] }}" pathLength="100"
-                                                style="stroke-dasharray: {{ 75 - 2 * $measure['cap'] }} 100"/>
-                                        <circle class="centre-stats__bar" cx="0" cy="0" r="{{ $measure['radius'] }}" pathLength="100"
-                                                stroke="{{ $measure['color'] }}"
-                                                :style="`stroke-dasharray: ${length('{{ $measure['key'] }}')} 100`"
-                                                @mousemove="point($event, '{{ $measure['key'] }}')" @mouseleave="leave()"/>
-                                        <text class="centre-stats__label" x="-10" y="{{ 5 - $measure['radius'] }}" text-anchor="end"
-                                              fill="{{ $measure['color'] }}">{{ $measure['label'] }}</text>
-                                        </g>
-                                    @endforeach
-                                </svg>
-
-                                <div class="centre-stats__tip" x-show="tip" x-cloak
-                                     :style="tip && `left: ${tip.x}px; top: ${tip.y}px; background: ${tip.color}`" x-text="tip?.text"></div>
-                            </div>
+                            <x-ui.radial-bars class="centre-stats__chart" :bars="$measures"/>
                         @endif
                     </div>
                 </x-ui.reveal>
 
                 @foreach ($centres as $i => $centre)
-                    <div class="centre-stats__start centre-stats__start--wide" x-show="city === {{ $i }}" @if ($i > 0) x-cloak @endif>
+                    <div class="centre-stats__start centre-stats__start--wide" x-show="pick === {{ $i }}" @if ($i > 0) x-cloak @endif>
                         <div class="-mx-3 flex">
                             <div class="flex-1 px-3 text-right">
                                 <div class="centre-stats__since">Start Date</div>

@@ -1,0 +1,80 @@
+/*
+ * Radial bars (resources/views/components/ui/radial-bars.blade.php): pale
+ * tracks of 270 degrees with a coloured, round-ended bar on each, as the
+ * amCharts radar column chart drew them (fill 0.08 black for the track).
+ * The box they sit in sets --chart-height.
+ */
+@layer components {
+    .radial-bars {
+        position: relative;
+
+        & svg {
+            display: block;
+            width: 100%;
+            height: var(--chart-height, 18.5rem);
+            overflow: visible;
+            fill: none;
+        }
+    }
+
+    /* A chart drawn at other sizes shows one: the main one, or the tablet or phone one. */
+    .radial-bars__svg--tablet,
+    .radial-bars__svg--phone {
+        display: none !important;
+    }
+
+    @media (768px <= width <= 1280px) {
+        .radial-bars:has(.radial-bars__svg--tablet) .radial-bars__svg:not(.radial-bars__svg--tablet) {
+            display: none !important;
+        }
+
+        .radial-bars__svg--tablet {
+            display: block !important;
+        }
+    }
+
+    @media (width < 576px) {
+        .radial-bars:has(.radial-bars__svg--phone) .radial-bars__svg:not(.radial-bars__svg--phone) {
+            display: none !important;
+        }
+
+        .radial-bars__svg--phone {
+            display: block !important;
+        }
+    }
+
+    .radial-bars__track,
+    .radial-bars__bar {
+        stroke-width: var(--bar-width);
+        stroke-linecap: round;
+        /* A circle's stroke starts at three o'clock; the rings start at twelve. */
+        transform: rotate(-90deg);
+        /* The round end starts at the ring's start, not before it (--cap is set per ring). */
+        stroke-dashoffset: calc(var(--cap) * -1);
+    }
+
+    .radial-bars__track {
+        stroke: rgb(0 0 0 / 0.08);
+    }
+
+    .radial-bars__bar {
+        cursor: pointer;
+        transition: stroke-dasharray 1s ease-out;
+    }
+
+    .radial-bars__label {
+        font-size: 16px;
+        font-weight: 700;
+    }
+
+    /* The bubble that says a bar's figure, in the bar's colour */
+    .radial-bars__tip {
+        position: absolute;
+        padding: 6px 10px;
+        font-size: 14px;
+        color: #fff;
+        pointer-events: none;
+        border-radius: 8px;
+        transform: translate(-50%, calc(-100% - 12px));
+    }
+}

@@ -1,0 +1,162 @@
+/*
+ * The Study Zone statistics band. Legacy #statistics-section, .card-height,
+ * .sub-statistics-title, #chartEdu, #canvas-holder and .center-label
+ * (study_new.css), measured on /projects/study-zone.
+ */
+@layer components {
+    .zone-stats {
+        margin-top: 15vw;
+
+        @media (width < 576px) {
+            margin-top: 25vw;
+        }
+    }
+
+    .zone-stats__band {
+        position: relative;
+        padding: 4rem 0;
+        margin-bottom: 1vw;
+        background: #f4f4f4;
+
+        @media (width < 576px) {
+            height: auto;
+        }
+    }
+
+    .zone-stats__title {
+        position: relative;
+        left: -8vw;
+        font-size: 1.3vw;
+        font-weight: 800;
+        color: #063c54;
+
+        @media (768px <= width <= 992px) {
+            left: -10rem;
+        }
+
+        @media (993px <= width <= 1280px) {
+            left: -7.5rem;
+        }
+
+        @media (width < 576px) {
+            left: -30vw;
+            font-size: 2.3vw;
+        }
+    }
+
+    .zone-stats__title--centred {
+        left: 0;
+        text-align: center;
+    }
+
+    .zone-stats__note {
+        position: absolute;
+        bottom: 0;
+        left: 47%;
+        font-size: 0.7vw;
+        color: #616262;
+
+        & span {
+            font-weight: 700;
+            color: #063c54;
+        }
+
+        @media (width < 576px) {
+            bottom: -2rem;
+            left: 34%;
+            font-size: 1.7vw;
+        }
+    }
+
+    .zone-stats__education {
+        width: stretch;
+        height: 17.5rem;
+
+        @media (768px <= width <= 1280px) {
+            height: 13rem;
+        }
+
+        @media (width < 576px) {
+            width: 13rem;
+            height: 13.5rem;
+        }
+
+        & .radial-bars {
+            --chart-height: 17.5rem;
+
+            height: 100%;
+
+            @media (768px <= width <= 1280px) {
+                --chart-height: 13rem;
+            }
+
+            @media (width < 576px) {
+                --chart-height: 13.5rem;
+            }
+        }
+    }
+
+    .zone-stats__gauge {
+        width: 12vw;
+        height: 100%;
+
+        & svg {
+            width: 100%;
+            aspect-ratio: 2;
+        }
+    }
+
+    .zone-stats__share {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        font-size: 0.5rem;
+        line-height: 0.9rem;
+        text-align: center;
+        transform: translate(-50%, -50%);
+    }
+
+    .zone-stats__gender--male {
+        color: #f99d1c;
+    }
+
+    .zone-stats__gender--female {
+        color: #063c54;
+    }
+
+    .zone-stats__percent {
+        font-size: 1.2rem;
+        font-weight: 900;
+
+        & span {
+            font-size: 0.5rem;
+            line-height: 0.9rem;
+
+            @media (768px <= width <= 992px) {
+                font-size: 0.3rem;
+                line-height: 0.6rem;
+            }
+        }
+
+        @media (768px <= width <= 1280px) {
+            font-size: 0.5rem;
+        }
+
+        @media (width < 576px) {
+            font-size: 1rem;
+        }
+    }
+
+    .zone-stats__label {
+        font-size: 0.9rem;
+        font-weight: 900;
+
+        @media (768px <= width <= 1280px) {
+            font-size: 0.5rem;
+        }
+
+        @media (width < 576px) {
+            font-size: 0.8rem;
+        }
+    }
+}

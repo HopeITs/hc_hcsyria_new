@@ -23,6 +23,8 @@ Route::livewire('/who-we-are/partners', 'pages::who-we-are')->name('public.who-w
 
 Route::livewire('/projects/disc', 'pages::disc')->name('public.disc_home');
 
+Route::livewire('/projects/study-zone', 'pages::study-zone')->name('public.studyzone2');
+
 Route::livewire('/projects/micro-projects', 'pages::micro-projects')
     ->name('new.public.micro_project_test');
 

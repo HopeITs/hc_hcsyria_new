@@ -1,0 +1,91 @@
+/*
+ * The Study Zone map with a label and a dotted line per city. Legacy
+ * #citiesMap, .tooltip and .map-line (study_new.css); the labels are the
+ * dark blue of the page's titles.
+ */
+@layer components {
+    .zone-map {
+        position: relative;
+        z-index: 1000;
+        width: 30rem;
+        height: 100%;
+        left: 9rem;
+
+        @media (768px <= width <= 1280px) {
+            left: 4rem;
+            width: 19rem;
+        }
+
+        @media (width < 576px) {
+            left: -2rem;
+            width: 50%;
+            height: auto;
+            margin-bottom: 2rem;
+        }
+    }
+
+    .zone-map__label {
+        position: absolute;
+        left: -10.5vw;
+        z-index: 999;
+        padding: 5px 8px;
+        margin-top: 2vw;
+        font-size: 0.7vw;
+        font-weight: 500;
+        color: #fff;
+        pointer-events: none;
+        white-space: nowrap;
+        background: #063c54;
+        border-radius: 5px;
+        opacity: 0;
+        transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+        &.is-shown {
+            opacity: 1;
+        }
+
+        @media (width < 576px) {
+            left: -26.5vw;
+            width: 24vw;
+            padding: 1.1vw;
+            font-size: 1.7vw;
+        }
+    }
+
+    .zone-map__label--aleppo { top: 10%; @media (width < 576px) { top: 5vw; } }
+    .zone-map__label--latakia { top: 23%; @media (width < 576px) { top: 10vw; } }
+    .zone-map__label--tartus { top: 37.5%; @media (width < 576px) { top: 15vw; } }
+    .zone-map__label--homs { top: 51.5%; @media (width < 576px) { top: 20vw; } }
+    .zone-map__label--damascus { top: 66.5%; @media (width < 576px) { top: 25vw; } }
+
+    .zone-map__line {
+        position: absolute;
+        left: -6vw;
+        width: 12vw;
+        margin-top: 2vw;
+        fill: #063c54;
+        visibility: hidden;
+
+        &.is-shown {
+            visibility: visible;
+            animation: zone-map-slide 1s ease-in-out forwards;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            &.is-shown {
+                animation: none;
+            }
+        }
+    }
+
+    .zone-map__line--aleppo { top: 12%; left: -16%; width: 35%; @media (width < 576px) { top: 17%; } }
+    .zone-map__line--latakia { top: 26%; left: -11%; width: 14%; }
+    .zone-map__line--tartus { top: 40%; left: -13%; width: 17%; }
+    .zone-map__line--homs { top: 54%; left: -12%; width: 45%; }
+    .zone-map__line--damascus { top: 69%; left: -10%; width: 30%; }
+
+    @keyframes zone-map-slide {
+        from { transform: translateX(-3vw); }
+        to { transform: translateX(0); }
+    }
+}
