@@ -7,7 +7,8 @@
 --}}
 <div {{ $attributes->class('dropdown') }} x-data="{ open: false }" @click.outside="open = false" @keydown.escape="open = false">
     <button type="button" class="dropdown__button" @click="open = ! open" :aria-expanded="open.toString()" aria-haspopup="true">
-        <span>{{ $trigger }}</span>
+        {{-- The space inside the span is the one Bootstrap's markup left before the caret. --}}
+        <span>{{ $trigger }} </span>
     </button>
 
     <ul class="dropdown__menu" x-show="open" x-cloak @click="open = false">
