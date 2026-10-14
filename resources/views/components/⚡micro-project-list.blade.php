@@ -175,29 +175,29 @@ new class extends Component
         <div class="page-margin">
             {{-- Placeholders for the list while Apply is thinking. --}}
             <div wire:loading.block wire:target="apply">
-                <x-site.project-skeleton :$view :count="6"/>
+                <div x-show="$wire.view === 'tiles'" @if ($view !== 'tiles') style="display: none" @endif><x-site.project-skeleton view="tiles" :count="6"/></div>
+                <div x-show="$wire.view === 'grid'" @if ($view !== 'grid') style="display: none" @endif><x-site.project-skeleton view="grid" :count="6"/></div>
             </div>
         </div>
 
         <div class="page-margin">
             <div class="page-margin" wire:loading.remove wire:target="apply">
                 @if ($projects->isNotEmpty())
-                    @if ($view === 'tiles')
-                        <div id="tiles-section" class="project-tiles">
-                            @foreach ($projects as $project)
-                                <x-site.project-tile :$project wire:key="tile-{{ $project->id }}"/>
-                            @endforeach
-                        </div>
-                    @else
-                        <div id="grid-section" class="project-rows">
-                            @foreach ($projects as $project)
-                                <x-site.project-row :$project :$mobile :flip="! $mobile && $loop->even" wire:key="row-{{ $project->id }}"/>
-                            @endforeach
-                        </div>
-                    @endif
+                    {{-- Both layouts are drawn and the view switch only shows one of them, so changing view needs no round trip. --}}
+                    <div id="tiles-section" class="project-tiles" x-show="$wire.view === 'tiles'" @if ($view !== 'tiles') style="display: none" @endif>
+                        @foreach ($projects as $project)
+                            <x-site.project-tile :$project wire:key="tile-{{ $project->id }}"/>
+                        @endforeach
+                    </div>
+                    <div id="grid-section" class="project-rows" x-show="$wire.view === 'grid'" @if ($view !== 'grid') style="display: none" @endif>
+                        @foreach ($projects as $project)
+                            <x-site.project-row :$project :$mobile :flip="! $mobile && $loop->even" wire:key="row-{{ $project->id }}"/>
+                        @endforeach
+                    </div>
 
                     <div wire:loading.block wire:target="loadMore">
-                        <x-site.project-skeleton :$view :count="3" class="project-skeleton--flush"/>
+                        <div x-show="$wire.view === 'tiles'"><x-site.project-skeleton view="tiles" :count="3" class="project-skeleton--flush"/></div>
+                        <div x-show="$wire.view === 'grid'" @if ($view !== 'grid') style="display: none" @endif><x-site.project-skeleton view="grid" :count="3" class="project-skeleton--flush"/></div>
                     </div>
 
                     @if ($hasMore)

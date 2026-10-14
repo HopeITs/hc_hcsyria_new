@@ -39,8 +39,8 @@
         <div class="project-filters__col project-filters__col--end">
             <div class="project-view">
                 <label>View</label>
-                <img :src="`/images/ico/${$wire.view === 'tiles' ? 'tiles-active' : 'tiles'}.png`" src="/images/ico/{{ $view === 'tiles' ? 'tiles-active' : 'tiles' }}.png" alt="Tiles" role="button" class="project-view__tiles" @click="$wire.show('tiles')">
-                <img :src="`/images/ico/${$wire.view === 'grid' ? 'grid-active' : 'grid'}.png`" src="/images/ico/{{ $view === 'grid' ? 'grid-active' : 'grid' }}.png" alt="List" role="button" class="project-view__grid" @click="$wire.show('grid')">
+                <img :src="`/images/ico/${$wire.view === 'tiles' ? 'tiles-active' : 'tiles'}.png`" src="/images/ico/{{ $view === 'tiles' ? 'tiles-active' : 'tiles' }}.png" alt="Tiles" role="button" class="project-view__tiles" @click="setView('tiles')">
+                <img :src="`/images/ico/${$wire.view === 'grid' ? 'grid-active' : 'grid'}.png`" src="/images/ico/{{ $view === 'grid' ? 'grid-active' : 'grid' }}.png" alt="List" role="button" class="project-view__grid" @click="setView('grid')">
             </div>
             <div class="project-video">
                 <label class="project-video__switch" :class="{ 'is-on': draft.hasVideo }">

@@ -95,6 +95,19 @@ export default (Alpine) => {
                 + (hasVideo ? ' | Video' : '');
         },
 
+        /**
+         * Shows tiles or rows at once: both are on the page, so this is only a
+         * switch. The list learns of it with its next request; the address
+         * follows now.
+         */
+        setView(view) {
+            this.$wire.$set('view', view, false);
+
+            const url = new URL(location.href);
+            if (view === 'tiles') url.searchParams.delete('view'); else url.searchParams.set('view', view);
+            history.replaceState(history.state, '', url);
+        },
+
         tip(element, text) {
             showTip(element, text, 'right', 1000);
         },
