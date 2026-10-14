@@ -9,7 +9,7 @@
 --}}
 @php($presenter = new \App\Support\ProjectPresenter($project))
 <div {{ $attributes->class('project-modal') }} x-data="projectModal(@js(['locked' => $locked]))"
-     @keydown.window.escape="close()" @keydown.tab.window="trap($event)" role="dialog" aria-modal="true" aria-label="{{ $presenter->heading() }}">
+     @keydown.window.escape="$event.defaultPrevented || close()" @keydown.tab.window="trap($event)" role="dialog" aria-modal="true" aria-label="{{ $presenter->heading() }}">
     <div class="project-modal__backdrop" @click="backdrop()"></div>
 
     <div class="project-modal__dialog" tabindex="-1" x-ref="dialog">
