@@ -99,19 +99,45 @@ export default (Alpine) => {
             showTip(element, text, 'right', 1000);
         },
 
+        /** Whether any filter is applied, which is when there is something to clear. */
+        get filtered() {
+            return Boolean(this.$wire.city || this.$wire.donor || this.$wire.hasVideo || this.$wire.search);
+        },
+
         async apply() {
             const { city, donor, hasVideo, search } = this.draft;
 
             await this.$wire.apply(city, donor, hasVideo, search);
-            document.querySelector('.member-projects')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            this.showList();
+        },
+
+        async clear() {
+            this.draft = { city: '', donor: '', hasVideo: false, search: '' };
+            window.dispatchEvent(new CustomEvent('search-set', { detail: '' }));
+
+            await this.$wire.apply('', '', false, '');
+            this.showList();
+        },
+
+        /** Brings the list into view, but only when its top is hidden behind the bar or off the screen. */
+        showList() {
+            const list = document.querySelector('.project-tiles, .project-rows, .project-none');
+            const bar = this.$root.getBoundingClientRect();
+
+            if (list && list.getBoundingClientRect().top < bar.bottom) {
+                document.querySelector('.member-projects')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
         },
     }));
 
     Alpine.data('projectModal', ({ locked }) => ({
         touch: 'ontouchstart' in document.documentElement,
 
+        opener: null,
+
         init() {
             document.documentElement.classList.add('project-modal-open');
+            this.opener = document.activeElement;
             this.$nextTick(() => this.$refs.dialog.focus());
 
             let startY = 0;
@@ -123,6 +149,29 @@ export default (Alpine) => {
 
         destroy() {
             document.documentElement.classList.remove('project-modal-open');
+
+            // Back to where the visitor was, if that is still on the page.
+            if (this.opener?.isConnected) this.opener.focus();
+        },
+
+        /** Tab stays inside the window while it is open. */
+        trap(event) {
+            const focusable = [...this.$refs.dialog.querySelectorAll('a[href], button, [tabindex]:not([tabindex="-1"])')]
+                .filter((element) => element.offsetParent !== null);
+
+            if (focusable.length === 0) return;
+
+            const first = focusable[0];
+            const last = focusable[focusable.length - 1];
+            const inside = this.$refs.dialog.contains(document.activeElement);
+
+            if (event.shiftKey && (document.activeElement === first || ! inside || document.activeElement === this.$refs.dialog)) {
+                event.preventDefault();
+                last.focus();
+            } else if (! event.shiftKey && (document.activeElement === last || ! inside)) {
+                event.preventDefault();
+                first.focus();
+            }
         },
 
         backdrop() {

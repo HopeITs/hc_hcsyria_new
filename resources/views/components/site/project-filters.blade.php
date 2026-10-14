@@ -61,6 +61,7 @@
         <div class="project-filters__col project-filters__col--end">
             <div class="project-result">
                 Filter Result: <span x-text="result"></span>
+                <button type="button" class="project-result__clear" x-show="filtered" x-cloak @click="clear()">Clear filters</button>
             </div>
         </div>
         <div class="project-filters__gap"></div>

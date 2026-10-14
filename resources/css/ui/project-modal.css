@@ -28,6 +28,12 @@
         .project-modal { animation: none; }
     }
 
+    /* Only the frame, shown until the server has sent the project. */
+    .project-modal__shape {
+        height: 38rem;
+        max-height: calc(100vh - 6rem);
+    }
+
     .project-modal__backdrop {
         position: fixed;
         inset: 0;

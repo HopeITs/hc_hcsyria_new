@@ -52,8 +52,9 @@ new class extends Component
     #[Url(except: 'tiles')]
     public string $view = 'tiles';
 
-    /** The project whose details window is open, by id. */
-    public ?int $details = null;
+    /** The id of the project whose details window is open; also in the address, as legacy's deep link had it. */
+    #[Url(as: 'projectDetailsModal', history: true, except: '')]
+    public string $details = '';
 
     /** Whether the details window was opened by a link to it, which keeps it open until the cross is used. */
     #[Locked]
@@ -87,8 +88,8 @@ new class extends Component
 
         $this->mobile = Device::isMobile(request());
         $this->total = MemberProjectQuery::total();
-        $this->details = request()->integer('projectDetailsModal') ?: null;
-        $this->linked = $this->details !== null;
+        $this->details = ctype_digit($this->details) ? $this->details : '';
+        $this->linked = $this->details !== '';
         $this->count = $this->query()->builder()->count();
     }
 
@@ -131,13 +132,13 @@ new class extends Component
 
     public function open(int $id): void
     {
-        $this->details = $id;
+        $this->details = (string) $id;
         $this->linked = false;
     }
 
     public function close(): void
     {
-        $this->details = null;
+        $this->details = '';
     }
 
     /** @return array<int, array{lat: string, lng: string, name: ?string, beneficiary: string}> */
@@ -172,7 +173,7 @@ new class extends Component
             'hasMore' => $this->count > $projects->count(),
             'cities' => MemberProjectQuery::cities(),
             'donors' => MemberProjectQuery::donors(),
-            'detail' => $this->details ? MemberProjectQuery::find($this->details) : null,
+            'detail' => ctype_digit($this->details) && $this->details !== '' ? MemberProjectQuery::find((int) $this->details) : null,
         ];
     }
 };
@@ -221,6 +222,16 @@ new class extends Component
 
                 <x-ui.red-rule short class="project-rule"/>
                 <x-site.project-map/>
+            </div>
+        </div>
+    </div>
+
+    {{-- The window's frame, up at once while the server fetches what goes in it. --}}
+    <div wire:loading.flex wire:target="open" class="project-modal project-modal--opening" aria-hidden="true">
+        <div class="project-modal__backdrop"></div>
+        <div class="project-modal__dialog">
+            <div class="project-modal__content">
+                <div class="project-skeleton__shape project-modal__shape"></div>
             </div>
         </div>
     </div>

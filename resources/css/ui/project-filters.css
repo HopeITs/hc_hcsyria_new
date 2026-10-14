@@ -194,6 +194,16 @@
         }
     }
 
+    .project-result__clear {
+        margin-left: 0.5vw;
+        font-size: inherit;
+        color: var(--color-brand-600);
+        text-decoration: underline;
+        cursor: pointer;
+        background: none;
+        border: 0;
+    }
+
     /* The red button: Apply, and the outlined Load More. */
     .project-button {
         height: -webkit-fill-available;

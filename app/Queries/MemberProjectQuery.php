@@ -8,6 +8,7 @@ use App\Models\Project;
 use App\Support\PlaceName;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Cache;
 
 /*
  * What a signed-in member sees on /projects/micro-projects: the filter
@@ -23,6 +24,11 @@ final class MemberProjectQuery
 
     /** Marks a missing partner: the column holds '0', not NULL. */
     private const NO_PARTNER = '0';
+
+    /** Where the search box's suggestions are kept, and for how long: they read every listed project. */
+    public const SUGGESTIONS_KEY = 'micro-projects.suggestions';
+
+    private const SUGGESTIONS_MINUTES = 10;
 
     /** @return Collection<int, Place> */
     public static function cities(): Collection
@@ -50,6 +56,12 @@ final class MemberProjectQuery
      * @return array{projects: array<int, string>, beneficiaries: array<int, string>}
      */
     public static function suggestions(): array
+    {
+        return Cache::remember(self::SUGGESTIONS_KEY, now()->addMinutes(self::SUGGESTIONS_MINUTES), fn () => self::readSuggestions());
+    }
+
+    /** @return array{projects: array<int, string>, beneficiaries: array<int, string>} */
+    private static function readSuggestions(): array
     {
         $projects = ProjectSearch::make()->builder()->with('content:project_id,MPE_Name')
             ->get(['id', 'MicroProject_ID', 'MPE_BeneficiaryName', 'MPE_PartnerName', 'MPE_PartnerName2']);

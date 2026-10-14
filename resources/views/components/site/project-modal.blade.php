@@ -3,13 +3,13 @@
 {{--
     A project's details in a window over the page (resources/css/ui/project-modal.css,
     resources/js/project-list.js): its photos, facts, donor and whole story.
-    Closes with the cross, Escape, a click on the dark behind it (not when
+    Keeps the keyboard inside while it is open and gives it back to the card that opened it. Closes with the cross, Escape, a click on the dark behind it (not when
     it was opened by a link, as the legacy deep link did), or a swipe up on a
     touch screen.
 --}}
 @php($presenter = new \App\Support\ProjectPresenter($project))
 <div {{ $attributes->class('project-modal') }} x-data="projectModal(@js(['locked' => $locked]))"
-     @keydown.window.escape="close()" role="dialog" aria-modal="true" aria-label="{{ $presenter->heading() }}">
+     @keydown.window.escape="close()" @keydown.tab.window="trap($event)" role="dialog" aria-modal="true" aria-label="{{ $presenter->heading() }}">
     <div class="project-modal__backdrop" @click="backdrop()"></div>
 
     <div class="project-modal__dialog" tabindex="-1" x-ref="dialog">

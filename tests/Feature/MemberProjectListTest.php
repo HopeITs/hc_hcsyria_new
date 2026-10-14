@@ -9,6 +9,7 @@ use App\Models\UserPermission;
 use App\Queries\MemberAccessQuery;
 use App\Queries\MemberProjectQuery;
 use App\Queries\ProjectSearch;
+use Illuminate\Support\Facades\Cache;
 use Livewire\Livewire;
 
 /*
@@ -166,7 +167,7 @@ it('opens a project from a link to it, and not one that is not on the public lis
         ->assertSet('linked', true)
         ->assertSee('Zqx linked')
         ->call('close')
-        ->assertSet('details', null)
+        ->assertSet('details', '')
         ->assertDontSee('Zqx linked');
 
     Livewire::actingAs(authorisedMember())->withQueryParams(['projectDetailsModal' => $project->id])
@@ -180,7 +181,7 @@ it('opens the details of a tile with its facts', function () {
     Livewire::actingAs(authorisedMember())->test('micro-project-list')
         ->call('apply', '', '', false, 'zqx clicked')
         ->call('open', $project->id)
-        ->assertSet('details', $project->id)
+        ->assertSet('details', (string) $project->id)
         ->assertSet('linked', false)
         ->assertSee('Zqx clicked')
         ->assertSee('Beneficiary:')
@@ -201,6 +202,7 @@ it('has a pin for each filtered project that has a position', function () {
 
 it('offers names and beneficiaries to the search box, without the zero of a missing partner', function () {
     listedProject(['MPE_PartnerName' => 'zqx partner']);
+    Cache::forget(MemberProjectQuery::SUGGESTIONS_KEY);
 
     $found = MemberProjectQuery::suggestions();
 
@@ -254,4 +256,30 @@ it('starts the filter bar from the filters in the address', function () {
     $this->actingAs(authorisedMember())->get('/projects/micro-projects?city=3&search=zqx')
         ->assertSee('City-', false)
         ->assertSeeHtml('&quot;search&quot;:&quot;zqx&quot;');
+});
+
+it('keeps the suggestions for a while instead of reading every project each time', function () {
+    Cache::forget(MemberProjectQuery::SUGGESTIONS_KEY);
+    MemberProjectQuery::suggestions();
+    listedProject([], ['MPE_Name' => 'zqx late arrival']);
+
+    expect(MemberProjectQuery::suggestions()['projects'])->not->toContain('zqx late arrival');
+
+    Cache::forget(MemberProjectQuery::SUGGESTIONS_KEY);
+
+    expect(MemberProjectQuery::suggestions()['projects'])->toContain('zqx late arrival');
+});
+
+it('puts the open details window in the address and ignores one that is not a number', function () {
+    $project = listedProject([], ['MPE_Name' => 'zqx addressed']);
+
+    Livewire::actingAs(authorisedMember())->withQueryParams(['projectDetailsModal' => (string) $project->id])
+        ->test('micro-project-list')
+        ->assertSet('details', (string) $project->id)
+        ->assertSee('Zqx addressed');
+
+    Livewire::actingAs(authorisedMember())->withQueryParams(['projectDetailsModal' => 'abc'])
+        ->test('micro-project-list')
+        ->assertSet('details', '')
+        ->assertSet('linked', false);
 });
