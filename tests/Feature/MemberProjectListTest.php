@@ -181,7 +181,7 @@ it('opens the details of a tile with its facts', function () {
     Livewire::actingAs(authorisedMember())->test('micro-project-list')
         ->call('apply', '', '', false, 'zqx clicked')
         ->call('open', $project->id)
-        ->assertSet('details', (string) $project->id)
+        ->assertSet('details', $project->id.'-zqx-clicked')
         ->assertSet('linked', false)
         ->assertSee('Zqx clicked')
         ->assertSee('Beneficiary:')
@@ -275,8 +275,12 @@ it('puts the open details window in the address and ignores one that is not a nu
 
     Livewire::actingAs(authorisedMember())->withQueryParams(['projectDetailsModal' => (string) $project->id])
         ->test('micro-project-list')
-        ->assertSet('details', (string) $project->id)
+        ->assertSet('details', $project->id.'-zqx-addressed')
         ->assertSee('Zqx addressed');
+
+    Livewire::actingAs(authorisedMember())->withQueryParams(['projectDetailsModal' => $project->id.'-an-old-name'])
+        ->test('micro-project-list')
+        ->assertSet('details', $project->id.'-zqx-addressed');
 
     Livewire::actingAs(authorisedMember())->withQueryParams(['projectDetailsModal' => 'abc'])
         ->test('micro-project-list')

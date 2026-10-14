@@ -116,3 +116,14 @@ it('writes Idlib as the public site does', function () {
         ->and(PlaceName::of('Aleppo'))->toBe('Aleppo')
         ->and(PlaceName::of(null))->toBe('');
 });
+
+it('stands for a project in an address by its id and its name', function () {
+    $presenter = presented([], ['MPE_Name' => 'Pick-up Truck']);
+    $presenter->project->id = 3033;
+
+    expect($presenter->linkKey())->toBe('3033-pick-up-truck');
+
+    $presenter->project->setRelation('content', new ProjectContent(['MPE_Name' => '???']));
+
+    expect($presenter->linkKey())->toBe('3033');
+});

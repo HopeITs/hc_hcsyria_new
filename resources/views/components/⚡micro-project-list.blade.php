@@ -3,6 +3,7 @@
 use App\Queries\MemberProjectQuery;
 use App\Queries\ProjectSearch;
 use App\Support\Device;
+use App\Support\ProjectPresenter;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 use Livewire\Attributes\Locked;
@@ -52,7 +53,10 @@ new class extends Component
     #[Url(except: 'tiles')]
     public string $view = 'tiles';
 
-    /** The id of the project whose details window is open; also in the address, as legacy's deep link had it. */
+    /**
+     * The project whose details window is open, as it is in the address: its id and
+     * its name, 3033-pick-up-truck. Legacy's links carry the bare id, still understood.
+     */
     #[Url(as: 'projectDetailsModal', history: true, except: '')]
     public string $details = '';
 
@@ -88,7 +92,7 @@ new class extends Component
 
         $this->mobile = Device::isMobile(request());
         $this->total = MemberProjectQuery::total();
-        $this->details = ctype_digit($this->details) ? $this->details : '';
+        $this->details = $this->canonicalDetails($this->details);
         $this->linked = $this->details !== '';
         $this->count = $this->query()->builder()->count();
     }
@@ -132,7 +136,7 @@ new class extends Component
 
     public function open(int $id): void
     {
-        $this->details = (string) $id;
+        $this->details = $this->canonicalDetails((string) $id);
         $this->linked = false;
     }
 
@@ -156,6 +160,21 @@ new class extends Component
     }
 
     /** A city slug as the address or Apply sent it: kept when it is one of the filter's, else no city. */
+    /** The project id a details link names: the digits it starts with, whatever follows. */
+    private function detailsId(): ?int
+    {
+        return preg_match('/^(\d+)(-|$)/', $this->details, $found) ? (int) $found[1] : null;
+    }
+
+    /** A details link as the address should carry it: id and name of a listed project, else nothing. */
+    private function canonicalDetails(string $link): string
+    {
+        $this->details = $link;
+        $project = ($id = $this->detailsId()) ? MemberProjectQuery::find($id) : null;
+
+        return $project ? (new ProjectPresenter($project))->linkKey() : '';
+    }
+
     private function knownCity(string $slug): string
     {
         return MemberProjectQuery::cityId($slug) === null ? '' : $slug;
@@ -184,7 +203,7 @@ new class extends Component
             'hasMore' => $this->count > $projects->count(),
             'cities' => MemberProjectQuery::cities(),
             'donors' => MemberProjectQuery::donors(),
-            'detail' => ctype_digit($this->details) && $this->details !== '' ? MemberProjectQuery::find((int) $this->details) : null,
+            'detail' => ($id = $this->detailsId()) ? MemberProjectQuery::find($id) : null,
         ];
     }
 };

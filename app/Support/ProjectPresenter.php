@@ -28,6 +28,14 @@ final class ProjectPresenter
         return (string) $this->project->content?->MPE_Name;
     }
 
+    /** What stands for the project in an address: its id, then its name as a slug (3033-pick-up-truck). */
+    public function linkKey(): string
+    {
+        $slug = Str::slug($this->name());
+
+        return $slug === '' ? (string) $this->project->id : $this->project->id.'-'.$slug;
+    }
+
     /** The name as it heads a row or a details window. */
     public function heading(): string
     {

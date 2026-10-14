@@ -25,7 +25,7 @@
             <x-site.project-icon name="location" :tip="$tips ? ($layout === 'modal' ? 'location' : null) : null"/>
         </a>
     @elseif ($icon === 'copy')
-        <x-site.project-icon name="copy" :tip="$tips ? 'copy' : null" :copy="$project->id" role="button"/>
+        <x-site.project-icon name="copy" :tip="$tips ? 'copy' : null" :copy="$presenter->linkKey()" role="button"/>
     @elseif ($icon === 'more' && $layout === 'tile')
         <button type="button" class="project-more-button" wire:click="open({{ $project->id }})" aria-label="Read more">
             <x-site.project-icon name="readmore" tip="read more"/>
