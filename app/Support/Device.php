@@ -20,9 +20,22 @@ final class Device
 {
     public static function isPhone(Request $request): bool
     {
+        $detect = self::detect($request);
+
+        return $detect->isMobile() && ! $detect->isTablet();
+    }
+
+    /** A phone or a tablet: what legacy's Agent::isMobile() answered. */
+    public static function isMobile(Request $request): bool
+    {
+        return self::detect($request)->isMobile();
+    }
+
+    private static function detect(Request $request): MobileDetect
+    {
         $detect = new MobileDetect;
         $detect->setUserAgent((string) $request->userAgent());
 
-        return $detect->isMobile() && ! $detect->isTablet();
+        return $detect;
     }
 }

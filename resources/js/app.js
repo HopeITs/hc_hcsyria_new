@@ -10,6 +10,8 @@ import centreSpread from './centre-spread';
 import hideNavBetween from './hide-nav-between';
 import lightbox from './lightbox';
 import preloader from './preloader';
+import projectList from './project-list';
+import projectMap from './project-map';
 import radialBars from './radial-bars';
 import reveal from './reveal';
 import searchBox from './search-box';
@@ -27,6 +29,8 @@ document.addEventListener('alpine:init', () => {
     window.Alpine.data('lightbox', lightbox);
     window.Alpine.data('preloader', preloader);
     window.Alpine.data('radialBars', radialBars);
+    window.Alpine.data('projectMap', projectMap);
+    projectList(window.Alpine);
     reveal(window.Alpine);
     hideNavBetween(window.Alpine);
 });

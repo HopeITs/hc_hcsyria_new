@@ -1,0 +1,139 @@
+/*
+ * The signed-in member's badge and card, fixed to the bottom corner. Legacy
+ * .fab-account (inline <style> in new/public/navbar.blade.php), as written.
+ */
+@layer components {
+    .account-menu {
+        position: fixed;
+        right: 22px;
+        bottom: 22px;
+        z-index: 1050;
+
+        @media (width <= 575.98px) {
+            right: 16px;
+            bottom: 16px;
+        }
+    }
+
+    .account-menu__toggle {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 44px;
+        height: 44px;
+        font-size: 1.35rem;
+        font-weight: 800;
+        color: var(--color-brand-600);
+        cursor: pointer;
+        background: #fff;
+        border: 2px solid var(--color-brand-600);
+        border-radius: 50%;
+        transition: transform 0.16s ease;
+
+        &:hover {
+            transform: scale(1.05);
+        }
+
+        @media (width <= 575.98px) {
+            width: 42px;
+            height: 42px;
+            font-size: 1.3rem;
+        }
+    }
+
+    .account-menu__panel {
+        position: absolute;
+        right: 0;
+        bottom: 66px;
+        width: 250px;
+        padding: 1rem;
+        visibility: hidden;
+        background: #fff;
+        border: 1px solid var(--color-ink-100);
+        border-radius: 16px;
+        box-shadow: 0 22px 50px -16px rgb(0 0 0 / 0.28);
+        opacity: 0;
+        transform: translateY(12px) scale(0.97);
+        transform-origin: bottom right;
+        transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+
+        .is-open > & {
+            visibility: visible;
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+
+    .account-menu__head {
+        display: flex;
+        gap: 0.7rem;
+        align-items: center;
+        margin-bottom: 0.85rem;
+    }
+
+    .account-menu__initial {
+        display: flex;
+        flex-shrink: 0;
+        align-items: center;
+        justify-content: center;
+        width: 44px;
+        height: 44px;
+        font-size: 1.35rem;
+        font-weight: 800;
+        color: var(--color-brand-600);
+        background: #fff;
+        border: 2px solid var(--color-brand-600);
+        border-radius: 50%;
+    }
+
+    .account-menu__name {
+        max-width: 165px;
+        overflow: hidden;
+        font-size: 0.95rem;
+        font-weight: 700;
+        line-height: 1.25;
+        color: #1f1f1f;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .account-menu__status {
+        display: inline-flex;
+        gap: 0.32rem;
+        align-items: center;
+        font-size: 0.76rem;
+        font-weight: 600;
+        color: var(--color-ink-500);
+
+        &::before {
+            display: inline-block;
+            width: 7px;
+            height: 7px;
+            content: '';
+            background: var(--color-ink-500);
+            border-radius: 50%;
+        }
+    }
+
+    .account-menu__signout {
+        display: flex;
+        gap: 0.45rem;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        padding: 0.62rem;
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: #fff;
+        cursor: pointer;
+        background: var(--color-brand-600);
+        border: none;
+        border-radius: 11px;
+        transition: background 0.18s ease;
+
+        &:hover {
+            background: #a71414;
+        }
+    }
+}

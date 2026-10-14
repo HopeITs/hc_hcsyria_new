@@ -1,6 +1,7 @@
 @import 'tailwindcss';
 @import './fonts.css';
 @import './site/navbar.css';
+@import './site/account-menu.css';
 @import './site/footer.css';
 @import './site/error-page.css';
 @import './site/page.css';
@@ -34,6 +35,11 @@
 @import './ui/zone-map.css';
 @import './ui/zone-stats.css';
 @import './ui/search-box.css';
+@import './ui/dropdown.css';
+@import './ui/project-filters.css';
+@import './ui/project-card.css';
+@import './ui/project-modal.css';
+@import './ui/project-map.css';
 @import './ui/centre-spread.css';
 @import './ui/testimonials.css';
 @import './ui/category-showcase.css';
@@ -142,76 +148,6 @@
 @utility skip-link {
     @apply absolute left-4 -top-20 z-[1100] bg-brand-600 px-4 py-2 text-white;
     @apply focus:top-4;
-}
-
-/*
- * Used only by the Phase 0 micro-projects page, which is re-ported in full in
- * the public-site phase; these go with it. Values are legacy computed styles
- * (navbar.css, micro_page_new-test.css, main-new-test.css) at 1440px.
- */
-@utility apply-btn {
-    background: #BC1818;
-    border: 2px solid #BC1818;
-    border-radius: 0;
-    color: white;
-    font-size: 1vw;
-    padding: 0.7vw;
-}
-
-@utility filter-dropdown {
-    background: #f7f7f7;
-    border: 0;
-    border-radius: 4px;
-    color: #B2B2B2;
-    font-size: 1.3vw;
-    font-weight: 100;
-    padding: 0.7vw;
-}
-
-@utility dropdown-item {
-    display: block;
-    width: 100%;
-    text-align: left;
-    padding: 0.4vw 1vw;
-    font-size: 1vw;
-    color: #616262;
-}
-
-@utility result-line {
-    color: #818181;
-    font-size: 0.7vw;
-    font-weight: 100;
-}
-
-@utility project-card {
-    background: #f4f4f4;
-}
-
-@utility card-title {
-    color: #BC1818;
-    font-size: 1vw;
-    font-weight: 900;
-    margin-bottom: 0;
-}
-
-@utility card-subtitle {
-    color: #676463;
-    font-size: 0.8vw;
-    font-weight: 700;
-    margin-bottom: 0;
-}
-
-@utility card-content {
-    color: rgba(27, 27, 27, 0.44);
-    font-size: 0.7vw;
-    margin-top: 0;
-}
-
-@utility nav-link {
-    color: #676766;
-    font-size: 1vw;
-    line-height: 1.3;
-    text-transform: uppercase;
 }
 
 @utility micro-page-margin {

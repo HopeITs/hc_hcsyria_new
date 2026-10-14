@@ -486,3 +486,24 @@
         list-style: decimal;
     }
 }
+
+/*
+ * What a signed-in member sees below the statistics: the project list, in
+ * place of the gate. Legacy #projects-section.small-margin.pt-5.section-space.
+ * The bars above and below it sit behind the list's white bands, as there.
+ */
+@layer components {
+    .member-section {
+        padding-top: 3rem;
+        margin-top: 9vw;
+
+        @media (width < 576px) {
+            margin-top: 13vw;
+        }
+    }
+
+    .member-section ~ .red-rule,
+    .member-section + .red-rule {
+        z-index: -1;
+    }
+}

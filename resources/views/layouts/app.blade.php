@@ -58,6 +58,10 @@
 
     <x-site.header :$menu :$overlayUntil/>
 
+    @auth
+        <x-site.account-menu/>
+    @endauth
+
     {{-- A flex item of the body column that grows, as the legacy page content did. --}}
     <main id="main" class="flex shrink-0 grow flex-col">
         {{ $slot }}

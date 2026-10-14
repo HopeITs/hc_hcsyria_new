@@ -14,10 +14,9 @@ use Livewire\Component;
  * PublicController::micro_project_new_test() at legacy commit 6d45ef9.
  *
  * Visitors get the brief, the statistics and, where members see the project
- * list and map, a sign-in gate (Fortify's POST /login; an account sees the
- * members' section when it passes the 'view-micro-projects' gate). The list
- * and map themselves are still to port (upgrade plan, Phase 2 step 6), so for
- * a member the gate is simply gone for now.
+ * list and map, a sign-in gate (Fortify's POST /login). An account that
+ * passes the 'view-micro-projects' gate sees the list and the map instead
+ * (the micro-project-list component).
  *
  * Not ported: the Facebook SDK the page loaded and never used, the edition
  * and donor lists the controller passed and the view ignored, and the three
@@ -76,14 +75,21 @@ new #[Layout('layouts::app', [
 
     <x-site.micro-statistics :cities="$cities" :rate="$rate" :ages="$ages" :categories="$categories"/>
 
-    <div class="locked-section">
-        <div class="locked-section__rule"></div>
-        @cannot('view-micro-projects')
+    @can('view-micro-projects')
+        <x-ui.red-rule/>
+        <div class="member-section">
+            <livewire:micro-project-list/>
+        </div>
+        <x-ui.red-rule/>
+        <x-site.funders :ongoing="$ongoing" :previous="$previous"/>
+    @else
+        <div class="locked-section">
+            <div class="locked-section__rule"></div>
             <x-site.locked-gate/>
-        @endcannot
-        <div class="locked-section__rule"></div>
-        <x-site.funders :ongoing="$ongoing" :previous="$previous" class="funders--after-gate"/>
-    </div>
+            <div class="locked-section__rule"></div>
+            <x-site.funders :ongoing="$ongoing" :previous="$previous" class="funders--after-gate"/>
+        </div>
+    @endcan
 
     <x-ui.red-rule class="red-rule--end"/>
 </div>

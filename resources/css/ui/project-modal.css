@@ -1,0 +1,175 @@
+/*
+ * A project's details in a window over the page. Legacy: Bootstrap 5.0's
+ * .modal, .modal-dialog-centered and .modal-content, with the project
+ * sizes of micro_page_new-test.css and main-new-test.css (.modal .card-title,
+ * .modal .card-subtitle, .modal .card-content, .close), measured on
+ * /projects/micro-projects at 1440px.
+ */
+@layer components {
+    html.project-modal-open {
+        overflow: hidden;
+    }
+
+    .project-modal {
+        position: fixed;
+        inset: 0;
+        z-index: 1055;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow-y: auto;
+        animation: project-modal-in 0.15s linear;
+    }
+
+    @keyframes project-modal-in {
+        from { opacity: 0; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .project-modal { animation: none; }
+    }
+
+    .project-modal__backdrop {
+        position: fixed;
+        inset: 0;
+        background: #000;
+        opacity: 0.5;
+    }
+
+    .project-modal__dialog {
+        position: relative;
+        width: 100%;
+        max-width: 600px;
+        margin: 1.75rem auto;
+        outline: none;
+        animation: project-dialog-in 0.3s ease-out;
+
+        @media (prefers-reduced-motion: reduce) {
+            animation: none;
+        }
+    }
+
+    @keyframes project-dialog-in {
+        from { transform: translate(0, -50px); }
+    }
+
+    .project-modal__content {
+        position: relative;
+        padding: 1vw 1vw calc(1vw + 1rem);
+        background: #fff;
+        background-clip: padding-box;
+        border: 1px solid rgb(0 0 0 / 0.2);
+        border-radius: 0.3rem;
+    }
+
+    /* Bootstrap's .modal-body: a 1rem padding the content sits in. */
+    .project-modal__content > :not(.project-modal__close) {
+        margin-right: 1rem;
+        margin-left: 1rem;
+    }
+
+    .project-modal__content > .project-row__head {
+        margin-top: 1rem;
+        margin-right: calc(1rem - 0.75rem);
+        margin-left: calc(1rem - 0.75rem);
+    }
+
+    .project-modal__close {
+        position: absolute;
+        top: -0.5vw;
+        right: 0;
+        padding: 1px 6px;
+        font-size: 20px;
+        line-height: 30px;
+        color: #b2b2b2;
+        cursor: pointer;
+        background: none;
+        border: 0;
+
+        &:hover {
+            color: #616262;
+        }
+    }
+
+    .project-modal .card-title {
+        margin: 0;
+        font-size: 1.3vw;
+
+        @media (width < 576px) {
+            margin-top: 1vw;
+            font-size: 3.3vw;
+        }
+    }
+
+    .project-modal .project-fact {
+        margin-bottom: 0.4vw;
+        font-size: 1.1vw;
+        line-height: 1.3vw;
+
+        @media (width < 576px) {
+            font-size: 3.1vw;
+            line-height: 5vw;
+        }
+    }
+
+    .project-modal .card-content {
+        font-size: 1.1vw;
+        line-height: 1.5vw;
+
+        @media (width < 576px) {
+            font-size: 3vw;
+            line-height: 4vw;
+        }
+    }
+
+    .project-modal__photos {
+        margin-bottom: 0;
+    }
+
+    .project-modal__photos .project-photos__track {
+        height: auto;
+    }
+
+    .project-modal__photos .project-photo {
+        height: auto;
+
+        & img {
+            display: block;
+            height: auto;
+        }
+    }
+
+    .project-modal__facts {
+        margin-top: 3rem;
+
+        & > div:first-child {
+            padding-top: 0.15vw;
+        }
+    }
+
+    .project-modal__swipe {
+        margin-bottom: 1rem;
+    }
+
+    /* Legacy wrapped the story in a paragraph, whose bottom margin this stands for. */
+    .project-modal__story {
+        margin-top: 0;
+        margin-bottom: 1rem;
+    }
+
+    /* "swipe up here to close", for touch screens. */
+    .project-modal__hint {
+        text-align: center;
+
+        & svg {
+            display: inline-block;
+            width: 1.5em;
+            height: 1.5em;
+            fill: currentcolor;
+        }
+
+        & p {
+            margin: 0 0 1rem;
+        }
+    }
+}

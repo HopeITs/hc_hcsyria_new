@@ -1,21 +1,16 @@
-@props(['label'])
-
 {{--
-    Replaces the Bootstrap .dropdown / data-bs-toggle pattern the legacy filter
-    bar used, with the same appearance: a light button showing the current
-    selection, and a full-width menu beneath it.
+    A button that opens a list beneath it (resources/css/ui/dropdown.css),
+    the look of the Bootstrap dropdown the legacy filter bar used. The
+    button's text goes in the `trigger` slot, the choices in the default one
+    as <li><a class="dropdown__item" href="#">...</a></li>; choosing one
+    closes the list.
 --}}
-<div x-data="{ open: false }" @click.outside="open = false" @keydown.escape="open = false" class="relative">
-    <button type="button" @click="open = !open" :aria-expanded="open.toString()"
-            class="filter-dropdown flex w-56 items-center justify-between gap-2">
-        <span class="truncate">{{ $label }}</span>
-        <svg class="size-4 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-            <path fill-rule="evenodd" d="M5.2 7.3a1 1 0 0 1 1.4 0L10 10.7l3.4-3.4a1 1 0 1 1 1.4 1.4l-4.1 4.1a1 1 0 0 1-1.4 0L5.2 8.7a1 1 0 0 1 0-1.4Z" clip-rule="evenodd"/>
-        </svg>
+<div {{ $attributes->class('dropdown') }} x-data="{ open: false }" @click.outside="open = false" @keydown.escape="open = false">
+    <button type="button" class="dropdown__button" @click="open = ! open" :aria-expanded="open.toString()" aria-haspopup="true">
+        <span>{{ $trigger }}</span>
     </button>
 
-    <div x-show="open" x-cloak x-transition.opacity.duration.150ms @click="open = false"
-         class="absolute left-0 top-full z-30 max-h-80 w-56 overflow-y-auto border border-ink-200 bg-white shadow-lg">
+    <ul class="dropdown__menu" x-show="open" x-cloak @click="open = false">
         {{ $slot }}
-    </div>
+    </ul>
 </div>

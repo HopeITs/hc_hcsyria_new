@@ -9,9 +9,9 @@
  * it. The map starts a moment after the page, as the legacy one did, so it
  * measures a finished layout.
  */
+import { startMap } from './leaflet-map';
+
 const START_DELAY_MS = 1500;
-const CENTRE = [34.8021, 36.9968];
-const ZOOM = 7;
 
 export default ({ centres, selected, tiles }) => {
     // Held outside the component's data: Alpine would wrap Leaflet's objects in proxies.
@@ -48,8 +48,7 @@ export default ({ centres, selected, tiles }) => {
     },
 
     async start() {
-        const { default: L } = await import('leaflet');
-        await import('leaflet/dist/leaflet.css');
+        const { L, map } = await startMap(this.$refs.map, { tiles });
 
         const icon = L.icon({
             iconUrl: '/images/ico/marker-icon-2x.png',
@@ -60,9 +59,6 @@ export default ({ centres, selected, tiles }) => {
             popupAnchor: [1, -34],
             tooltipAnchor: [16, -28],
         });
-
-        const map = L.map(this.$refs.map, { center: CENTRE, zoom: ZOOM });
-        L.tileLayer(tiles, { attribution: '' }).addTo(map);
 
         this.centres.filter((centre) => centre.active && centre.latitude && centre.longitude).forEach((centre) => {
             const marker = L.marker([centre.latitude, centre.longitude], { icon }).addTo(map);

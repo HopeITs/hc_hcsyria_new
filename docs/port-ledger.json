@@ -1701,7 +1701,7 @@
             "name": "new.public.micro_project_test",
             "order": 15,
             "status": "ported",
-            "notes": "Visitor view ported: brief, statistics, funders, sign-in gate, micro footer. The member project list and map, and the sign-in itself, come with the members phase (plan Phase 2 step 6).",
+            "notes": "Ported: visitor view (brief, statistics, funders, sign-in gate, micro footer), the sign-in, and the member view (filters, tiles and rows, details window with ?projectDetailsModal=, Leaflet map, account badge with Sign out). Member view verified against legacy with a temporary account (since deleted). Differences: gate re-checked on every Livewire request; deep link only opens projects on the public list; no duplicate map pins on Load More.",
             "ported_from": "6d45ef9",
             "live_status": "200",
             "examples": [
