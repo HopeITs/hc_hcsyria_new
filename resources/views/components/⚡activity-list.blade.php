@@ -205,10 +205,10 @@ new class extends Component
                     </div>
                 @endif
 
-                <x-ui.red-rule short :ms="600"/>
                 @if ($hasMore)
                     <x-ui.load-more/>
                 @endif
+                <x-ui.red-rule short :ms="600"/>
             </div>
 
             <div wire:loading.block wire:target="loadMore">
