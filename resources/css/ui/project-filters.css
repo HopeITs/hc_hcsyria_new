@@ -284,7 +284,13 @@
             }
         }
 
+        /* The chosen suggestion is red, as a chosen dropdown item is, not the navy of the Study Zone and DISC lists. */
         & .search-box__suggestion {
+            &.is-current {
+                color: #fff;
+                background: var(--color-brand-600);
+            }
+
             @media (width < 576px) {
                 font-size: 2vw;
             }
