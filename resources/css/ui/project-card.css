@@ -439,24 +439,9 @@
 
     /* ---- the grey shapes shown while the list reloads ----------------- */
 
-    .project-skeleton {
-        display: none;
-    }
-
-    .project-skeleton--tiles {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0 1.5rem;
-    }
-
-    .project-skeleton.flex,
-    .project-skeleton--more {
-        display: block;
-    }
-
-    .project-skeleton__tile {
-        width: calc((100% - 3rem) / 3);
-        margin-bottom: 1.5rem;
+    /* Added under a list that is growing: no gap of its own, the list's padding is the gap. */
+    .project-skeleton--flush {
+        margin-top: 0;
     }
 
     .project-skeleton__shape {
@@ -509,7 +494,7 @@
 
     .project-skeleton__row {
         display: flex;
-        margin-top: 3rem;
+        margin: 0.5rem;
 
         & > * { width: 50%; }
 

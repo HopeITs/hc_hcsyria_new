@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\Renderless;
+use Livewire\Attributes\Url;
 use Livewire\Component;
 
 /*
@@ -28,17 +29,27 @@ new class extends Component
 
     private const SEARCH_LENGTH = 100;
 
+    /*
+     * The applied filters and the view live in the address (?city=3&donor=1&video=1&search=...&view=grid),
+     * so a filtered list can be bookmarked or shared and opens already filtered, and
+     * each Apply is a step the back button undoes.
+     */
+    #[Url(history: true, except: '')]
     public string $city = '';
 
+    #[Url(history: true, except: '')]
     public string $donor = '';
 
+    #[Url(as: 'video', history: true, except: false)]
     public bool $hasVideo = false;
 
+    #[Url(history: true, except: '')]
     public string $search = '';
 
     public int $limit = self::STEP;
 
     /** 'tiles' or 'grid' (the list of rows). */
+    #[Url(except: 'tiles')]
     public string $view = 'tiles';
 
     /** The project whose details window is open, by id. */
@@ -68,6 +79,12 @@ new class extends Component
 
     public function mount(): void
     {
+        // What came in the address is no more to be trusted than what Apply sends.
+        $this->city = ctype_digit($this->city) ? $this->city : '';
+        $this->donor = ctype_digit($this->donor) ? $this->donor : '';
+        $this->search = Str::limit(trim($this->search), self::SEARCH_LENGTH, '');
+        $this->view = $this->view === 'grid' ? 'grid' : 'tiles';
+
         $this->mobile = Device::isMobile(request());
         $this->total = MemberProjectQuery::total();
         $this->details = request()->integer('projectDetailsModal') ?: null;
@@ -78,14 +95,28 @@ new class extends Component
     /** Apply: the draft becomes the filter, and the list starts again from its first page. */
     public function apply(string $city, string $donor, bool $hasVideo, string $search): void
     {
-        $this->city = $city;
-        $this->donor = $donor;
+        $this->city = ctype_digit($city) ? $city : '';
+        $this->donor = ctype_digit($donor) ? $donor : '';
         $this->hasVideo = $hasVideo;
         $this->search = Str::limit(trim($search), self::SEARCH_LENGTH, '');
         $this->limit = self::STEP;
         $this->count = $this->query()->builder()->count();
 
         $this->dispatch('projects-filtered');
+    }
+
+    /** The address changed under the list (the back button): count again from the first page. */
+    public function updated(string $name): void
+    {
+        if (in_array($name, ['city', 'donor', 'hasVideo', 'search'], true)) {
+            $this->city = ctype_digit($this->city) ? $this->city : '';
+            $this->donor = ctype_digit($this->donor) ? $this->donor : '';
+            $this->search = Str::limit(trim($this->search), self::SEARCH_LENGTH, '');
+            $this->limit = self::STEP;
+            $this->count = $this->query()->builder()->count();
+
+            $this->dispatch('projects-filtered');
+        }
     }
 
     public function loadMore(): void
@@ -148,19 +179,13 @@ new class extends Component
 ?>
 
 <div class="member-projects">
-    <x-site.project-filters :$cities :$donors :view="$view"/>
+    <x-site.project-filters :$cities :$donors :view="$view" :applied="['city' => $city, 'donor' => $donor, 'hasVideo' => $hasVideo, 'search' => $search]"/>
 
     <div class="page-margin">
         <div class="page-margin">
             {{-- Placeholders for the list while Apply is thinking. --}}
-            <div wire:loading.flex wire:target="apply" class="project-skeleton project-skeleton--{{ $view }}">
-                @if ($view === 'tiles')
-                    @for ($i = 0; $i < 6; $i++)
-                        <div class="project-skeleton__tile"><x-site.project-skeleton/></div>
-                    @endfor
-                @else
-                    <x-site.project-skeleton rows/>
-                @endif
+            <div wire:loading.block wire:target="apply">
+                <x-site.project-skeleton :$view :count="6"/>
             </div>
         </div>
 
@@ -181,16 +206,8 @@ new class extends Component
                         </div>
                     @endif
 
-                    <div wire:loading wire:target="loadMore" class="project-skeleton project-skeleton--more">
-                        @if ($view === 'tiles')
-                            <div class="project-skeleton project-skeleton--tiles">
-                                @for ($i = 0; $i < 3; $i++)
-                                    <div class="project-skeleton__tile"><x-site.project-skeleton/></div>
-                                @endfor
-                            </div>
-                        @else
-                            <x-site.project-skeleton rows :count="1"/>
-                        @endif
+                    <div wire:loading.block wire:target="loadMore">
+                        <x-site.project-skeleton :$view :count="3" class="project-skeleton--flush"/>
                     </div>
 
                     @if ($hasMore)

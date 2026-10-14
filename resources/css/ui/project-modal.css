@@ -15,8 +15,7 @@
         inset: 0;
         z-index: 1055;
         display: flex;
-        align-items: center;
-        justify-content: center;
+        padding-block: 1.75rem;
         overflow-y: auto;
         animation: project-modal-in 0.15s linear;
     }
@@ -40,7 +39,7 @@
         position: relative;
         width: 100%;
         max-width: 600px;
-        margin: 1.75rem auto;
+        margin: auto;
         outline: none;
         animation: project-dialog-in 0.3s ease-out;
 

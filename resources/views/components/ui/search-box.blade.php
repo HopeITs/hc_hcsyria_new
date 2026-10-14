@@ -10,9 +10,10 @@
 --}}
 <div {{ $attributes->class(['search-box', 'search-box--filter' => $filter]) }}
      x-data="searchBox(@js($filter
-         ? ['filter' => true, 'headings' => [__('projects.projectsNames'), __('projects.beneficiariesNames')]]
+         ? ['filter' => true, 'value' => $value, 'headings' => [__('projects.projectsNames'), __('projects.beneficiariesNames')]]
          : ['suggestions' => array_values($suggestions), 'value' => $value]))"
-     @click.outside="open = false">
+     @click.outside="open = false"
+     @if ($filter) @search-set.window="query = $event.detail" @endif>
     @if ($button)
         <button type="button" class="search-box__button" @click="go()" aria-label="Search">
             <img src="/images/ico/search-blue-icon.png" alt="">

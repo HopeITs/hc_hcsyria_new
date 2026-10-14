@@ -71,10 +71,20 @@ export default (Alpine) => {
         });
     });
 
-    Alpine.data('projectFilters', ({ cities, donors }) => ({
+    Alpine.data('projectFilters', ({ cities, donors, applied }) => ({
         cities,
         donors,
-        draft: { city: '', donor: '', hasVideo: false, search: '' },
+        draft: { ...applied },
+
+        init() {
+            // The filters can change under the bar: the back button restores an earlier address.
+            ['city', 'donor', 'hasVideo', 'search'].forEach((name) => {
+                this.$watch(() => this.$wire[name], (value) => {
+                    this.draft[name] = value;
+                    if (name === 'search') window.dispatchEvent(new CustomEvent('search-set', { detail: value }));
+                });
+            });
+        },
 
         /** "Filter Result": the draft's choices beside the count of the filters last applied. */
         get result() {

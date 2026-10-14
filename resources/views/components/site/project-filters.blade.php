@@ -1,14 +1,16 @@
-@props(['cities', 'donors', 'view'])
+@props(['cities', 'donors', 'view', 'applied'])
 
 {{--
     The filter bar above the project list (resources/css/ui/project-filters.css,
     resources/js/project-filters.js): city and donor, the view, projects with
     a video, the search box and Apply. It works on a draft that Apply sends to
     the list, and sticks under the navigation while the list scrolls past.
-    The list's own state comes through $wire.
+    It starts from the filters the list already has (the address may have set
+    them) and follows them when they change under it (the back button). The
+    list's own state comes through $wire.
 --}}
 <div class="project-filters" wire:ignore
-     x-data="projectFilters(@js(['cities' => $cities->pluck('name', 'id'), 'donors' => $donors->pluck('name', 'id')]))">
+     x-data="projectFilters(@js(['cities' => $cities->pluck('name', 'id'), 'donors' => $donors->pluck('name', 'id'), 'applied' => $applied]))">
     <div class="project-filters__row">
         <div class="project-filters__col project-filters__col--end">
             <x-ui.dropdown>
@@ -50,7 +52,7 @@
         </div>
         <div class="project-filters__gap"></div>
         <div class="project-filters__col project-filters__col--bottom" @search-box="draft.search = $event.detail">
-            <x-ui.search-box filter placeholder="Search" :button="false"/>
+            <x-ui.search-box filter placeholder="Search" :button="false" :value="$applied['search']"/>
             <button type="button" class="project-button" @click="apply()">Apply</button>
         </div>
     </div>

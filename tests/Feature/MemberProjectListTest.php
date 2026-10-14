@@ -226,3 +226,32 @@ it('shows the member a badge with a way to sign out, and a visitor none', functi
 
     $this->get('/projects/micro-projects')->assertDontSee('Logged in');
 });
+
+it('opens already filtered from the filters in the address', function () {
+    listedProject();
+    listedProject(['MPE_City' => 1, 'MPE_Video' => 'https://www.youtube.com/embed/abc'], ['MPE_Name' => 'zqx elsewhere']);
+
+    Livewire::actingAs(authorisedMember())->withQueryParams(['search' => 'zqx', 'city' => '1', 'video' => '1', 'view' => 'grid'])
+        ->test('micro-project-list')
+        ->assertSet('search', 'zqx')
+        ->assertSet('city', '1')
+        ->assertSet('hasVideo', true)
+        ->assertSet('view', 'grid')
+        ->assertSet('count', 1)
+        ->assertSee('Zqx elsewhere')
+        ->assertDontSee('Zqx workshop');
+});
+
+it('ignores filters in the address that are not what Apply could send', function () {
+    Livewire::actingAs(authorisedMember())->withQueryParams(['city' => 'abc', 'donor' => '1 or 1=1', 'view' => 'x'])
+        ->test('micro-project-list')
+        ->assertSet('city', '')
+        ->assertSet('donor', '')
+        ->assertSet('view', 'tiles');
+});
+
+it('starts the filter bar from the filters in the address', function () {
+    $this->actingAs(authorisedMember())->get('/projects/micro-projects?city=3&search=zqx')
+        ->assertSee('City-', false)
+        ->assertSeeHtml('&quot;search&quot;:&quot;zqx&quot;');
+});
