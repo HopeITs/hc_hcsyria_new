@@ -27,7 +27,7 @@
     @elseif ($icon === 'copy')
         <x-site.project-icon name="copy" :tip="$tips ? 'copy' : null" :copy="$presenter->linkKey()" role="button"/>
     @elseif ($icon === 'more' && $layout === 'tile')
-        <button type="button" class="project-more-button" wire:click="open({{ $project->id }})" aria-label="Read more">
+        <button type="button" class="project-more-button" @click="$dispatch('project-opening'); Livewire.dispatch('project-open', { id: {{ $project->id }} })" aria-label="Read more">
             <x-site.project-icon name="readmore" tip="read more"/>
         </button>
     @endif

@@ -158,37 +158,6 @@ it('switches between tiles and rows, and refuses any other view', function () {
         ->assertSet('view', 'tiles');
 });
 
-it('opens a project from a link to it, and not one that is not on the public list', function () {
-    $project = listedProject(['MPE_Published' => 0], ['MPE_Name' => 'zqx hidden']);
-    $listed = listedProject([], ['MPE_Name' => 'zqx linked']);
-
-    Livewire::actingAs(authorisedMember())->withQueryParams(['projectDetailsModal' => $listed->id])
-        ->test('micro-project-list')
-        ->assertSet('linked', true)
-        ->assertSee('Zqx linked')
-        ->call('close')
-        ->assertSet('details', '')
-        ->assertDontSee('Zqx linked');
-
-    Livewire::actingAs(authorisedMember())->withQueryParams(['projectDetailsModal' => $project->id])
-        ->test('micro-project-list')
-        ->assertDontSee('Zqx hidden');
-});
-
-it('opens the details of a tile with its facts', function () {
-    $project = listedProject([], ['MPE_Name' => 'zqx clicked']);
-
-    Livewire::actingAs(authorisedMember())->test('micro-project-list')
-        ->call('apply', '', '', false, 'zqx clicked')
-        ->call('open', $project->id)
-        ->assertSet('details', $project->id.'-zqx-clicked')
-        ->assertSet('linked', false)
-        ->assertSee('Zqx clicked')
-        ->assertSee('Beneficiary:')
-        ->assertSee('years old')
-        ->assertSee('Family members:');
-});
-
 it('has a pin for each filtered project that has a position', function () {
     listedProject();
     listedProject(['latitude' => '0', 'longtitude' => '0'], ['MPE_Name' => 'zqx nowhere']);
@@ -270,24 +239,6 @@ it('keeps the suggestions for a while instead of reading every project each time
     expect(MemberProjectQuery::suggestions()['projects'])->toContain('zqx late arrival');
 });
 
-it('puts the open details window in the address and ignores one that is not a number', function () {
-    $project = listedProject([], ['MPE_Name' => 'zqx addressed']);
-
-    Livewire::actingAs(authorisedMember())->withQueryParams(['projectDetailsModal' => (string) $project->id])
-        ->test('micro-project-list')
-        ->assertSet('details', $project->id.'-zqx-addressed')
-        ->assertSee('Zqx addressed');
-
-    Livewire::actingAs(authorisedMember())->withQueryParams(['projectDetailsModal' => $project->id.'-an-old-name'])
-        ->test('micro-project-list')
-        ->assertSet('details', $project->id.'-zqx-addressed');
-
-    Livewire::actingAs(authorisedMember())->withQueryParams(['projectDetailsModal' => 'abc'])
-        ->test('micro-project-list')
-        ->assertSet('details', '')
-        ->assertSet('linked', false);
-});
-
 it('writes cities and donors in the address by slug, and takes only the slugs the filter has', function () {
     expect(MemberProjectQuery::cities()->pluck('slug')->all())->toContain('aleppo', 'homs', 'al-wadi', 'idlib')
         ->and(MemberProjectQuery::cityId('homs'))->toBe(1)
@@ -300,4 +251,59 @@ it('writes cities and donors in the address by slug, and takes only the slugs th
         ->test('micro-project-list')
         ->assertSet('city', '')
         ->assertSet('donor', 'caritas-poland');
+});
+
+it('opens a project from a link to it, and not one that is not on the public list', function () {
+    $hidden = listedProject(['MPE_Published' => 0], ['MPE_Name' => 'zqx hidden']);
+    $listed = listedProject([], ['MPE_Name' => 'zqx linked']);
+
+    Livewire::actingAs(authorisedMember())->withQueryParams(['projectDetailsModal' => (string) $listed->id])
+        ->test('micro-project-details')
+        ->assertSet('details', $listed->id.'-zqx-linked')
+        ->assertSet('linked', true)
+        ->assertSee('Zqx linked')
+        ->call('close')
+        ->assertSet('details', '')
+        ->assertDontSee('Zqx linked');
+
+    Livewire::actingAs(authorisedMember())->withQueryParams(['projectDetailsModal' => (string) $hidden->id])
+        ->test('micro-project-details')
+        ->assertSet('details', '')
+        ->assertDontSee('Zqx hidden');
+});
+
+it('opens the details of a card with the facts of the project, and the link names the project', function () {
+    $project = listedProject([], ['MPE_Name' => 'zqx clicked']);
+
+    Livewire::actingAs(authorisedMember())->test('micro-project-details')
+        ->assertDontSee('Zqx clicked')
+        ->dispatch('project-open', id: $project->id)
+        ->assertSet('details', $project->id.'-zqx-clicked')
+        ->assertSet('linked', false)
+        ->assertSee('Zqx clicked')
+        ->assertSee('Beneficiary:')
+        ->assertSee('years old')
+        ->assertSee('Family members:');
+});
+
+it('understands the bare id of legacy links and a link with an old name, and ignores text that is no id', function () {
+    $project = listedProject([], ['MPE_Name' => 'zqx addressed']);
+    $key = $project->id.'-zqx-addressed';
+
+    foreach ([(string) $project->id, $project->id.'-an-old-name'] as $link) {
+        Livewire::actingAs(authorisedMember())->withQueryParams(['projectDetailsModal' => $link])
+            ->test('micro-project-details')->assertSet('details', $key)->assertSee('Zqx addressed');
+    }
+
+    Livewire::actingAs(authorisedMember())->withQueryParams(['projectDetailsModal' => 'abc'])
+        ->test('micro-project-details')->assertSet('details', '')->assertSet('linked', false);
+});
+
+it('refuses the details window to anyone the gate does not let in', function () {
+    Livewire::test('micro-project-details')->assertForbidden();
+});
+
+it('carries the details window as a part of its own, so opening a project does not draw the list again', function () {
+    $this->actingAs(authorisedMember())->get('/projects/micro-projects')
+        ->assertSeeHtml('project-open');
 });

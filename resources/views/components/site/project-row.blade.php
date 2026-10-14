@@ -36,7 +36,7 @@
 
             @if ($presenter->hasDetails())
                 <div class="project-row__more">
-                    <button type="button" class="project-more" wire:click="open({{ $project->id }})">{{ __('main.readMore') }}</button>
+                    <button type="button" class="project-more" @click="$dispatch('project-opening'); Livewire.dispatch('project-open', { id: {{ $project->id }} })">{{ __('main.readMore') }}</button>
                 </div>
             @endif
         </div>

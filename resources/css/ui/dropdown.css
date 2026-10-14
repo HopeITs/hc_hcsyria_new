@@ -24,6 +24,17 @@
         border: none;
         border-radius: 0.25rem;
 
+        /* A long choice stays on the one line, cut with an ellipsis, rather than growing the button. */
+        & > span {
+            display: inline-block;
+            max-width: calc(100% - 1.4em);
+            padding-right: 0.2em; /* the space Bootstrap's markup left before the caret */
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            vertical-align: bottom;
+        }
+
         /* The caret Bootstrap draws after the text. */
         &::after {
             display: inline-block;

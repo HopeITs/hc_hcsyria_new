@@ -179,6 +179,9 @@
         font-weight: 100;
         color: #818181;
 
+        /* One line however long the filters are: the text runs on past the box, to the right. */
+        white-space: nowrap;
+
         & span {
             font-weight: 800;
         }

@@ -138,6 +138,7 @@ export default (Alpine) => {
         init() {
             document.documentElement.classList.add('project-modal-open');
             this.opener = document.activeElement;
+            window.dispatchEvent(new CustomEvent('project-opened'));
             this.$nextTick(() => this.$refs.dialog.focus());
 
             let startY = 0;

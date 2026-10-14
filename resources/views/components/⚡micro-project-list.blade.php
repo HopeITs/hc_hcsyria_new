@@ -3,7 +3,6 @@
 use App\Queries\MemberProjectQuery;
 use App\Queries\ProjectSearch;
 use App\Support\Device;
-use App\Support\ProjectPresenter;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 use Livewire\Attributes\Locked;
@@ -13,9 +12,9 @@ use Livewire\Component;
 
 /*
  * What a signed-in member sees on /projects/micro-projects in place of the
- * gate: the filters, the projects as tiles or rows, a details window and a
- * map of the filtered set. Ported from App\Livewire\MicroProjects and its
- * view at legacy commit 6d45ef9; what each project card says and shows is in
+ * gate: the filters, the projects as tiles or rows and a map of the filtered
+ * set, with the details window (micro-project-details) alongside. Ported from
+ * App\Livewire\MicroProjects and its view at legacy commit 6d45ef9; what each project card says and shows is in
  * components/site/project-*.
  *
  * The filter bar edits a draft in the browser and sends it when Apply is
@@ -53,17 +52,6 @@ new class extends Component
     #[Url(except: 'tiles')]
     public string $view = 'tiles';
 
-    /**
-     * The project whose details window is open, as it is in the address: its id and
-     * its name, 3033-pick-up-truck. Legacy's links carry the bare id, still understood.
-     */
-    #[Url(as: 'projectDetailsModal', history: true, except: '')]
-    public string $details = '';
-
-    /** Whether the details window was opened by a link to it, which keeps it open until the cross is used. */
-    #[Locked]
-    public bool $linked = false;
-
     /** How many projects match the applied filters. */
     #[Locked]
     public int $count = 0;
@@ -92,8 +80,6 @@ new class extends Component
 
         $this->mobile = Device::isMobile(request());
         $this->total = MemberProjectQuery::total();
-        $this->details = $this->canonicalDetails($this->details);
-        $this->linked = $this->details !== '';
         $this->count = $this->query()->builder()->count();
     }
 
@@ -134,17 +120,6 @@ new class extends Component
         $this->view = $view === 'grid' ? 'grid' : 'tiles';
     }
 
-    public function open(int $id): void
-    {
-        $this->details = $this->canonicalDetails((string) $id);
-        $this->linked = false;
-    }
-
-    public function close(): void
-    {
-        $this->details = '';
-    }
-
     /** @return array<int, array{lat: string, lng: string, name: ?string, beneficiary: string}> */
     #[Renderless]
     public function markers(): array
@@ -160,21 +135,6 @@ new class extends Component
     }
 
     /** A city slug as the address or Apply sent it: kept when it is one of the filter's, else no city. */
-    /** The project id a details link names: the digits it starts with, whatever follows. */
-    private function detailsId(): ?int
-    {
-        return preg_match('/^(\d+)(-|$)/', $this->details, $found) ? (int) $found[1] : null;
-    }
-
-    /** A details link as the address should carry it: id and name of a listed project, else nothing. */
-    private function canonicalDetails(string $link): string
-    {
-        $this->details = $link;
-        $project = ($id = $this->detailsId()) ? MemberProjectQuery::find($id) : null;
-
-        return $project ? (new ProjectPresenter($project))->linkKey() : '';
-    }
-
     private function knownCity(string $slug): string
     {
         return MemberProjectQuery::cityId($slug) === null ? '' : $slug;
@@ -203,7 +163,6 @@ new class extends Component
             'hasMore' => $this->count > $projects->count(),
             'cities' => MemberProjectQuery::cities(),
             'donors' => MemberProjectQuery::donors(),
-            'detail' => ($id = $this->detailsId()) ? MemberProjectQuery::find($id) : null,
         ];
     }
 };
@@ -256,17 +215,6 @@ new class extends Component
         </div>
     </div>
 
-    {{-- The window's frame, up at once while the server fetches what goes in it. --}}
-    <div wire:loading.flex wire:target="open" class="project-modal project-modal--opening" aria-hidden="true">
-        <div class="project-modal__backdrop"></div>
-        <div class="project-modal__dialog">
-            <div class="project-modal__content">
-                <div class="project-skeleton__shape project-modal__shape"></div>
-            </div>
-        </div>
-    </div>
-
-    @if ($detail)
-        <x-site.project-modal :project="$detail" :locked="$linked" wire:key="modal-{{ $detail->id }}"/>
-    @endif
+    {{-- The details window is a component of its own, so opening it does not draw this list again. --}}
+    <livewire:micro-project-details/>
 </div>
