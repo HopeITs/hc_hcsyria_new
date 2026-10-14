@@ -3,7 +3,6 @@
 use App\Actions\RecordPageView;
 use App\Queries\CoverQuery;
 use App\Queries\DiscStatisticsQuery;
-use App\Queries\InitiativeListQuery;
 use App\Queries\ProjectPageQuery;
 use App\Queries\SuccessQuery;
 use App\Support\Device;
@@ -55,49 +54,24 @@ new #[Layout('layouts::app', [
             'stories' => SuccessQuery::latest(self::CATEGORY, self::TESTIMONIES, 4),
             'ongoing' => ProjectPageQuery::funders(self::CATEGORY, true),
             'previous' => ProjectPageQuery::funders(self::CATEGORY, false),
-            'lists' => $this->activityLists(),
-            'tab' => $this->openTab(),
         ];
     }
 
-    /** The three towns' activities, a page of five each; the town's page number is in the address as ini_A, ini_H, ini_D. */
-    private function activityLists(): array
+    /**
+     * The tabs of the activities: the three towns, each with the places it lists (legacy's page
+     * parameter, ini_A, ini_H, ini_D, still opens its town).
+     *
+     * @return array<string, array<string, mixed>>
+     */
+    public function towns(): array
     {
         $sorry = ["Sorry, we couldn't find any results", __('projects.sorryMessage2')];
 
         return [
-            'aleppo' => [
-                'label' => __('projects.aleppo'),
-                'activities' => InitiativeListQuery::forPlace(self::CATEGORY, self::ACTIVITIES, 3, 'ini_A', byDate: true),
-                'empty' => ['No Activities Yet', null],
-            ],
-            'homs' => [
-                'label' => __('projects.homs'),
-                'activities' => InitiativeListQuery::forPlace(self::CATEGORY, self::ACTIVITIES, 1, 'ini_H'),
-                'empty' => $sorry,
-            ],
-            'damas' => [
-                'label' => __('projects.damascus'),
-                'activities' => InitiativeListQuery::forPlace(self::CATEGORY, self::ACTIVITIES, 2, 'ini_D'),
-                'empty' => $sorry,
-            ],
+            'aleppo' => ['label' => __('projects.aleppo'), 'places' => [3], 'page' => 'ini_A', 'byDate' => true, 'empty' => ['No Activities Yet', null]],
+            'homs' => ['label' => __('projects.homs'), 'places' => [1], 'page' => 'ini_H', 'byDate' => false, 'empty' => $sorry],
+            'damas' => ['label' => __('projects.damascus'), 'places' => [2], 'page' => 'ini_D', 'byDate' => false, 'empty' => $sorry],
         ];
-    }
-
-    /** The tab to open: the one in ?tab=, else the town whose page number is in the address, else Aleppo. */
-    private function openTab(): string
-    {
-        $tab = request('tab');
-
-        if (in_array($tab, ['aleppo', 'homs', 'damas'], true)) {
-            return $tab;
-        }
-
-        return match (true) {
-            request()->has('ini_H') => 'homs',
-            request()->has('ini_D') => 'damas',
-            default => 'aleppo',
-        };
     }
 
     /** @return list<array{label: string, title: string, image: string, lines: list<array{ms: int, text: string}>}> */
@@ -222,18 +196,8 @@ new #[Layout('layouts::app', [
 
     <x-ui.red-rule :ms="800" class="mt-4"/>
 
-    <div id="initiative-section" class="section-gap">
-        <div class="flow-root px-3">
-            <x-ui.reveal :ms="600" class="mb-2 flex flex-col items-center justify-center">
-                <x-ui.section-title class="mt-4">{{ __('studyzone.activities') }}</x-ui.section-title>
-            </x-ui.reveal>
-        </div>
-    </div>
-    <x-ui.red-rule short :ms="800" style="z-index: -1"/>
-
-    <x-ui.reveal :ms="800">
-        <x-site.activity-tabs :lists="$lists" type="disc" :selected="$tab" :phone="$phone"/>
-    </x-ui.reveal>
+    <livewire:activity-list :category="self::CATEGORY" :sub-category="self::ACTIVITIES" type="disc" :towns="$this->towns()"
+                            :title="__('studyzone.activities')" :phone="$phone"/>
 
     <x-ui.red-rule :ms="800"/>
     <x-site.funders :ongoing="$ongoing" :previous="$previous"/>

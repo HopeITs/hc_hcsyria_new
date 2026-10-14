@@ -22,13 +22,14 @@ it('frames the brief video from YouTube\'s cookieless host', function () {
         ->assertDontSee('src="https://www.youtube.com/embed/', false);
 });
 
-it('opens the tab named in the address, else the one whose page is asked for, else Aleppo', function (string $query, string $tab) {
-    $this->get('/projects/disc'.$query)->assertSee("activityTabs({ tab: '$tab' })", false);
+it('opens the tab named in the address, else the one whose page is asked for, else Aleppo', function (string $query, string $town) {
+    // The list carries its open town (empty is the first, Aleppo) in the state the page ships with.
+    $this->get('/projects/disc'.$query)->assertSee('&quot;town&quot;:&quot;'.$town.'&quot;', false);
 })->with([
-    'nothing' => ['', 'aleppo'],
+    'nothing' => ['', ''],
     'tab' => ['?tab=damas', 'damas'],
     'page of Homs' => ['?ini_H=2', 'homs'],
-    'nonsense tab' => ['?tab=<script>', 'aleppo'],
+    'nonsense tab' => ['?tab=<script>', ''],
 ]);
 
 it('lists the three DISC centres in the footer', function () {

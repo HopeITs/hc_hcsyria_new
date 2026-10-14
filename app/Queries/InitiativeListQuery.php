@@ -3,6 +3,7 @@
 namespace App\Queries;
 
 use App\Models\Initiative;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -27,6 +28,30 @@ final class InitiativeListQuery
      */
     public static function forPlace(int $categoryId, int $subCategoryId, int|array $placeId, string $pageName, bool $byDate = false, ?string $search = null): LengthAwarePaginator
     {
+        return self::ordered(self::base($categoryId, $subCategoryId, (array) $placeId, $search), $byDate)
+            ->paginate(self::PER_PAGE, ['*'], $pageName);
+    }
+
+    /**
+     * The first $limit activities of a town and how many it has in all: what a
+     * list that grows with "Load More" shows, instead of a page.
+     *
+     * @param  list<int>  $placeIds
+     * @return array{0: Collection<int, Initiative>, 1: int}
+     */
+    public static function upTo(int $categoryId, int $subCategoryId, array $placeIds, int $limit, bool $byDate = false, ?string $search = null): array
+    {
+        $query = self::base($categoryId, $subCategoryId, $placeIds, $search);
+
+        return [self::ordered(clone $query, $byDate)->limit($limit)->get(), $query->count()];
+    }
+
+    /**
+     * @param  list<int>  $placeIds
+     * @return Builder<Initiative>
+     */
+    private static function base(int $categoryId, int $subCategoryId, array $placeIds, ?string $search): Builder
+    {
         return Initiative::query()
             ->with([
                 'content',
@@ -34,20 +59,28 @@ final class InitiativeListQuery
             ])
             ->where('what_category_id', $categoryId)
             ->where('sub_what_category_id', $subCategoryId)
-            ->whereIn('place_id', (array) $placeId)
+            ->whereIn('place_id', $placeIds)
             ->where('online', '1')
             ->when(filled($search), function ($query) use ($search) {
-                $like = '%'.self::escapeLike(mb_strtolower($search)).'%';
+                $like = '%'.self::escapeLike(mb_strtolower((string) $search)).'%';
 
                 // One group, so the three alternatives stay inside the relation's own constraint.
                 $query->whereHas('content', fn ($content) => $content->where(fn ($any) => $any
                     ->where('title', 'like', $like)
                     ->orWhere('content', 'like', $like)
                     ->orWhere('description', 'like', $like)));
-            })
+            });
+    }
+
+    /**
+     * @param  Builder<Initiative>  $query
+     * @return Builder<Initiative>
+     */
+    private static function ordered(Builder $query, bool $byDate): Builder
+    {
+        return $query
             ->when($byDate, fn ($query) => $query->orderByDesc('created_at'), fn ($query) => $query->orderByDesc('id'))
-            ->orderByDesc('id')
-            ->paginate(self::PER_PAGE, ['*'], $pageName);
+            ->orderByDesc('id');
     }
 
     /**

@@ -37,11 +37,7 @@
 
     <div class="project-filters__row project-filters__row--tools">
         <div class="project-filters__col project-filters__col--end">
-            <div class="project-view">
-                <label>View</label>
-                <img :src="`/images/ico/${$wire.view === 'tiles' ? 'tiles-active' : 'tiles'}.png`" src="/images/ico/{{ $view === 'tiles' ? 'tiles-active' : 'tiles' }}.png" alt="Tiles" role="button" class="project-view__tiles" @click="setView('tiles')">
-                <img :src="`/images/ico/${$wire.view === 'grid' ? 'grid-active' : 'grid'}.png`" src="/images/ico/{{ $view === 'grid' ? 'grid-active' : 'grid' }}.png" alt="List" role="button" class="project-view__grid" @click="setView('grid')">
-            </div>
+            <x-ui.view-switch :$view/>
             <div class="project-video">
                 <label class="project-video__switch" :class="{ 'is-on': draft.hasVideo }">
                     <input type="checkbox" x-model="draft.hasVideo" aria-label="Project with Video"

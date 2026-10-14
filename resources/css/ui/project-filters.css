@@ -70,57 +70,6 @@
         }
     }
 
-    /* View: the tiles / rows switch. */
-    .project-view {
-        position: relative;
-        width: 13.3vw;
-        padding: 0.75vw;
-        font-size: 1vw;
-        color: #b2b2b2;
-        background-color: #f7f7f7;
-
-        & label {
-            position: relative;
-            left: 5vw;
-            display: inline-block;
-            font-size: 1.3vw;
-        }
-
-        & img {
-            position: relative;
-            display: inline;
-            width: auto;
-            height: 0.7vw;
-            vertical-align: middle;
-            cursor: pointer;
-        }
-
-        @media (1025px <= width <= 1280px), (576px <= width <= 768px) {
-            width: 17vw;
-        }
-
-        @media (width < 576px) {
-            width: 21vw;
-
-            & label {
-                left: 6vw;
-                font-size: 2.4vw;
-            }
-
-            & img {
-                height: 1.2vw;
-            }
-        }
-    }
-
-    .project-view__tiles { left: 5.5vw; }
-    .project-view__grid { left: 5.7vw; }
-
-    @media (width < 576px) {
-        .project-view__tiles { left: 7vw; }
-        .project-view__grid { left: 7.7vw; }
-    }
-
     /* Projects with a video: a box that turns red when it is on. */
     .project-video {
         position: relative;
@@ -207,7 +156,7 @@
         border: 0;
     }
 
-    /* The red button: Apply, and the outlined Load More. */
+    /* The red button: Apply. */
     .project-button {
         height: -webkit-fill-available;
         padding: 0.7vw;
@@ -225,25 +174,6 @@
 
         @media (width < 576px) {
             height: 4.8vw;
-        }
-    }
-
-    .project-button--outline {
-        width: 8vw;
-        margin: 0;
-        color: var(--color-brand-600);
-        background: none;
-        transition: background-color 0.3s ease, color 0.3s ease;
-
-        &:hover,
-        &:focus {
-            color: #fff;
-            background: var(--color-brand-600);
-        }
-
-        @media (width < 576px) {
-            width: 15vw;
-            font-size: 2vw;
         }
     }
 

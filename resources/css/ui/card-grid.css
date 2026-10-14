@@ -1,0 +1,69 @@
+/*
+ * What a list of cards shares: the grid the tiles sit in (one, two or three
+ * across, Bootstrap's columns and 1.5rem gutter), the Load More button under
+ * it and the line shown when nothing matches. Legacy .col-md-6.col-lg-4,
+ * .apply-btn.loadmore and .alert (micro_page_new-test.css), measured on
+ * /projects/micro-projects.
+ */
+@layer components {
+    .card-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        align-items: start;
+        padding-bottom: 1.5rem;
+        margin-top: 3rem;
+
+        @media (width >= 768px) {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        @media (width >= 992px) {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+
+    /* Above the red bar that may hang over it. */
+    .load-more {
+        position: relative;
+        z-index: 1000;
+        margin-top: 3rem;
+        margin-bottom: 0.25rem;
+        text-align: center;
+    }
+
+    .list-empty {
+        padding: 1rem;
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        color: #41464b;
+        text-align: center;
+        background-color: #e2e3e5;
+        border: 1px solid #d3d6d8;
+        border-radius: 0.25rem;
+    }
+
+    /* Outlined in the page's accent colour (red where a page has none), filled when pointed at. */
+    .load-more__button {
+        width: 8vw;
+        padding: 0.7vw;
+        font-size: 1vw;
+        color: var(--accent, var(--color-brand-600));
+        cursor: pointer;
+        background: none;
+        border: 2px solid var(--accent, var(--color-brand-600));
+        border-radius: 0;
+        transition: background-color 0.3s ease, color 0.3s ease;
+
+        &:hover,
+        &:focus {
+            color: #fff;
+            background: var(--accent, var(--color-brand-600));
+        }
+
+        @media (width < 576px) {
+            width: 15vw;
+            font-size: 2vw;
+        }
+    }
+}

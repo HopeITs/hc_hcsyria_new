@@ -1,4 +1,4 @@
-@props(['suggestions' => [], 'value' => '', 'placeholder' => 'Search Activities', 'filter' => false, 'button' => true])
+@props(['suggestions' => [], 'value' => '', 'placeholder' => 'Search Activities', 'filter' => false, 'button' => true, 'live' => false, 'heading' => 'activities'])
 
 {{--
     A search box with suggestions as you type (resources/css/ui/search-box.css,
@@ -9,9 +9,11 @@
     it, and shows them under a heading for names and one for beneficiaries.
 --}}
 <div {{ $attributes->class(['search-box', 'search-box--filter' => $filter]) }}
-     x-data="searchBox(@js($filter
-         ? ['filter' => true, 'value' => $value, 'headings' => [__('projects.projectsNames'), __('projects.beneficiariesNames')]]
-         : ['suggestions' => array_values($suggestions), 'value' => $value]))"
+     x-data="searchBox(@js(match (true) {
+         $filter => ['filter' => true, 'value' => $value, 'headings' => [__('projects.projectsNames'), __('projects.beneficiariesNames')]],
+         $live => ['live' => true, 'value' => $value, 'headings' => [$heading]],
+         default => ['suggestions' => array_values($suggestions), 'value' => $value],
+     }))"
      @click.outside="open = false"
      @if ($filter) @search-set.window="query = $event.detail" @endif>
     @if ($button)

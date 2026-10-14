@@ -1,0 +1,57 @@
+/*
+ * The "View" box that switches a list between tiles and rows (x-ui.view-switch).
+ * Legacy .filter-container with its two icons (micro_page_new-test.css),
+ * measured on /projects/micro-projects at 1440px.
+ */
+@layer components {
+    /* View: the tiles / rows switch. */
+    .view-switch {
+        position: relative;
+        width: 13.3vw;
+        padding: 0.75vw;
+        font-size: 1vw;
+        color: #b2b2b2;
+        background-color: #f7f7f7;
+
+        & label {
+            position: relative;
+            left: 5vw;
+            display: inline-block;
+            font-size: 1.3vw;
+        }
+
+        & img {
+            position: relative;
+            display: inline;
+            width: auto;
+            height: 0.7vw;
+            vertical-align: middle;
+            cursor: pointer;
+        }
+
+        @media (1025px <= width <= 1280px), (576px <= width <= 768px) {
+            width: 17vw;
+        }
+
+        @media (width < 576px) {
+            width: 21vw;
+
+            & label {
+                left: 6vw;
+                font-size: 2.4vw;
+            }
+
+            & img {
+                height: 1.2vw;
+            }
+        }
+    }
+
+    .view-switch__tiles { left: 5.5vw; }
+    .view-switch__grid { left: 5.7vw; }
+
+    @media (width < 576px) {
+        .view-switch__tiles { left: 7vw; }
+        .view-switch__grid { left: 7.7vw; }
+    }
+}

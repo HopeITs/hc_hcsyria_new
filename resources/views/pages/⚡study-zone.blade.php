@@ -2,8 +2,6 @@
 
 use App\Actions\RecordPageView;
 use App\Queries\CoverQuery;
-use App\Queries\InitiativeListQuery;
-use App\Queries\InitiativeTitleListQuery;
 use App\Queries\ProjectPageQuery;
 use App\Queries\StudyZoneCenterQuery;
 use App\Queries\StudyZoneStatisticsQuery;
@@ -73,8 +71,6 @@ new #[Layout('layouts::app', [
 
     public function with(): array
     {
-        $search = trim((string) request('search'));
-
         return [
             'covers' => CoverQuery::images(self::CATEGORY),
             'brief' => ProjectPageQuery::brief(self::CATEGORY),
@@ -82,42 +78,27 @@ new #[Layout('layouts::app', [
             'ongoing' => ProjectPageQuery::funders(self::CATEGORY, true),
             'previous' => ProjectPageQuery::funders(self::CATEGORY, false),
             'figures' => StudyZoneStatisticsQuery::figures(),
-            'lists' => $this->activityLists($search),
-            'tab' => $this->openTab(),
-            'search' => $search,
-            'suggestions' => InitiativeTitleListQuery::make()->forCategory(self::CATEGORY)->titles()->map(fn ($title) => html_entity_decode($title, ENT_QUOTES))->all(),
             'spread' => $this->spread(),
         ];
     }
 
-    /** @return array<string, array{label: string, activities: mixed, empty: array{0: string, 1: ?string}}> */
-    private function activityLists(string $search): array
+    /**
+     * The tabs of the activities: each town with the places it lists (Homs and its countryside as
+     * one) and legacy's page parameter for it (ini_A ...), which still opens the town.
+     *
+     * @return array<string, array<string, mixed>>
+     */
+    public function towns(): array
     {
         $sorry = ["Sorry, we couldn't find any results", __('projects.sorryMessage2')];
 
         return collect(self::TOWNS)->map(fn (array $town, string $key) => [
             'label' => $town[0],
-            'activities' => InitiativeListQuery::forPlace(self::CATEGORY, self::ACTIVITIES, $town[1], $town[2], byDate: $key === 'aleppo', search: $search),
+            'places' => $town[1],
+            'page' => $town[2],
+            'byDate' => $key === 'aleppo',
             'empty' => $key === 'aleppo' ? ['No Activities Yet', null] : $sorry,
         ])->all();
-    }
-
-    /** The tab to open: the one in ?tab=, else the town whose page number is in the address, else Aleppo. */
-    private function openTab(): string
-    {
-        $tab = request('tab');
-
-        if (is_string($tab) && array_key_exists($tab, self::TOWNS)) {
-            return $tab;
-        }
-
-        foreach (self::TOWNS as $key => $town) {
-            if (request()->has($town[2])) {
-                return $key;
-            }
-        }
-
-        return 'aleppo';
     }
 
     /**
@@ -277,19 +258,8 @@ new #[Layout('layouts::app', [
 
     <x-ui.red-rule :ms="800"/>
 
-    <div id="initiative-section" class="section-gap">
-        <div class="flow-root px-3">
-            <x-ui.reveal :ms="600" class="mb-2 flex flex-col items-center justify-center">
-                <x-ui.section-title class="mt-4">{{ __('studyzone.activities') }}</x-ui.section-title>
-                <x-ui.search-box :$suggestions :value="$search"/>
-            </x-ui.reveal>
-        </div>
-    </div>
-    <x-ui.red-rule short :ms="800" style="z-index: -1"/>
-
-    <x-ui.reveal :ms="800">
-        <x-site.activity-tabs :lists="$lists" type="study-zone" :selected="$tab" :phone="$phone"/>
-    </x-ui.reveal>
+    <livewire:activity-list :category="self::CATEGORY" :sub-category="self::ACTIVITIES" type="study-zone" :towns="$this->towns()"
+                            :title="__('studyzone.activities')" searchable :phone="$phone"/>
 
     <x-ui.red-rule :ms="800"/>
 

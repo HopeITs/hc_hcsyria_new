@@ -1,0 +1,76 @@
+/*
+ * The grey shapes of cards, shimmering while a list reloads or grows
+ * (x-ui.card-skeleton). Legacy .project-placeholder (micro_page_new-test.css).
+ */
+@layer components {
+
+    /* Added under a list that is growing: no gap of its own, the list's padding is the gap. */
+    .card-skeleton--flush {
+        margin-top: 0;
+    }
+
+    .card-skeleton__shape {
+        position: relative;
+        overflow: hidden;
+        background: #f5f5f5;
+
+        &::after {
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 80%;
+            height: 100%;
+            content: '';
+            background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.4), transparent);
+            opacity: 0.5;
+            animation: project-shimmer 2.5s infinite;
+        }
+    }
+
+    @keyframes project-shimmer {
+        100% { left: 100%; }
+    }
+
+    .card-skeleton__card {
+        padding: 1rem;
+    }
+
+    .card-skeleton__image {
+        height: 10.5vw;
+        margin-bottom: 1rem;
+        background: #e9e9e9;
+    }
+
+    .card-skeleton__image--tall {
+        height: 21vw;
+        margin: 0;
+    }
+
+    .card-skeleton__line {
+        height: 12px;
+        margin-bottom: 8px;
+        background: #e0e0e0;
+        border-radius: 6px;
+    }
+
+    .card-skeleton__line--short { width: 40%; }
+    .card-skeleton__line--medium { width: 70%; }
+    .card-skeleton__line--long { width: 90%; }
+
+    .card-skeleton__row {
+        display: flex;
+        margin: 0.5rem;
+
+        & > * { width: 50%; }
+
+        &.is-flipped { flex-direction: row-reverse; }
+    }
+
+    .card-skeleton__shape--text {
+        padding: 0;
+    }
+
+    .card-skeleton__shape--text .card-skeleton__line {
+        margin: 1rem;
+    }
+}
