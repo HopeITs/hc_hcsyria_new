@@ -145,13 +145,20 @@ new class extends Component
         <div class="flow-root px-3">
             <x-ui.reveal :ms="600" class="mb-2 flex flex-col items-center justify-center">
                 <x-ui.section-title class="mt-4">{{ $title }}</x-ui.section-title>
-                <div class="activity-tools">
-                    @if ($searchable)
-                        <x-ui.search-box :live="true" :value="$search"/>
-                    @endif
-                    <x-ui.view-switch :$view/>
-                </div>
             </x-ui.reveal>
+        </div>
+    </div>
+
+    {{-- Stays under the navigation while the list scrolls past, as the micro-projects filters do; its shadow shows once it has stuck. --}}
+    <div class="activity-bar__sentinel"></div>
+    <div class="activity-bar" :class="{ 'is-stuck': stuck }"
+         x-data="{ stuck: false }"
+         x-init="new IntersectionObserver(([entry]) => stuck = ! entry.isIntersecting && entry.boundingClientRect.top < 0).observe($root.previousElementSibling)">
+        <div class="activity-tools">
+            @if ($searchable)
+                <x-ui.search-box live :value="$search"/>
+            @endif
+            <x-ui.view-switch :$view/>
         </div>
     </div>
     <x-ui.red-rule short :ms="800" style="z-index: -1"/>

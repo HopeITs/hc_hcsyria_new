@@ -127,8 +127,34 @@
     }
 }
 
-/* The search box and the view switch, side by side under the title of a list of activities. */
+/*
+ * The search box and the view switch, side by side under the title of a list
+ * of activities, pinned under the navigation (as .project-filters is on the
+ * micro-projects list) while the list scrolls past.
+ */
 @layer components {
+    .activity-bar__sentinel {
+        height: 0;
+    }
+
+    .activity-bar {
+        position: sticky;
+        top: 4vw;
+        z-index: 1000;
+        padding: 0.5vw 0;
+        background: #fff;
+        transition: box-shadow 0.2s ease;
+
+        &.is-stuck {
+            box-shadow: 0 2px 4px -2px rgb(0 0 0 / 0.2);
+        }
+
+        @media (width < 576px) {
+            top: 10vw;
+            padding: 1vw 0;
+        }
+    }
+
     .activity-tools {
         display: flex;
         gap: 1.5vw;
