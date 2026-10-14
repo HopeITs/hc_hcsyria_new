@@ -10,14 +10,14 @@
     list's own state comes through $wire.
 --}}
 <div class="project-filters" wire:ignore
-     x-data="projectFilters(@js(['cities' => $cities->pluck('name', 'id'), 'donors' => $donors->pluck('name', 'id'), 'applied' => $applied]))">
+     x-data="projectFilters(@js(['cities' => $cities->pluck('name', 'slug'), 'donors' => $donors->pluck('name', 'slug'), 'applied' => $applied]))">
     <div class="project-filters__row">
         <div class="project-filters__col project-filters__col--end">
             <x-ui.dropdown>
                 <x-slot:trigger><span x-text="'City-' + (cities[draft.city] ?? 'All')"></span></x-slot:trigger>
                 <li><a class="dropdown__item" href="#" @click.prevent="draft.city = ''">All</a></li>
                 @foreach ($cities as $city)
-                    <li><a class="dropdown__item" href="#" @click.prevent="draft.city = '{{ $city->id }}'">{{ $city->name }}</a></li>
+                    <li><a class="dropdown__item" href="#" @click.prevent="draft.city = '{{ $city->slug }}'">{{ $city->name }}</a></li>
                 @endforeach
             </x-ui.dropdown>
         </div>
@@ -27,7 +27,7 @@
                 <x-slot:trigger><span x-text="'Donor-' + (donors[draft.donor] ?? 'All')"></span></x-slot:trigger>
                 <li><a class="dropdown__item" href="#" @click.prevent="draft.donor = ''">All</a></li>
                 @foreach ($donors as $donor)
-                    <li><a class="dropdown__item" href="#" @click.prevent="draft.donor = '{{ $donor->id }}'">{{ $donor->name }}</a></li>
+                    <li><a class="dropdown__item" href="#" @click.prevent="draft.donor = '{{ $donor->slug }}'">{{ $donor->name }}</a></li>
                 @endforeach
             </x-ui.dropdown>
         </div>

@@ -30,7 +30,7 @@ new class extends Component
     private const SEARCH_LENGTH = 100;
 
     /*
-     * The applied filters and the view live in the address (?city=3&donor=1&video=1&search=...&view=grid),
+     * The applied filters and the view live in the address (?city=homs&donor=caritas-poland&video=1&search=...&view=grid), cities and donors by slug,
      * so a filtered list can be bookmarked or shared and opens already filtered, and
      * each Apply is a step the back button undoes.
      */
@@ -81,8 +81,8 @@ new class extends Component
     public function mount(): void
     {
         // What came in the address is no more to be trusted than what Apply sends.
-        $this->city = ctype_digit($this->city) ? $this->city : '';
-        $this->donor = ctype_digit($this->donor) ? $this->donor : '';
+        $this->city = $this->knownCity($this->city);
+        $this->donor = $this->knownDonor($this->donor);
         $this->search = Str::limit(trim($this->search), self::SEARCH_LENGTH, '');
         $this->view = $this->view === 'grid' ? 'grid' : 'tiles';
 
@@ -96,8 +96,8 @@ new class extends Component
     /** Apply: the draft becomes the filter, and the list starts again from its first page. */
     public function apply(string $city, string $donor, bool $hasVideo, string $search): void
     {
-        $this->city = ctype_digit($city) ? $city : '';
-        $this->donor = ctype_digit($donor) ? $donor : '';
+        $this->city = $this->knownCity($city);
+        $this->donor = $this->knownDonor($donor);
         $this->hasVideo = $hasVideo;
         $this->search = Str::limit(trim($search), self::SEARCH_LENGTH, '');
         $this->limit = self::STEP;
@@ -110,8 +110,8 @@ new class extends Component
     public function updated(string $name): void
     {
         if (in_array($name, ['city', 'donor', 'hasVideo', 'search'], true)) {
-            $this->city = ctype_digit($this->city) ? $this->city : '';
-            $this->donor = ctype_digit($this->donor) ? $this->donor : '';
+            $this->city = $this->knownCity($this->city);
+            $this->donor = $this->knownDonor($this->donor);
             $this->search = Str::limit(trim($this->search), self::SEARCH_LENGTH, '');
             $this->limit = self::STEP;
             $this->count = $this->query()->builder()->count();
@@ -155,12 +155,23 @@ new class extends Component
         return MemberProjectQuery::suggestions();
     }
 
+    /** A city slug as the address or Apply sent it: kept when it is one of the filter's, else no city. */
+    private function knownCity(string $slug): string
+    {
+        return MemberProjectQuery::cityId($slug) === null ? '' : $slug;
+    }
+
+    private function knownDonor(string $slug): string
+    {
+        return MemberProjectQuery::donorId($slug) === null ? '' : $slug;
+    }
+
     private function query(): ProjectSearch
     {
         return ProjectSearch::make()
             ->search($this->search)
-            ->forDonor($this->donor)
-            ->inCity($this->city)
+            ->forDonor(MemberProjectQuery::donorId($this->donor))
+            ->inCity(MemberProjectQuery::cityId($this->city))
             ->onlyWithVideo($this->hasVideo);
     }
 

@@ -114,7 +114,7 @@ it('applies a draft of filters and starts the list again from the first page', f
         ->assertSet('count', 2)
         ->assertSee('zqx workshop')
         ->assertSee('zqx elsewhere')
-        ->call('apply', '3', '', false, 'zqx')
+        ->call('apply', 'aleppo', '', false, 'zqx')
         ->assertSet('count', 1)
         ->assertSee('zqx workshop')
         ->assertDontSee('zqx elsewhere')
@@ -131,7 +131,7 @@ it('filters to projects with a video, a donor, or a number', function () {
         ->call('apply', '', '', true, 'zqx')
         ->assertSet('count', 1)
         ->assertDontSee('zqx silent')
-        ->call('apply', '', '2', false, 'zqx')
+        ->call('apply', '', 'salt', false, 'zqx')
         ->assertSet('count', 1)
         ->call('apply', '', '', false, '88887')
         ->assertSet('count', 1)
@@ -233,10 +233,10 @@ it('opens already filtered from the filters in the address', function () {
     listedProject();
     listedProject(['MPE_City' => 1, 'MPE_Video' => 'https://www.youtube.com/embed/abc'], ['MPE_Name' => 'zqx elsewhere']);
 
-    Livewire::actingAs(authorisedMember())->withQueryParams(['search' => 'zqx', 'city' => '1', 'video' => '1', 'view' => 'grid'])
+    Livewire::actingAs(authorisedMember())->withQueryParams(['search' => 'zqx', 'city' => 'homs', 'video' => '1', 'view' => 'grid'])
         ->test('micro-project-list')
         ->assertSet('search', 'zqx')
-        ->assertSet('city', '1')
+        ->assertSet('city', 'homs')
         ->assertSet('hasVideo', true)
         ->assertSet('view', 'grid')
         ->assertSet('count', 1)
@@ -253,7 +253,7 @@ it('ignores filters in the address that are not what Apply could send', function
 });
 
 it('starts the filter bar from the filters in the address', function () {
-    $this->actingAs(authorisedMember())->get('/projects/micro-projects?city=3&search=zqx')
+    $this->actingAs(authorisedMember())->get('/projects/micro-projects?city=aleppo&search=zqx')
         ->assertSee('City-', false)
         ->assertSeeHtml('&quot;search&quot;:&quot;zqx&quot;');
 });
@@ -282,4 +282,18 @@ it('puts the open details window in the address and ignores one that is not a nu
         ->test('micro-project-list')
         ->assertSet('details', '')
         ->assertSet('linked', false);
+});
+
+it('writes cities and donors in the address by slug, and takes only the slugs the filter has', function () {
+    expect(MemberProjectQuery::cities()->pluck('slug')->all())->toContain('aleppo', 'homs', 'al-wadi', 'idlib')
+        ->and(MemberProjectQuery::cityId('homs'))->toBe(1)
+        ->and(MemberProjectQuery::cityId('1'))->toBeNull()
+        ->and(MemberProjectQuery::cityId('atlantis'))->toBeNull()
+        ->and(MemberProjectQuery::donorId('caritas-poland'))->toBe(1)
+        ->and(MemberProjectQuery::donors()->pluck('slug')->unique()->count())->toBe(MemberProjectQuery::donors()->count());
+
+    Livewire::actingAs(authorisedMember())->withQueryParams(['city' => '1', 'donor' => 'caritas-poland'])
+        ->test('micro-project-list')
+        ->assertSet('city', '')
+        ->assertSet('donor', 'caritas-poland');
 });

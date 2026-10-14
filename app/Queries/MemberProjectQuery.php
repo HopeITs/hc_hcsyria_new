@@ -9,6 +9,7 @@ use App\Support\PlaceName;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
 
 /*
  * What a signed-in member sees on /projects/micro-projects: the filter
@@ -30,17 +31,60 @@ final class MemberProjectQuery
 
     private const SUGGESTIONS_MINUTES = 10;
 
-    /** @return Collection<int, Place> */
+    /**
+     * The cities of the filter, each with the slug that stands for it in an address.
+     *
+     * @return Collection<int, Place>
+     */
     public static function cities(): Collection
     {
-        return Place::query()->whereIn('id', self::CITY_IDS)->orderBy('rank')->get(['id', 'name'])
+        $cities = Place::query()->whereIn('id', self::CITY_IDS)->orderBy('rank')->get(['id', 'name'])
             ->each(fn (Place $place) => $place->name = PlaceName::of($place->name));
+
+        return self::withSlugs($cities);
     }
 
-    /** @return Collection<int, Donor> */
+    /**
+     * The donors of the filter, each with its slug.
+     *
+     * @return Collection<int, Donor>
+     */
     public static function donors(): Collection
     {
-        return Donor::query()->orderBy('name')->get(['id', 'name']);
+        return self::withSlugs(Donor::query()->orderBy('name')->get(['id', 'name']));
+    }
+
+    /** The id of the city a slug stands for; null for any other text. */
+    public static function cityId(string $slug): ?int
+    {
+        return self::cities()->firstWhere('slug', $slug)?->id;
+    }
+
+    /** The id of the donor a slug stands for; null for any other text. */
+    public static function donorId(string $slug): ?int
+    {
+        return self::donors()->firstWhere('slug', $slug)?->id;
+    }
+
+    /**
+     * Names as addresses spell them: lower case, hyphens, no accents. Two
+     * names that come to the same slug keep it apart with their id.
+     *
+     * @template TModel of Place|Donor
+     *
+     * @param  Collection<int, TModel>  $models
+     * @return Collection<int, TModel>
+     */
+    private static function withSlugs(Collection $models): Collection
+    {
+        $taken = [];
+
+        return $models->each(function (Place|Donor $model) use (&$taken) {
+            $slug = Str::slug((string) $model->name) ?: (string) $model->id;
+            $slug = isset($taken[$slug]) ? $slug.'-'.$model->id : $slug;
+            $taken[$slug] = true;
+            $model->setAttribute('slug', $slug);
+        });
     }
 
     /** Every project the public listing can show, whatever the filters. */
