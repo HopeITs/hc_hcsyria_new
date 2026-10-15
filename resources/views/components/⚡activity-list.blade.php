@@ -220,10 +220,10 @@ new class extends Component
         <div class="relative bg-white">
             <div wire:loading.block wire:target="apply">
                 <div x-show="$wire.view === 'tiles'" @if ($view !== 'tiles') style="display: none" @endif>
-                    <x-ui.card-skeleton view="tiles" :count="3" class="activity-tiles card-skeleton--flush"/>
+                    <x-site.activity-skeleton view="tiles"/>
                 </div>
                 <div x-show="$wire.view === 'grid'" @if ($view !== 'grid') style="display: none" @endif>
-                    <x-ui.card-skeleton view="grid" :count="1" class="card-skeleton--flush"/>
+                    <x-site.activity-skeleton view="rows" :count="3"/>
                 </div>
             </div>
 
@@ -262,8 +262,8 @@ new class extends Component
             </div>
 
             <div wire:loading.block wire:target="loadMore">
-                <div x-show="$wire.view === 'tiles'" @if ($view !== 'tiles') style="display: none" @endif><x-ui.card-skeleton view="tiles" :count="3" class="activity-tiles card-skeleton--flush"/></div>
-                <div x-show="$wire.view === 'grid'" @if ($view !== 'grid') style="display: none" @endif><x-ui.card-skeleton view="grid" :count="1" class="card-skeleton--flush"/></div>
+                <div x-show="$wire.view === 'tiles'" @if ($view !== 'tiles') style="display: none" @endif><x-site.activity-skeleton view="tiles" class="card-skeleton--flush"/></div>
+                <div x-show="$wire.view === 'grid'" @if ($view !== 'grid') style="display: none" @endif><x-site.activity-skeleton view="rows" :count="2"/></div>
             </div>
         </div>
     </x-ui.reveal>
