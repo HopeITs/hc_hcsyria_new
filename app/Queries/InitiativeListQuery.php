@@ -104,28 +104,33 @@ final class InitiativeListQuery
     }
 
     /**
-     * Every online activity of a programme that has no towns or tabs, in the
-     * order its editors ranked them (School to School), or only those matching
-     * a search.
+     * Every online activity of a programme (or sub-category) that has no towns or
+     * tabs, in the order its editors ranked them (School to School, Family to
+     * Family's partners), or only those matching a search.
      *
      * @return Collection<int, Initiative>
      */
-    public static function ranked(int $categoryId, ?string $search = null): Collection
+    public static function ranked(?int $categoryId, ?int $subCategoryId = null, ?string $search = null): Collection
     {
         return Initiative::query()
             ->with([
                 'content',
                 'initiativeImages' => fn ($images) => $images->orderBy('image_order')->orderBy('id'),
             ])
-            ->where('what_category_id', $categoryId)
+            ->when($categoryId !== null, fn ($query) => $query->where('what_category_id', $categoryId))
+            ->when($subCategoryId !== null, fn ($query) => $query->where('sub_what_category_id', $subCategoryId))
             ->where('online', '1')
             ->when(filled($search), fn ($query) => self::matching($query, $search))
             ->orderBy('rank')
             ->get();
     }
 
-    /** Only activities whose title, text or summary contain the term. */
-    private static function matching($query, string $search): void
+    /**
+     * Only activities whose title, text or summary contain the term.
+     *
+     * @param  Builder<Initiative>  $query
+     */
+    private static function matching(Builder $query, string $search): void
     {
         $like = '%'.self::escapeLike(mb_strtolower($search)).'%';
 
