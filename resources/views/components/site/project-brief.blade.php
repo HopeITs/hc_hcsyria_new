@@ -1,4 +1,4 @@
-@props(['project'])
+@props(['project', 'mirror' => false])
 
 {{--
     A programme's brief (legacy components/project-brief-section): its logo,
@@ -13,7 +13,8 @@
     photos, from YouTube's cookieless host (the address in the database is
     youtube.com; the page it is allowed to frame is the privacy one).
 
-    Not ported yet: Family to Family's mirrored layout, which comes with that page.
+    :mirror puts the photos or video on the left and the text on the right, as
+    Family to Family's page does; on phones the photos come first either way.
 --}}
 @php
     $photos = $project->hopeProjectMedia->where('mediaType', 'image')->values();
@@ -21,7 +22,7 @@
     $video = $video ? str_replace('://www.youtube.com/', '://www.youtube-nocookie.com/', $video) : null;
 @endphp
 
-<section class="project-brief">
+<section @class(['project-brief', 'project-brief--mirror' => $mirror])>
     <x-ui.red-rule class="project-brief__rule"/>
 
     <x-ui.reveal :ms="1000" class="project-brief__body">
@@ -43,7 +44,7 @@
                     </div>
                 </div>
 
-                <div class="project-brief__media flex w-full justify-start sm:w-1/2">
+                <div @class(['project-brief__media flex w-full justify-start sm:w-1/2', 'order-first' => $mirror])>
                     <x-ui.reveal :ms="600" class="project-brief__frame">
                         @if ($video)
                             <iframe class="project-brief__video" src="{{ $video }}" title="{{ $project->name }}" loading="lazy"

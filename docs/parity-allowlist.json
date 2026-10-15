@@ -3,7 +3,8 @@
     "text": {
         "+ Skip to content": "Keyboard skip link, visually hidden until focused (accessibility; upgrade-plan §2.4).",
         "- Previous": "Carousel buttons: the legacy visually-hidden <span> is now the button's aria-label; screen readers say the same, nothing visible changes.",
-        "- Next": "Carousel buttons: the legacy visually-hidden <span> is now the button's aria-label; screen readers say the same, nothing visible changes."
+        "- Next": "Carousel buttons: the legacy visually-hidden <span> is now the button's aria-label; screen readers say the same, nothing visible changes.",
+        "+ Leaflet": "The map's tile attribution link, which the map library adds and legacy's maps hid."
     },
     "links": {
         "+ a #main": "Target of the skip link above.",
@@ -11,7 +12,12 @@
         "- a tel:+963963989162117": "The DISC footer's Damascus number linked to +963963989162117, a typo (the number shown, and linked on phones, is +963989162117); both layouts link the right one.",
         "- iframe https://www.youtube.com/embed/enCQB-ejFEw": "Programme videos are framed from youtube-nocookie.com (the privacy host the content security policy allows) instead of youtube.com; same video.",
         "+ iframe https://www.youtube-nocookie.com/embed/enCQB-ejFEw": "As above.",
-        "- img /images/logos/hc-w.svg": "The white navbar logo (#nav_logo_w) is display:none at every width; not ported."
+        "- img /images/logos/hc-w.svg": "The white navbar logo (#nav_logo_w) is display:none at every width; not ported.",
+        "- iframe https://www.youtube.com/embed/ApyHAvgggcE": "Programme videos are framed from youtube-nocookie.com (the privacy host the content security policy allows) instead of youtube.com; same video.",
+        "+ iframe https://www.youtube-nocookie.com/embed/ApyHAvgggcE": "As above.",
+        "- iframe https://www.youtube.com/embed/vdU-_krIovw": "Programme videos are framed from youtube-nocookie.com (the privacy host the content security policy allows) instead of youtube.com; same video.",
+        "+ iframe https://www.youtube-nocookie.com/embed/vdU-_krIovw": "As above.",
+        "+ img /images/home/school-statistics.svg": "School to School's statistics scene: legacy drew it as 5.7 MB of inline SVG; it is an image now (the five hover areas are an overlay)."
     },
     "fonts": {
         "- FontAwesome normal normal": "FontAwesome 4.7 icon font replaced by inline SVG of the glyphs used (components/ui/icon.blade.php).",

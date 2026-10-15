@@ -34,6 +34,19 @@
         }
     }
 
+    /* Family to Family's mirrored brief keeps the narrower inset legacy's #Family .padding-screen gave its text. */
+    .project-brief--mirror .project-brief__text {
+        padding: 0 1vw;
+
+        @media (width >= 576px) {
+            padding: 0 1vw 0 3.7vw;
+        }
+    }
+
+    .project-brief--mirror .project-brief__heading {
+        color: var(--color-ink-600);
+    }
+
     .project-brief__logo {
         display: none;
         width: var(--logo-width, 12vw);

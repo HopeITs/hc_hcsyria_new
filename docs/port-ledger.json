@@ -1403,9 +1403,9 @@
             "action": "PublicController@family_to_family",
             "name": "new.public.family2family",
             "order": 16,
-            "status": "pending",
-            "notes": null,
-            "ported_from": null,
+            "status": "ported",
+            "notes": "Cover photos, the survey figures (s1-s3, phone s1-s4) and the partners' photographs (p1, p2... in the partners' order) are files legacy named directly; kept as such. Partners are the initiatives in sub-category 1 whatever their category, as in legacy. The commented-out figures section, the Chart.js scripts and the second cover carousel for phones are not ported. Keywords were Family to Family's own copy of another page's; they name this programme now.",
+            "ported_from": "6d45ef9",
             "live_status": "200",
             "examples": [
                 {

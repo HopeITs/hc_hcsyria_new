@@ -6,6 +6,7 @@
 import carousel from './carousel';
 import categoryShowcase from './category-showcase';
 import centreSpread from './centre-spread';
+import familyMap from './family-map';
 import hideNavBetween from './hide-nav-between';
 import lightbox from './lightbox';
 import preloader from './preloader';
@@ -26,6 +27,7 @@ document.addEventListener('alpine:init', () => {
     window.Alpine.data('carousel', carousel);
     window.Alpine.data('categoryShowcase', categoryShowcase);
     window.Alpine.data('centreSpread', centreSpread);
+    window.Alpine.data('familyMap', familyMap);
     window.Alpine.data('lightbox', lightbox);
     window.Alpine.data('preloader', preloader);
     window.Alpine.data('radialBars', radialBars);
