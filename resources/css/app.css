@@ -36,6 +36,10 @@
 @import './ui/zone-stats.css';
 @import './ui/search-box.css';
 @import './ui/dropdown.css';
+@import './ui/view-switch.css';
+@import './ui/card-grid.css';
+@import './ui/card-skeleton.css';
+@import './ui/activity-tile.css';
 @import './ui/project-filters.css';
 @import './ui/project-card.css';
 @import './ui/project-modal.css';

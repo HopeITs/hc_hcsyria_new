@@ -1,4 +1,4 @@
-@props(['suggestions' => [], 'value' => '', 'placeholder' => 'Search Activities', 'filter' => false, 'button' => true])
+@props(['suggestions' => [], 'value' => '', 'placeholder' => 'Search Activities', 'filter' => false, 'button' => true, 'headings' => null])
 
 {{--
     A search box with suggestions as you type (resources/css/ui/search-box.css,
@@ -6,12 +6,14 @@
     a button, and searching reloads the page with ?search=; $suggestions are
     the titles to suggest from. As a :filter it belongs to a filter bar: it
     announces what is typed, fetches its own suggestions from the list around
-    it, and shows them under a heading for names and one for beneficiaries.
+    it, and shows them under a heading for names and one for beneficiaries
+    (or under $headings, one for each list the list's suggestions() returns).
 --}}
 <div {{ $attributes->class(['search-box', 'search-box--filter' => $filter]) }}
-     x-data="searchBox(@js($filter
-         ? ['filter' => true, 'value' => $value, 'headings' => [__('projects.projectsNames'), __('projects.beneficiariesNames')]]
-         : ['suggestions' => array_values($suggestions), 'value' => $value]))"
+     x-data="searchBox(@js(match (true) {
+         $filter => ['filter' => true, 'value' => $value, 'headings' => $headings ?? [__('projects.projectsNames'), __('projects.beneficiariesNames')]],
+         default => ['suggestions' => array_values($suggestions), 'value' => $value],
+     }))"
      @click.outside="open = false"
      @if ($filter) @search-set.window="query = $event.detail" @endif>
     @if ($button)
@@ -30,7 +32,7 @@
                 <div>
                     <h5 class="search-box__heading" x-text="group.heading"></h5>
                     <template x-for="item in group.items" :key="group.heading + item.title">
-                        <div class="search-box__suggestion" :class="{ 'is-current': item.i === cursor }" @click="go(item.title)" @mouseenter="cursor = item.i">
+                        <div class="search-box__suggestion" :class="{ 'is-current': item.i === cursor }" :title="item.title" @click="go(item.title)" @mouseenter="cursor = item.i">
                             <template x-for="part in parts(item.title)"><span :class="{ 'font-bold': part.match }" x-text="part.text"></span></template>
                         </div>
                     </template>

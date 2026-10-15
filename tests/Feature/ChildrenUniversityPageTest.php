@@ -19,17 +19,13 @@ it('shows a button for each of the five subjects', function () {
         ], false);
 });
 
-it('offers an Aleppo and a Homs tab', function () {
-    $this->get('/projects/childrenuni')->assertSeeInOrder(['Aleppo', 'Homs']);
-});
-
-it('opens the tab named in the address, else the one whose page is asked for, else Aleppo', function (string $query, string $tab) {
-    $this->get('/projects/childrenuni'.$query)->assertSee("activityTabs({ tab: '$tab' })", false);
+it('filters to the city named in the address, else the one whose page is asked for, else every city', function (string $query, string $town) {
+    $this->get('/projects/childrenuni'.$query)->assertSee('&quot;city&quot;:&quot;'.$town.'&quot;', false);
 })->with([
-    'default' => ['', 'aleppo'],
-    'tab' => ['?tab=homs', 'homs'],
+    'default' => ['', ''],
+    'city' => ['?city=homs', 'homs'],
     'page of Homs' => ['?ini_H=2', 'homs'],
-    'nonsense tab' => ['?tab=<script>', 'aleppo'],
+    'nonsense city' => ['?city=<script>', ''],
 ]);
 
 it('wears the programme\'s own footer', function () {

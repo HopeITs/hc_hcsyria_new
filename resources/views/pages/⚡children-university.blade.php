@@ -2,8 +2,6 @@
 
 use App\Actions\RecordPageView;
 use App\Queries\CoverQuery;
-use App\Queries\InitiativeListQuery;
-use App\Queries\InitiativeTitleListQuery;
 use App\Queries\ProjectPageQuery;
 use App\Support\Device;
 use Livewire\Attributes\Layout;
@@ -20,7 +18,9 @@ use Livewire\Component;
  * Bootstrap, typeahead.js) and the Leaflet, Chart.js and fancybox links it
  * never used. The subjects' text was written twice in the legacy script, for
  * hovering and for clicking, with the same words; it is written once.
- * Search takes bound values; legacy spliced them into its SQL.
+ * The activities are the shared list of Study Zone and DISC (filter bar,
+ * tiles or rows, Load More) in place of legacy's two tabs, search box and
+ * pager. Search takes bound values; legacy spliced them into its SQL.
  */
 new #[Layout('layouts::app', [
     'title' => 'what_we_do.children_uni',
@@ -31,12 +31,6 @@ new #[Layout('layouts::app', [
 {
     /** The programme's id in what_categories: its covers, brief, funders and activities. */
     private const CATEGORY = 17;
-
-    /** The towns of the activity tabs, in order: tab key => [label, place id, page parameter]. */
-    private const TOWNS = [
-        'aleppo' => ['aleppo', 3, 'ini_A'],
-        'homs' => ['homs', 1, 'ini_H'],
-    ];
 
     public bool $phone = false;
 
@@ -49,48 +43,23 @@ new #[Layout('layouts::app', [
 
     public function with(): array
     {
-        $search = trim((string) request('search'));
-
         return [
             'covers' => CoverQuery::images(self::CATEGORY),
             'brief' => ProjectPageQuery::brief(self::CATEGORY),
             'ongoing' => ProjectPageQuery::funders(self::CATEGORY, true),
             'previous' => ProjectPageQuery::funders(self::CATEGORY, false),
-            'lists' => $this->activityLists($search),
-            'tab' => $this->openTab(),
-            'search' => $search,
-            'suggestions' => InitiativeTitleListQuery::make()->forCategory(self::CATEGORY)->titles()->map(fn ($title) => html_entity_decode($title, ENT_QUOTES))->all(),
         ];
     }
 
-    /** @return array<string, array{label: string, activities: mixed, empty: array{0: string, 1: ?string}}> */
-    private function activityLists(string $search): array
+    /** The two towns of the activity list; the programme has no sub-categories, and Homs is place 1 alone. */
+    public function towns(): array
     {
         $sorry = ["Sorry, we couldn't find any results", __('projects.sorryMessage2')];
 
-        return collect(self::TOWNS)->map(fn (array $town) => [
-            'label' => __('projects.'.$town[0]),
-            'activities' => InitiativeListQuery::forPlace(self::CATEGORY, null, $town[1], $town[2], search: $search),
-            'empty' => $sorry,
-        ])->all();
-    }
-
-    /** The tab to open: the one in ?tab=, else the town whose page number is in the address, else Aleppo. */
-    private function openTab(): string
-    {
-        $tab = request('tab');
-
-        if (is_string($tab) && array_key_exists($tab, self::TOWNS)) {
-            return $tab;
-        }
-
-        foreach (self::TOWNS as $key => $town) {
-            if (request()->has($town[2])) {
-                return $key;
-            }
-        }
-
-        return 'aleppo';
+        return [
+            'aleppo' => ['label' => __('projects.aleppo'), 'places' => [3], 'page' => 'ini_A', 'byDate' => false, 'empty' => $sorry],
+            'homs' => ['label' => __('projects.homs'), 'places' => [1], 'page' => 'ini_H', 'byDate' => false, 'empty' => $sorry],
+        ];
     }
 
     /** @return list<array{name: string, image: string, lines: list<array{ms: int, text: string}>}> */
@@ -149,7 +118,7 @@ new #[Layout('layouts::app', [
 };
 ?>
 
-<div id="Children" class="page-start accent-disc" style="--logo-width: 4.5vw; --logo-width-phone: 5vw; --search-width-phone: 50vw; --search-icon-phone: 3vw" x-data x-hide-nav-between="'#categories-section', '#initiative-section'">
+<div id="Children" class="page-start accent-disc" style="--logo-width: 4.5vw; --logo-width-phone: 5vw" x-data x-hide-nav-between="'#categories-section', '#initiative-section'">
     <x-site.page-title title="Educational Program" subtitle="Children University">
         <img class="reveal page-title__logo" style="--reveal-ms: 1000ms" x-reveal src="/images/logos/Children-Uni.svg" alt="Children University">
     </x-site.page-title>
@@ -169,19 +138,8 @@ new #[Layout('layouts::app', [
 
     <x-ui.red-rule/>
 
-    <div id="initiative-section" class="section-gap">
-        <div class="flow-root px-3">
-            <x-ui.reveal :ms="600" class="mb-2 flex flex-col items-center justify-center">
-                <x-ui.section-title class="mt-4">{{ __('studyzone.activities') }}</x-ui.section-title>
-                <x-ui.search-box :$suggestions :value="$search"/>
-            </x-ui.reveal>
-        </div>
-    </div>
-    <x-ui.red-rule short :ms="800" style="z-index: -1"/>
-
-    <x-ui.reveal :ms="800">
-        <x-site.activity-tabs :lists="$lists" type="children-university" :selected="$tab" :phone="$phone"/>
-    </x-ui.reveal>
+    <livewire:activity-list :category="self::CATEGORY" :sub-category="null" type="children-university" :towns="$this->towns()"
+                            :title="__('studyzone.activities')" :phone="$phone"/>
 
     <x-ui.red-rule :ms="800"/>
     <x-site.funders :ongoing="$ongoing" :previous="$previous"/>

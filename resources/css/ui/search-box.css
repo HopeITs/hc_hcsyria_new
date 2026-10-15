@@ -1,8 +1,7 @@
 /*
  * The search box under a list's title. Legacy .search-container, #search-input
  * (study_new.css) and typeahead.js's menu (typeahead.css), measured on
- * /projects/study-zone. A page may widen the box and its icon on phones with
- * --search-width-phone and --search-icon-phone (Children University does).
+ * /projects/study-zone.
  */
 @layer components {
     .search-box {
@@ -25,11 +24,6 @@
         & img {
             width: 1.5vw;
             height: 1.5vw;
-
-            @media (width < 576px) {
-                width: var(--search-icon-phone, 1.5vw);
-                height: var(--search-icon-phone, 1.5vw);
-            }
         }
     }
 
@@ -37,23 +31,24 @@
         position: relative;
     }
 
+    /* One size for the box on every page (the micro-projects filters, Study Zone). */
     .search-box__input {
         display: block;
-        width: 25vw;
-        padding: 1vw;
-        font-size: 1vw;
+        width: 12.5vw;
+        padding: 0.7vw;
+        font-size: 1.3vw;
         font-weight: 100;
         color: #b2b2b2;
         background-color: #f7f7f7;
         border: none;
 
-        @media (width < 576px) {
-            width: var(--search-width-phone, 26vw);
-            font-size: 2.4vw;
+        @media (1025px <= width <= 1280px) {
+            width: 16.5vw;
         }
 
-        @media (576px <= width <= 991px), (993px <= width <= 1280px) {
+        @media (width < 576px) {
             width: 21vw;
+            font-size: 2.4vw;
         }
 
         &::placeholder {
@@ -94,6 +89,8 @@
         font-size: 0.85vw;
         line-height: 1.42857143;
         color: var(--color-ink-600);
+        overflow: hidden;
+        text-overflow: ellipsis;
         white-space: nowrap;
         cursor: pointer;
 
