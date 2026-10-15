@@ -36,15 +36,7 @@ final class InitiativeListQuery
             ->where('sub_what_category_id', $subCategoryId)
             ->whereIn('place_id', (array) $placeId)
             ->where('online', '1')
-            ->when(filled($search), function ($query) use ($search) {
-                $like = '%'.self::escapeLike(mb_strtolower($search)).'%';
-
-                // One group, so the three alternatives stay inside the relation's own constraint.
-                $query->whereHas('content', fn ($content) => $content->where(fn ($any) => $any
-                    ->where('title', 'like', $like)
-                    ->orWhere('content', 'like', $like)
-                    ->orWhere('description', 'like', $like)));
-            })
+            ->when(filled($search), fn ($query) => self::matching($query, $search))
             ->when($byDate, fn ($query) => $query->orderByDesc('created_at'), fn ($query) => $query->orderByDesc('id'))
             ->orderByDesc('id')
             ->paginate(self::PER_PAGE, ['*'], $pageName);
@@ -52,11 +44,12 @@ final class InitiativeListQuery
 
     /**
      * Every online activity of a programme that has no towns or tabs, in the
-     * order its editors ranked them (School to School).
+     * order its editors ranked them (School to School), or only those matching
+     * a search.
      *
      * @return Collection<int, Initiative>
      */
-    public static function ranked(int $categoryId): Collection
+    public static function ranked(int $categoryId, ?string $search = null): Collection
     {
         return Initiative::query()
             ->with([
@@ -65,8 +58,21 @@ final class InitiativeListQuery
             ])
             ->where('what_category_id', $categoryId)
             ->where('online', '1')
+            ->when(filled($search), fn ($query) => self::matching($query, $search))
             ->orderBy('rank')
             ->get();
+    }
+
+    /** Only activities whose title, text or summary contain the term. */
+    private static function matching($query, string $search): void
+    {
+        $like = '%'.self::escapeLike(mb_strtolower($search)).'%';
+
+        // One group, so the three alternatives stay inside the relation's own constraint.
+        $query->whereHas('content', fn ($content) => $content->where(fn ($any) => $any
+            ->where('title', 'like', $like)
+            ->orWhere('content', 'like', $like)
+            ->orWhere('description', 'like', $like)));
     }
 
     /** A search term as a LIKE pattern body: the wildcards a visitor types mean themselves. */

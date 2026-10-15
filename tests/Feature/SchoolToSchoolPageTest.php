@@ -39,3 +39,10 @@ it('counts a visit once per session under the legacy page name', function () {
 
     expect((int) PageView::query()->where('page_name', 'school_to_school')->value('views'))->toBe($before + 1);
 });
+
+it('searches the activities and says so when nothing matches', function () {
+    $this->get('/projects/school-to-school?search=zzzzqqqq')
+        ->assertOk()
+        ->assertSee("Sorry, we couldn't find any results", false);
+    $this->get('/projects/school-to-school?search=%25')->assertOk();
+});
