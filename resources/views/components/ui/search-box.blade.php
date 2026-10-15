@@ -1,4 +1,4 @@
-@props(['suggestions' => [], 'value' => '', 'placeholder' => 'Search Activities', 'filter' => false, 'button' => true, 'live' => false, 'heading' => 'activities'])
+@props(['suggestions' => [], 'value' => '', 'placeholder' => 'Search Activities', 'filter' => false, 'button' => true, 'headings' => null])
 
 {{--
     A search box with suggestions as you type (resources/css/ui/search-box.css,
@@ -6,12 +6,12 @@
     a button, and searching reloads the page with ?search=; $suggestions are
     the titles to suggest from. As a :filter it belongs to a filter bar: it
     announces what is typed, fetches its own suggestions from the list around
-    it, and shows them under a heading for names and one for beneficiaries.
+    it, and shows them under a heading for names and one for beneficiaries
+    (or under $headings, one for each list the list's suggestions() returns).
 --}}
 <div {{ $attributes->class(['search-box', 'search-box--filter' => $filter]) }}
      x-data="searchBox(@js(match (true) {
-         $filter => ['filter' => true, 'value' => $value, 'headings' => [__('projects.projectsNames'), __('projects.beneficiariesNames')]],
-         $live => ['live' => true, 'value' => $value, 'headings' => [$heading]],
+         $filter => ['filter' => true, 'value' => $value, 'headings' => $headings ?? [__('projects.projectsNames'), __('projects.beneficiariesNames')]],
          default => ['suggestions' => array_values($suggestions), 'value' => $value],
      }))"
      @click.outside="open = false"

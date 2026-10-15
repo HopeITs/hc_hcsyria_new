@@ -1,7 +1,11 @@
 <?php
 
+use App\Models\Initiative;
 use App\Queries\InitiativeListQuery;
 use App\Queries\InitiativeTitleListQuery;
+use App\Queries\MemberProjectQuery;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection as Support;
 use Illuminate\Support\Str;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\Renderless;
@@ -9,16 +13,19 @@ use Livewire\Attributes\Url;
 use Livewire\Component;
 
 /*
- * A programme's activities (Study Zone, DISC): a title, a search box where the
- * programme has one, a tab for each town, the activities as tiles or rows, and
- * Load More. It replaces the tabs of paged lists, which reloaded the page for
- * every step; here the town, the search and the view are in the address
- * (?tab=homs&search=...&view=grid) and the list changes in place.
+ * A programme's activities (Study Zone, DISC): the filter bar of the
+ * micro-projects list (a city, a donor, a video, the search box and Apply),
+ * the activities as tiles or rows, and Load More. It replaces the tabs of
+ * paged lists, which reloaded the page for every step; here the filters and
+ * the view are in the address
+ * (?city=homs&donor=caritas-poland&search=...&view=grid) and the list changes
+ * in place.
  *
  * Both layouts are on the page and the switch shows one (see x-ui.view-switch);
- * a town or a search fetches the first six again, Load More adds six.
+ * Apply fetches the first six again, Load More adds six. The bar offers a
+ * donor and a video only where the programme's activities have them.
  *
- * $towns is town key => ['label', 'places' (ids), 'page' (legacy's page
+ * $towns is the city's slug => ['label', 'places' (ids), 'page' (legacy's page
  * parameter, ini_A), 'byDate', 'empty' (what an empty list says)].
  */
 new class extends Component
@@ -46,14 +53,17 @@ new class extends Component
     public string $title = '';
 
     #[Locked]
-    public bool $searchable = false;
-
-    #[Locked]
     public bool $phone = false;
 
-    /** The open town's key; empty is the first. Legacy had it as ?tab=. */
-    #[Url(as: 'tab', history: true, except: '')]
-    public string $town = '';
+    /** The applied city's slug; empty is every city. Legacy had its towns as ?tab=. */
+    #[Url(history: true, except: '')]
+    public string $city = '';
+
+    #[Url(history: true, except: '')]
+    public string $donor = '';
+
+    #[Url(as: 'video', history: true, except: false)]
+    public bool $hasVideo = false;
 
     #[Url(history: true, except: '')]
     public string $search = '';
@@ -64,38 +74,60 @@ new class extends Component
 
     public int $limit = self::STEP;
 
+    /** @var Support<int, \App\Models\Donor>|null */
+    private ?Support $donorList = null;
+
+    /** How many activities match the applied filters. */
+    #[Locked]
+    public int $count = 0;
+
+    /** How many activities the programme has at all. */
+    #[Locked]
+    public int $total = 0;
+
     /**
      * @param  array<string, array<string, mixed>>  $towns
      */
-    public function mount(int $category, int $subCategory, string $type, array $towns, string $title, bool $searchable = false, bool $phone = false): void
+    public function mount(int $category, int $subCategory, string $type, array $towns, string $title, bool $phone = false): void
     {
         $this->category = $category;
         $this->subCategory = $subCategory;
         $this->type = $type;
         $this->towns = $towns;
         $this->title = $title;
-        $this->searchable = $searchable;
         $this->phone = $phone;
 
         // Legacy opened the town whose page number was in the address (?ini_H=2).
-        if ($this->town === '') {
+        if ($this->city === '') {
             foreach ($towns as $key => $town) {
                 if (request()->has($town['page'])) {
-                    $this->town = $key;
+                    $this->city = $key;
                     break;
                 }
             }
         }
 
         $this->normalise();
+        $this->total = InitiativeListQuery::upTo($category, $subCategory, $this->allPlaces(), 0)[1];
+        $this->count = $this->fetch(0)[1];
     }
 
-    /** The town or search changed (a tab, the box, the back button): start the list again. */
+    /** Apply: the draft becomes the filter, and the list starts again from its first page. */
+    public function apply(string $city, string $donor, bool $hasVideo, string $search): void
+    {
+        $this->city = $city;
+        $this->donor = $donor;
+        $this->hasVideo = $hasVideo;
+        $this->search = $search;
+
+        $this->restart();
+    }
+
+    /** The address changed under the list (the back button): start again. */
     public function updated(string $name): void
     {
-        if ($name === 'town' || $name === 'search') {
-            $this->normalise();
-            $this->limit = self::STEP;
+        if (in_array($name, ['city', 'donor', 'hasVideo', 'search'], true)) {
+            $this->restart();
         }
     }
 
@@ -114,68 +146,82 @@ new class extends Component
         return [$titles];
     }
 
-    /** What the address or the browser sent, as one of the towns, a short search and a known view. */
+    private function restart(): void
+    {
+        $this->normalise();
+        $this->limit = self::STEP;
+        $this->count = $this->fetch(0)[1];
+
+        $this->dispatch('projects-filtered');
+    }
+
+    /** What the address or Apply sent, as one of the cities and donors, a short search and a known view. */
     private function normalise(): void
     {
-        $this->town = array_key_exists($this->town, $this->towns) ? $this->town : '';
-        $this->search = $this->searchable ? Str::limit(trim($this->search), self::SEARCH_LENGTH, '') : '';
+        $this->city = array_key_exists($this->city, $this->towns) ? $this->city : '';
+        $this->donor = $this->donors()->contains('slug', $this->donor) ? $this->donor : '';
+        $this->search = Str::limit(trim($this->search), self::SEARCH_LENGTH, '');
         $this->view = $this->view === 'grid' ? 'grid' : 'tiles';
+    }
+
+    /** @return list<int> */
+    private function allPlaces(): array
+    {
+        return collect($this->towns)->flatMap(fn (array $town) => $town['places'])->all();
+    }
+
+    /**
+     * The activities of the applied filters, up to $limit, and how many match.
+     *
+     * @return array{0: Collection<int, Initiative>, 1: int}
+     */
+    private function fetch(int $limit): array
+    {
+        $town = $this->towns[$this->city] ?? null;
+        $donor = $this->donors()->firstWhere('slug', $this->donor);
+
+        return InitiativeListQuery::upTo($this->category, $this->subCategory, $town['places'] ?? $this->allPlaces(), $limit,
+            $town['byDate'] ?? false, $this->search, $donor?->id, $this->hasVideo);
+    }
+
+    /** The donors of this programme's activities, each with the slug that stands for it in an address. */
+    private function donors(): Support
+    {
+        return $this->donorList ??= MemberProjectQuery::donors()
+            ->whereIn('id', InitiativeListQuery::donorIds($this->category, $this->subCategory))->values();
     }
 
     public function with(): array
     {
-        $first = array_key_first($this->towns);
-        $town = $this->towns[$this->town ?: $first];
-
-        [$activities, $total] = InitiativeListQuery::upTo($this->category, $this->subCategory, $town['places'], $this->limit, $town['byDate'], $this->search);
+        [$activities] = $this->fetch($this->limit);
+        $town = $this->towns[$this->city] ?? null;
+        $filtered = $this->search !== '' || $this->donor !== '' || $this->hasVideo;
 
         return [
-            'first' => $first,
             'activities' => $activities,
-            'hasMore' => $total > $activities->count(),
-            'emptyTitle' => $this->search === '' ? $town['empty'][0] : "Sorry, we couldn't find any results",
-            'emptyHint' => $this->search === '' ? $town['empty'][1] : __('projects.sorryMessage2'),
+            'hasMore' => $this->count > $activities->count(),
+            'cities' => collect($this->towns)->map(fn (array $town, string $slug) => (object) ['slug' => $slug, 'name' => $town['label']])->values(),
+            'donors' => $this->donors(),
+            'hasVideos' => InitiativeListQuery::hasVideos($this->category, $this->subCategory),
+            'emptyTitle' => $town && ! $filtered ? $town['empty'][0] : "Sorry, we couldn't find any results",
+            'emptyHint' => $town && ! $filtered ? $town['empty'][1] : __('projects.sorryMessage2'),
         ];
     }
 };
 ?>
 
-<div @search-box-submit.window="$wire.$set('search', $event.detail)">
-    <div id="initiative-section" class="section-gap">
-        <div class="flow-root px-3">
-            <x-ui.reveal :ms="600" class="mb-2 flex flex-col items-center justify-center">
-                <x-ui.section-title class="mt-4">{{ $title }}</x-ui.section-title>
-            </x-ui.reveal>
-        </div>
+<div>
+    {{-- The bar sticks under the navigation while the list scrolls past, as on the micro-projects list. --}}
+    <div id="initiative-section">
+        <x-site.project-filters :$cities :$donors :$view :title="$title" unit="Activities" :video="$hasVideos" :headings="['activities']"
+                                :applied="['city' => $city, 'donor' => $donor, 'hasVideo' => $hasVideo, 'search' => $search]"/>
     </div>
-
-    {{-- Stays under the navigation while the list scrolls past, as the micro-projects filters do; its shadow shows once it has stuck. --}}
-    <div class="activity-bar__sentinel"></div>
-    <div class="activity-bar" :class="{ 'is-stuck': stuck }"
-         x-data="{ stuck: false }"
-         x-init="new IntersectionObserver(([entry]) => stuck = ! entry.isIntersecting && entry.boundingClientRect.top < 0).observe($root.previousElementSibling)">
-        <div class="activity-tools">
-            @if ($searchable)
-                <x-ui.search-box live :value="$search"/>
-            @endif
-            <x-ui.view-switch :$view/>
-        </div>
-    </div>
-    <x-ui.red-rule short :ms="800" style="z-index: -1"/>
 
     <x-ui.reveal :ms="800">
-        <ul class="activity-tabs" role="tablist">
-            @foreach ($towns as $key => $town)
-                <li class="activity-tabs__item" role="presentation">
-                    <button type="button" class="activity-tabs__tab" :class="{ 'is-active': ($wire.town || '{{ $first }}') === '{{ $key }}' }" role="tab"
-                            :aria-selected="($wire.town || '{{ $first }}') === '{{ $key }}'" @click="$wire.$set('town', '{{ $key === $first ? '' : $key }}')">{{ $town['label'] }}</button>
-                </li>
-            @endforeach
-        </ul>
         <div class="h-[3vw] bg-white"></div>
 
         <div class="relative bg-white">
-            <div wire:loading.block wire:target="town, search">
+            <div wire:loading.block wire:target="apply">
                 <div x-show="$wire.view === 'tiles'" @if ($view !== 'tiles') style="display: none" @endif>
                     <x-ui.card-skeleton view="tiles" :count="3" class="activity-tiles card-skeleton--flush"/>
                 </div>
@@ -184,7 +230,7 @@ new class extends Component
                 </div>
             </div>
 
-            <div wire:loading.remove wire:target="town, search">
+            <div wire:loading.remove wire:target="apply">
                 @if ($activities->isNotEmpty())
                     {{-- Both layouts are drawn and the view switch only shows one of them. --}}
                     <div class="card-grid activity-tiles" x-show="$wire.view === 'tiles'" @if ($view !== 'tiles') style="display: none" @endif>

@@ -12,16 +12,14 @@
  * first use ($wire.suggestions()), and each kind lists five at most, as
  * typeahead.js did.
  *
- * A live box (`live`) belongs to a list on a Livewire component: choosing a
- * suggestion, Enter or the button announce the term as a `search-box-submit`
- * event for the list to search with, and nothing reloads. Whenever the box
- * has `headings` its suggestions are fetched, on first use, from the list
- * around it ($wire.suggestions(), a list of titles for each heading).
+ * Whenever the box has `headings` its suggestions are fetched, on first use,
+ * from the list around it ($wire.suggestions(), a list of titles for each
+ * heading).
  */
 const PAGE_PARAMS = ['ini_A', 'ini_H', 'ini_D', 'ini_L', 'ini_T'];
 const FILTER_LIMIT = 5;
 
-export default ({ suggestions = [], value = '', headings = null, filter = false, live = false } = {}) => ({
+export default ({ suggestions = [], value = '', headings = null, filter = false } = {}) => ({
     query: value,
     open: false,
     cursor: -1,
@@ -88,11 +86,9 @@ export default ({ suggestions = [], value = '', headings = null, filter = false,
     },
 
     go(term = this.query) {
-        if (filter || live) {
+        if (filter) {
             this.query = term;
             this.open = false;
-
-            if (live) this.$dispatch('search-box-submit', term);
 
             return;
         }

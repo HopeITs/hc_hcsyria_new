@@ -71,7 +71,7 @@ export default (Alpine) => {
         });
     });
 
-    Alpine.data('projectFilters', ({ cities, donors, applied }) => ({
+    Alpine.data('projectFilters', ({ cities, donors, applied, unit = 'Projects' }) => ({
         cities,
         donors,
         draft: { ...applied },
@@ -90,7 +90,7 @@ export default (Alpine) => {
         get result() {
             const { city, donor, hasVideo, search } = this.draft;
 
-            return `${this.$wire.count} (${this.$wire.total}) Projects | ${this.cities[city] ?? 'All Cities'} | ${this.donors[donor] ?? 'All Donors'}`
+            return `${this.$wire.count} (${this.$wire.total}) ${unit} | ${this.cities[city] ?? 'All Cities'} | ${this.donors[donor] ?? 'All Donors'}`
                 + (search ? ` | ${this.$wire.search}` : '')
                 + (hasVideo ? ' | Video' : '');
         },
@@ -121,11 +121,11 @@ export default (Alpine) => {
 
         /** Brings the list into view, but only when its top is hidden behind the bar or off the screen. */
         showList() {
-            const list = document.querySelector('.card-grid, .project-rows, .list-empty');
+            const list = this.$root.parentElement.querySelector('.card-grid, .project-rows, .activity-card, .list-empty');
             const bar = this.$root.getBoundingClientRect();
 
             if (list && list.getBoundingClientRect().top < bar.bottom) {
-                document.querySelector('.member-projects')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                this.$root.parentElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
         },
     }));

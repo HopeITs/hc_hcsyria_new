@@ -259,7 +259,7 @@ new #[Layout('layouts::app', [
     <x-ui.red-rule :ms="800"/>
 
     <livewire:activity-list :category="self::CATEGORY" :sub-category="self::ACTIVITIES" type="study-zone" :towns="$this->towns()"
-                            :title="__('studyzone.activities')" searchable :phone="$phone"/>
+                            :title="__('studyzone.activities')" :phone="$phone"/>
 
     <x-ui.red-rule :ms="800"/>
 

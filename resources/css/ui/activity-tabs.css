@@ -1,69 +1,9 @@
 /*
- * Tabs over lists of activities. Legacy .nav-tabs, .nav-link and .tab-pane
- * (tabs.css, main-new.css), measured on /projects/disc: a row of tabs from
- * 15vw in, the chosen one outlined in the page's --accent; one tab under
- * another from 13vw in on phones.
+ * What an empty list of activities says ("No Activities Yet", "Sorry, we
+ * couldn't find any results"). Legacy .tab-pane's empty message (main-new.css),
+ * measured on /projects/disc.
  */
 @layer components {
-    .activity-tabs {
-        position: relative;
-        display: flex;
-        flex-wrap: wrap;
-        padding-left: 15vw;
-        margin-top: 5vw;
-        margin-bottom: 0;
-        line-height: 1.3vw;
-        list-style: none;
-        background: #fff;
-        border-bottom: 1px solid #dee2e6;
-
-        @media (width < 576px) {
-            display: block;
-            padding-left: 13vw;
-            margin-top: 9vw;
-        }
-    }
-
-    .activity-tabs__item {
-        @media (width < 576px) {
-            width: 75vw;
-            text-align: center;
-        }
-    }
-
-    .activity-tabs__tab {
-        display: block;
-        padding: 0.5rem 1rem;
-        margin-bottom: -1px;
-        font-size: 1vw;
-        color: #676463;
-        cursor: pointer;
-        background: none;
-        border: 1px solid;
-        border-color: #dee2e6 #dee2e6 #dee2e600;
-        border-radius: 0.25rem 0.25rem 0 0;
-
-        &.is-active {
-            font-weight: 700;
-            color: var(--accent);
-            background: #fff;
-            border: 0.2vw solid;
-            border-color: var(--accent) #dee2e6 #fff;
-        }
-
-        @media (width < 576px) {
-            width: 100%;
-            padding: 2vw 2.5vw;
-            margin-bottom: 5px;
-            font-size: 2.5vw;
-        }
-    }
-
-    .activity-tabs__pane {
-        background: #fff;
-    }
-
-    /* "No activities yet" and its kin */
     .activity-tabs__empty {
         margin: 3vw 0;
         font-size: 1.3vw;
