@@ -31,23 +31,24 @@
         position: relative;
     }
 
+    /* One size for the box on every page (the micro-projects filters, Study Zone). */
     .search-box__input {
         display: block;
-        width: 25vw;
-        padding: 1vw;
-        font-size: 1vw;
+        width: 12.5vw;
+        padding: 0.7vw;
+        font-size: 1.3vw;
         font-weight: 100;
         color: #b2b2b2;
         background-color: #f7f7f7;
         border: none;
 
-        @media (width < 576px) {
-            width: 26vw;
-            font-size: 2.4vw;
+        @media (1025px <= width <= 1280px) {
+            width: 16.5vw;
         }
 
-        @media (576px <= width <= 991px), (993px <= width <= 1280px) {
+        @media (width < 576px) {
             width: 21vw;
+            font-size: 2.4vw;
         }
 
         &::placeholder {

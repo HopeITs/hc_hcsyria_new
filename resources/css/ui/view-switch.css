@@ -20,13 +20,18 @@
             font-size: 1.3vw;
         }
 
-        & img {
+        & .view-switch__icon {
             position: relative;
             display: inline;
-            width: auto;
             height: 0.7vw;
             vertical-align: middle;
             cursor: pointer;
+            top: -0.1vw;
+            fill: #d6d6d6;
+
+            &.is-active {
+                fill: var(--accent);
+            }
         }
 
         @media (1025px <= width <= 1280px), (576px <= width <= 768px) {
@@ -41,14 +46,14 @@
                 font-size: 2.4vw;
             }
 
-            & img {
+            & .view-switch__icon {
                 height: 1.2vw;
             }
         }
     }
 
-    .view-switch__tiles { left: 5.5vw; }
-    .view-switch__grid { left: 5.7vw; }
+    .view-switch__tiles { left: 5.5vw; aspect-ratio: 136 / 97; }
+    .view-switch__grid { left: 5.7vw; aspect-ratio: 135 / 97; }
 
     @media (width < 576px) {
         .view-switch__tiles { left: 7vw; }

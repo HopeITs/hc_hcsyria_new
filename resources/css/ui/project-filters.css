@@ -188,20 +188,8 @@
 
         & .search-box__input {
             display: inline-block;
-            width: 12.5vw;
-            padding: 0.7vw;
             margin-right: -0.5vw;
-            font-size: 1.3vw;
             text-align: center;
-
-            @media (1025px <= width <= 1280px) {
-                width: 16.5vw;
-            }
-
-            @media (width < 576px) {
-                width: 21vw;
-                font-size: 2.4vw;
-            }
         }
 
         & .search-box__heading {
