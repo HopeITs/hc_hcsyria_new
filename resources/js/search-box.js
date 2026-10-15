@@ -11,6 +11,10 @@
  * for the bar to take with it, the suggestions are fetched from the list on
  * first use ($wire.suggestions()), and each kind lists five at most, as
  * typeahead.js did.
+ *
+ * Whenever the box has `headings` its suggestions are fetched, on first use,
+ * from the list around it ($wire.suggestions(), a list of titles for each
+ * heading).
  */
 const PAGE_PARAMS = ['ini_A', 'ini_H', 'ini_D', 'ini_L', 'ini_T'];
 const FILTER_LIMIT = 5;
@@ -28,16 +32,13 @@ export default ({ suggestions = [], value = '', headings = null, filter = false 
 
     /** Fetches the suggestions the first time the box is used. */
     async load() {
-        if (! filter || this.loaded) return;
+        if (! headings || this.loaded) return;
 
         this.loaded = true;
 
         const found = await this.$wire.suggestions();
 
-        this.groups = [
-            { heading: headings[0], titles: found.projects },
-            { heading: headings[1], titles: found.beneficiaries },
-        ];
+        this.groups = headings.map((heading, i) => ({ heading, titles: found[i] ?? [] }));
     },
 
     /** The groups with the titles that match what is typed, each title with its place in the whole list. */

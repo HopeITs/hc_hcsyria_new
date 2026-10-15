@@ -71,7 +71,7 @@ export default (Alpine) => {
         });
     });
 
-    Alpine.data('projectFilters', ({ cities, donors, applied }) => ({
+    Alpine.data('projectFilters', ({ cities, donors, applied, unit = 'Projects' }) => ({
         cities,
         donors,
         draft: { ...applied },
@@ -90,22 +90,9 @@ export default (Alpine) => {
         get result() {
             const { city, donor, hasVideo, search } = this.draft;
 
-            return `${this.$wire.count} (${this.$wire.total}) Projects | ${this.cities[city] ?? 'All Cities'} | ${this.donors[donor] ?? 'All Donors'}`
+            return `${this.$wire.count} (${this.$wire.total}) ${unit} | ${this.cities[city] ?? 'All Cities'} | ${this.donors[donor] ?? 'All Donors'}`
                 + (search ? ` | ${this.$wire.search}` : '')
                 + (hasVideo ? ' | Video' : '');
-        },
-
-        /**
-         * Shows tiles or rows at once: both are on the page, so this is only a
-         * switch. The list learns of it with its next request; the address
-         * follows now.
-         */
-        setView(view) {
-            this.$wire.$set('view', view, false);
-
-            const url = new URL(location.href);
-            if (view === 'tiles') url.searchParams.delete('view'); else url.searchParams.set('view', view);
-            history.replaceState(history.state, '', url);
         },
 
         tip(element, text) {
@@ -134,11 +121,11 @@ export default (Alpine) => {
 
         /** Brings the list into view, but only when its top is hidden behind the bar or off the screen. */
         showList() {
-            const list = document.querySelector('.project-tiles, .project-rows, .project-none');
+            const list = this.$root.parentElement.querySelector('.card-grid, .project-rows, .activity-card, .list-empty');
             const bar = this.$root.getBoundingClientRect();
 
             if (list && list.getBoundingClientRect().top < bar.bottom) {
-                document.querySelector('.member-projects')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                this.$root.parentElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
         },
     }));

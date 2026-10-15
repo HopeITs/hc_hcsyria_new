@@ -61,64 +61,13 @@
         font-size: 2.5vw;
         font-weight: 900;
         line-height: 1vw;
-        color: var(--color-brand-600);
+        color: var(--accent);
         text-align: center;
         background: #fff;
 
         @media (width < 576px) {
             font-size: 3.8vw;
         }
-    }
-
-    /* View: the tiles / rows switch. */
-    .project-view {
-        position: relative;
-        width: 13.3vw;
-        padding: 0.75vw;
-        font-size: 1vw;
-        color: #b2b2b2;
-        background-color: #f7f7f7;
-
-        & label {
-            position: relative;
-            left: 5vw;
-            display: inline-block;
-            font-size: 1.3vw;
-        }
-
-        & img {
-            position: relative;
-            display: inline;
-            width: auto;
-            height: 0.7vw;
-            vertical-align: middle;
-            cursor: pointer;
-        }
-
-        @media (1025px <= width <= 1280px), (576px <= width <= 768px) {
-            width: 17vw;
-        }
-
-        @media (width < 576px) {
-            width: 21vw;
-
-            & label {
-                left: 6vw;
-                font-size: 2.4vw;
-            }
-
-            & img {
-                height: 1.2vw;
-            }
-        }
-    }
-
-    .project-view__tiles { left: 5.5vw; }
-    .project-view__grid { left: 5.7vw; }
-
-    @media (width < 576px) {
-        .project-view__tiles { left: 7vw; }
-        .project-view__grid { left: 7.7vw; }
     }
 
     /* Projects with a video: a box that turns red when it is on. */
@@ -132,12 +81,12 @@
         display: flex;
         padding: 1vw;
         margin-left: 0.2vw;
-        color: var(--color-brand-600);
+        color: var(--accent);
         cursor: pointer;
         background-color: #f7f7f7;
 
         &.is-on {
-            background-color: var(--color-brand-600);
+            background-color: var(--accent);
         }
 
         & input {
@@ -159,9 +108,16 @@
         }
     }
 
+    /* The camera is a mask over the accent colour, so it is red on micro-projects and blue on Study Zone and DISC; light when the box is on. */
     .project-video__icon {
         width: 1.5vw;
         height: 1.5vw;
+        background-color: var(--accent);
+        mask: url('/images/ico/search-video-icon.svg') center / contain no-repeat;
+
+        .is-on > & {
+            background-color: #f7f7fb;
+        }
 
         @media (width < 576px) {
             display: flex;
@@ -200,14 +156,14 @@
     .project-result__clear {
         margin-left: 0.5vw;
         font-size: inherit;
-        color: var(--color-brand-600);
+        color: var(--accent);
         text-decoration: underline;
         cursor: pointer;
         background: none;
         border: 0;
     }
 
-    /* The red button: Apply, and the outlined Load More. */
+    /* The red button: Apply. */
     .project-button {
         height: -webkit-fill-available;
         padding: 0.7vw;
@@ -215,8 +171,8 @@
         font-size: 1vw;
         color: #fff;
         cursor: pointer;
-        background: var(--color-brand-600);
-        border: 2px solid var(--color-brand-600);
+        background: var(--accent);
+        border: 2px solid var(--accent);
         border-radius: 0;
 
         &:focus {
@@ -225,25 +181,6 @@
 
         @media (width < 576px) {
             height: 4.8vw;
-        }
-    }
-
-    .project-button--outline {
-        width: 8vw;
-        margin: 0;
-        color: var(--color-brand-600);
-        background: none;
-        transition: background-color 0.3s ease, color 0.3s ease;
-
-        &:hover,
-        &:focus {
-            color: #fff;
-            background: var(--color-brand-600);
-        }
-
-        @media (width < 576px) {
-            width: 15vw;
-            font-size: 2vw;
         }
     }
 
@@ -258,37 +195,25 @@
 
         & .search-box__input {
             display: inline-block;
-            width: 12.5vw;
-            padding: 0.7vw;
             margin-right: -0.5vw;
-            font-size: 1.3vw;
             text-align: center;
-
-            @media (1025px <= width <= 1280px) {
-                width: 16.5vw;
-            }
-
-            @media (width < 576px) {
-                width: 21vw;
-                font-size: 2.4vw;
-            }
         }
 
         & .search-box__heading {
             font-size: 1vw;
-            color: var(--color-brand-600);
-            border-bottom-color: var(--color-brand-600);
+            color: var(--accent);
+            border-bottom-color: var(--accent);
 
             @media (width < 576px) {
                 font-size: 2.2vw;
             }
         }
 
-        /* The chosen suggestion is red, as a chosen dropdown item is, not the navy of the Study Zone and DISC lists. */
+        /* The chosen suggestion takes the page's accent: red on micro-projects, blue on Study Zone and DISC. */
         & .search-box__suggestion {
             &.is-current {
                 color: #fff;
-                background: var(--color-brand-600);
+                background: var(--accent);
             }
 
             @media (width < 576px) {

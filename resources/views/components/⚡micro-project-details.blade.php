@@ -81,7 +81,7 @@ new class extends Component
         <div class="project-modal__backdrop"></div>
         <div class="project-modal__dialog">
             <div class="project-modal__content">
-                <div class="project-skeleton__shape project-modal__shape"></div>
+                <div class="card-skeleton__shape project-modal__shape"></div>
             </div>
         </div>
     </div>

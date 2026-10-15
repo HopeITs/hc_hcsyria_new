@@ -127,11 +127,13 @@ new class extends Component
         return MemberProjectQuery::markers($this->query());
     }
 
-    /** @return array{projects: array<int, string>, beneficiaries: array<int, string>} */
+    /** @return array{0: array<int, string>, 1: array<int, string>} the project names, then the beneficiaries' */
     #[Renderless]
     public function suggestions(): array
     {
-        return MemberProjectQuery::suggestions();
+        $found = MemberProjectQuery::suggestions();
+
+        return [$found['projects'], $found['beneficiaries']];
     }
 
     /** A city slug as the address or Apply sent it: kept when it is one of the filter's, else no city. */
@@ -175,8 +177,8 @@ new class extends Component
         <div class="page-margin">
             {{-- Placeholders for the list while Apply is thinking. --}}
             <div wire:loading.block wire:target="apply">
-                <div x-show="$wire.view === 'tiles'" @if ($view !== 'tiles') style="display: none" @endif><x-site.project-skeleton view="tiles" :count="6"/></div>
-                <div x-show="$wire.view === 'grid'" @if ($view !== 'grid') style="display: none" @endif><x-site.project-skeleton view="grid" :count="6"/></div>
+                <div x-show="$wire.view === 'tiles'" @if ($view !== 'tiles') style="display: none" @endif><x-ui.card-skeleton view="tiles" :count="6"/></div>
+                <div x-show="$wire.view === 'grid'" @if ($view !== 'grid') style="display: none" @endif><x-ui.card-skeleton view="grid" :count="6"/></div>
             </div>
         </div>
 
@@ -184,7 +186,7 @@ new class extends Component
             <div class="page-margin" wire:loading.remove wire:target="apply">
                 @if ($projects->isNotEmpty())
                     {{-- Both layouts are drawn and the view switch only shows one of them, so changing view needs no round trip. --}}
-                    <div id="tiles-section" class="project-tiles" x-show="$wire.view === 'tiles'" @if ($view !== 'tiles') style="display: none" @endif>
+                    <div id="tiles-section" class="card-grid" x-show="$wire.view === 'tiles'" @if ($view !== 'tiles') style="display: none" @endif>
                         @foreach ($projects as $project)
                             <x-site.project-tile :$project wire:key="tile-{{ $project->id }}"/>
                         @endforeach
@@ -196,17 +198,15 @@ new class extends Component
                     </div>
 
                     <div wire:loading.block wire:target="loadMore">
-                        <div x-show="$wire.view === 'tiles'"><x-site.project-skeleton view="tiles" :count="3" class="project-skeleton--flush"/></div>
-                        <div x-show="$wire.view === 'grid'" @if ($view !== 'grid') style="display: none" @endif><x-site.project-skeleton view="grid" :count="3" class="project-skeleton--flush"/></div>
+                        <div x-show="$wire.view === 'tiles'"><x-ui.card-skeleton view="tiles" :count="3" class="card-skeleton--flush"/></div>
+                        <div x-show="$wire.view === 'grid'" @if ($view !== 'grid') style="display: none" @endif><x-ui.card-skeleton view="grid" :count="3" class="card-skeleton--flush"/></div>
                     </div>
 
                     @if ($hasMore)
-                        <div class="project-loadmore">
-                            <button type="button" class="project-button project-button--outline" wire:click="loadMore">Load More</button>
-                        </div>
+                        <x-ui.load-more/>
                     @endif
                 @else
-                    <div class="project-none">No Projects Found</div>
+                    <div class="list-empty">No Projects Found</div>
                 @endif
 
                 <x-ui.red-rule short class="project-rule"/>
