@@ -45,7 +45,7 @@
                 <label class="project-video__switch" :class="{ 'is-on': draft.hasVideo }">
                     <input type="checkbox" x-model="draft.hasVideo" aria-label="Project with Video"
                            @mouseenter="tip($el, 'project with video')">
-                    <img class="project-video__icon" :src="draft.hasVideo ? '/images/ico/reverst-video.svg' : '/images/ico/search-video-icon.svg'" alt="">
+                    <span class="project-video__icon"></span>
                 </label>
             </div>
         </div>

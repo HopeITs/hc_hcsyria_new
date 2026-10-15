@@ -108,9 +108,16 @@
         }
     }
 
+    /* The camera is a mask over the accent colour, so it is red on micro-projects and blue on Study Zone and DISC; light when the box is on. */
     .project-video__icon {
         width: 1.5vw;
         height: 1.5vw;
+        background-color: var(--accent);
+        mask: url('/images/ico/search-video-icon.svg') center / contain no-repeat;
+
+        .is-on > & {
+            background-color: #f7f7fb;
+        }
 
         @media (width < 576px) {
             display: flex;
