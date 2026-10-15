@@ -23,7 +23,7 @@ use Livewire\Component;
  *
  * Both layouts are on the page and the switch shows one (see x-ui.view-switch);
  * Apply fetches the first six again, Load More adds six. The bar offers a
- * donor and a video only where the programme's activities have them.
+ * donor only where the programme's activities have one.
  *
  * $towns is the city's slug => ['label', 'places' (ids), 'page' (legacy's page
  * parameter, ini_A), 'byDate', 'empty' (what an empty list says)].
@@ -202,7 +202,6 @@ new class extends Component
             'hasMore' => $this->count > $activities->count(),
             'cities' => collect($this->towns)->map(fn (array $town, string $slug) => (object) ['slug' => $slug, 'name' => $town['label']])->values(),
             'donors' => $this->donors(),
-            'hasVideos' => InitiativeListQuery::hasVideos($this->category, $this->subCategory),
             'emptyTitle' => $town && ! $filtered ? $town['empty'][0] : "Sorry, we couldn't find any results",
             'emptyHint' => $town && ! $filtered ? $town['empty'][1] : __('projects.sorryMessage2'),
         ];
@@ -212,7 +211,7 @@ new class extends Component
 
 <div id="initiative-section">
     {{-- The bar sticks under the navigation while the list scrolls past, and is inset as on the micro-projects page. --}}
-    <x-site.project-filters class="mx-3" :$cities :$donors :$view :title="$title" unit="Activities" :video="$hasVideos" :headings="['activities']"
+    <x-site.project-filters class="mx-3" :$cities :$donors :$view :title="$title" unit="Activities" :headings="['activities']"
                             :applied="['city' => $city, 'donor' => $donor, 'hasVideo' => $hasVideo, 'search' => $search]"/>
 
     <x-ui.reveal :ms="800">

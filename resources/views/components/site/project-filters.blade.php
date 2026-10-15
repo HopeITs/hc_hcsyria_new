@@ -1,4 +1,4 @@
-@props(['cities', 'donors', 'view', 'applied', 'title' => 'Projects', 'unit' => 'Projects', 'video' => true, 'headings' => null])
+@props(['cities', 'donors', 'view', 'applied', 'title' => 'Projects', 'unit' => 'Projects', 'headings' => null])
 
 {{--
     The filter bar above the project list (resources/css/ui/project-filters.css,
@@ -6,8 +6,8 @@
     a video, the search box and Apply. It works on a draft that Apply sends to
     the list, and sticks under the navigation while the list scrolls past.
     It serves the micro-projects list and the activities of Study Zone and
-    DISC: $title and $unit name what is listed, $video says whether a video
-    filter is worth offering, and $headings names the groups of suggestions.
+    DISC: $title and $unit name what is listed, and $headings names the groups
+    of suggestions.
     It starts from the filters the list already has (the address may have set
     them) and follows them when they change under it (the back button). The
     list's own state comes through $wire.
@@ -41,8 +41,7 @@
     <div class="project-filters__row project-filters__row--tools">
         <div class="project-filters__col project-filters__col--end">
             <x-ui.view-switch :$view/>
-            {{-- Without a video filter its place stays, so the view switch sits where it does on the micro-projects list. --}}
-            <div class="project-video" @unless ($video) aria-hidden="true" inert style="visibility: hidden" @endunless>
+            <div class="project-video">
                 <label class="project-video__switch" :class="{ 'is-on': draft.hasVideo }">
                     <input type="checkbox" x-model="draft.hasVideo" aria-label="Project with Video"
                            @mouseenter="tip($el, 'project with video')">

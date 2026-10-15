@@ -89,6 +89,8 @@
         font-size: 0.85vw;
         line-height: 1.42857143;
         color: var(--color-ink-600);
+        overflow: hidden;
+        text-overflow: ellipsis;
         white-space: nowrap;
         cursor: pointer;
 

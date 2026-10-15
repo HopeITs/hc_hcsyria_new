@@ -194,19 +194,19 @@
 
         & .search-box__heading {
             font-size: 1vw;
-            color: var(--color-brand-600);
-            border-bottom-color: var(--color-brand-600);
+            color: var(--accent);
+            border-bottom-color: var(--accent);
 
             @media (width < 576px) {
                 font-size: 2.2vw;
             }
         }
 
-        /* The chosen suggestion is red, as a chosen dropdown item is, not the navy of the Study Zone and DISC lists. */
+        /* The chosen suggestion takes the page's accent: red on micro-projects, blue on Study Zone and DISC. */
         & .search-box__suggestion {
             &.is-current {
                 color: #fff;
-                background: var(--color-brand-600);
+                background: var(--accent);
             }
 
             @media (width < 576px) {

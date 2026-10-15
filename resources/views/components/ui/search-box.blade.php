@@ -32,7 +32,7 @@
                 <div>
                     <h5 class="search-box__heading" x-text="group.heading"></h5>
                     <template x-for="item in group.items" :key="group.heading + item.title">
-                        <div class="search-box__suggestion" :class="{ 'is-current': item.i === cursor }" @click="go(item.title)" @mouseenter="cursor = item.i">
+                        <div class="search-box__suggestion" :class="{ 'is-current': item.i === cursor }" :title="item.title" @click="go(item.title)" @mouseenter="cursor = item.i">
                             <template x-for="part in parts(item.title)"><span :class="{ 'font-bold': part.match }" x-text="part.text"></span></template>
                         </div>
                     </template>
