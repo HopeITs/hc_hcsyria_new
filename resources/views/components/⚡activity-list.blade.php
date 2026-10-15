@@ -39,7 +39,7 @@ new class extends Component
     public int $category = 0;
 
     #[Locked]
-    public int $subCategory = 0;
+    public ?int $subCategory = null;
 
     /** The programme's address segment: disc in /projects/disc/1-title. */
     #[Locked]
@@ -88,7 +88,7 @@ new class extends Component
     /**
      * @param  array<string, array<string, mixed>>  $towns
      */
-    public function mount(int $category, int $subCategory, string $type, array $towns, string $title, bool $phone = false): void
+    public function mount(int $category, ?int $subCategory, string $type, array $towns, string $title, bool $phone = false): void
     {
         $this->category = $category;
         $this->subCategory = $subCategory;

@@ -1,0 +1,122 @@
+/*
+ * Children University's subjects: a wide photo with a title picture over
+ * the top, a row of round buttons with cartoon characters on them over the
+ * bottom, and the chosen subject's text on the photo. Legacy
+ * #categories-section, .categories-img, .categories-content-title,
+ * .categories-content, .category and #category-description (main-new.css,
+ * children_new.css), measured on /projects/childrenuni.
+ */
+@layer components {
+    .character-showcase {
+        position: relative;
+        padding-bottom: 7vw;
+        margin-top: 9vw;
+
+        @media (width < 576px) {
+            padding-bottom: 12vw;
+            margin-top: 13vw;
+        }
+    }
+
+    .character-showcase__photo {
+        display: inline;
+        width: 100%;
+        height: 35vw;
+        margin-top: 0.5vw;
+        object-fit: cover;
+        vertical-align: initial;
+
+        @media (width < 576px) {
+            height: 55vw;
+        }
+    }
+
+    .character-showcase__edge {
+        bottom: 0;
+    }
+
+    .character-showcase__title {
+        position: absolute;
+        top: 5vw;
+        width: 100%;
+    }
+
+    .character-showcase__buttons {
+        position: absolute;
+        top: 26vw;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+
+        @media (width < 576px) {
+            top: 42vw;
+        }
+    }
+
+    /* .category: a white ring with a shadow, the character filling it */
+    .character-showcase__button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 11vw;
+        height: 11vw;
+        padding: 1px 6px;
+        margin: 3vw;
+        cursor: pointer;
+        background: #fff;
+        filter: drop-shadow(0 6px 6px gray);
+        border: none;
+        border-radius: 50%;
+
+        &:hover,
+        &:focus,
+        &.is-selected {
+            background-color: #c8dee8;
+            outline: none;
+        }
+
+        & img {
+            width: 100%;
+
+            @media (width < 576px) {
+                width: 16vw;
+                height: 16vw;
+            }
+        }
+
+        @media (width < 576px) {
+            width: 17vw;
+            height: 17vw;
+            margin: 4vw 1.3vw;
+        }
+    }
+
+    .character-showcase__text {
+        position: absolute;
+        top: 15vw;
+        right: 0;
+        left: 0;
+
+        @media (width < 576px) {
+            top: 12vw;
+        }
+    }
+
+    /* Two copies of the text, as legacy had: wide screens and phones */
+    .character-showcase__text--wide {
+        @media (width < 576px) {
+            display: none;
+        }
+    }
+
+    .character-showcase__text--narrow {
+        @media (width >= 576px) {
+            display: none;
+        }
+    }
+
+    .character-showcase__name {
+        background: none;
+    }
+}

@@ -1,4 +1,4 @@
-@props(['centers', 'columns' => ['sm:w-1/4', 'sm:w-1/4', 'sm:w-1/4', 'sm:w-1/4'], 'upper' => false])
+@props(['centers', 'columns' => ['sm:w-1/4', 'sm:w-1/4', 'sm:w-1/4', 'sm:w-1/4'], 'upper' => false, 'align' => ['', 'justify-center', 'justify-end', 'justify-end']])
 
 {{--
     The grey strip above the red bands of the programme footers: where the
@@ -7,12 +7,11 @@
     between. Each centre is ['city', 'phone', 'map', 'email'?], the phone as written.
     :columns gives each column's width on wide screens (Tailwind classes);
     the first column keeps to the left, the second sits in the middle and
-    the rest to the right. :upper writes the towns in capitals.
+    the rest to the right (:align changes that: where each column puts its
+    content, '' for left). :upper writes the towns in capitals.
 --}}
 @php
     $last = count($centers) - 1;
-    // Where each of four columns puts its content on a wide screen.
-    $align = ['', 'justify-center', 'justify-end', 'justify-end'];
 @endphp
 
 <div {{ $attributes->class('site-footer__top') }}>

@@ -987,9 +987,9 @@
             "action": "PublicController@childrenUni",
             "name": null,
             "order": 13,
-            "status": "pending",
-            "notes": null,
-            "ported_from": null,
+            "status": "ported",
+            "notes": "Search takes bound values; legacy spliced them into its SQL. The subjects' text, written twice in legacy's script (hover and click), is written once. Wide layout's Aleppo footer number was linked as ++963993341399, the number on screen is used. The footer heading is red, as legacy drew it.",
+            "ported_from": "6d45ef9",
             "live_status": "200",
             "examples": [
                 {

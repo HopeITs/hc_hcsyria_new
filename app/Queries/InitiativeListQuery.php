@@ -22,12 +22,13 @@ final class InitiativeListQuery
     public const PER_PAGE = 5;
 
     /**
+     * @param  int|null  $subCategoryId  only this sub-category's activities; null for a programme without sub-categories (Children University)
      * @param  int|list<int>  $placeId  one town, or several shown as one (Homs and its countryside)
      * @param  string  $pageName  the query-string key of this list's page number
      * @param  string|null  $search  only activities whose title, text or summary contain this
      * @return LengthAwarePaginator<int, Initiative>
      */
-    public static function forPlace(int $categoryId, int $subCategoryId, int|array $placeId, string $pageName, bool $byDate = false, ?string $search = null): LengthAwarePaginator
+    public static function forPlace(int $categoryId, ?int $subCategoryId, int|array $placeId, string $pageName, bool $byDate = false, ?string $search = null): LengthAwarePaginator
     {
         return self::ordered(self::base($categoryId, $subCategoryId, (array) $placeId, $search), $byDate)
             ->paginate(self::PER_PAGE, ['*'], $pageName);
@@ -40,7 +41,7 @@ final class InitiativeListQuery
      * @param  list<int>  $placeIds
      * @return array{0: Collection<int, Initiative>, 1: int}
      */
-    public static function upTo(int $categoryId, int $subCategoryId, array $placeIds, int $limit, bool $byDate = false, ?string $search = null, ?int $donorId = null, bool $onlyWithVideo = false): array
+    public static function upTo(int $categoryId, ?int $subCategoryId, array $placeIds, int $limit, bool $byDate = false, ?string $search = null, ?int $donorId = null, bool $onlyWithVideo = false): array
     {
         $query = self::base($categoryId, $subCategoryId, $placeIds, $search, $donorId, $onlyWithVideo);
 
@@ -52,7 +53,7 @@ final class InitiativeListQuery
      *
      * @return list<int>
      */
-    public static function donorIds(int $categoryId, int $subCategoryId): array
+    public static function donorIds(int $categoryId, ?int $subCategoryId): array
     {
         $ids = InitiativeDonor::query()
             ->whereIn('initiative_id', self::base($categoryId, $subCategoryId, null, null)->select('initiatives.id'))
@@ -65,7 +66,7 @@ final class InitiativeListQuery
     }
 
     /** Whether any of a programme's activities has a video, which is when its filter offers one. */
-    public static function hasVideos(int $categoryId, int $subCategoryId): bool
+    public static function hasVideos(int $categoryId, ?int $subCategoryId): bool
     {
         return self::base($categoryId, $subCategoryId, null, null, null, true)->exists();
     }
@@ -74,7 +75,7 @@ final class InitiativeListQuery
      * @param  list<int>|null  $placeIds  null: every town
      * @return Builder<Initiative>
      */
-    private static function base(int $categoryId, int $subCategoryId, ?array $placeIds, ?string $search, ?int $donorId = null, bool $onlyWithVideo = false): Builder
+    private static function base(int $categoryId, ?int $subCategoryId, ?array $placeIds, ?string $search, ?int $donorId = null, bool $onlyWithVideo = false): Builder
     {
         return Initiative::query()
             ->with([
@@ -82,7 +83,7 @@ final class InitiativeListQuery
                 'initiativeImages' => fn ($images) => $images->orderBy('image_order')->orderBy('id'),
             ])
             ->where('what_category_id', $categoryId)
-            ->where('sub_what_category_id', $subCategoryId)
+            ->when($subCategoryId !== null, fn ($query) => $query->where('sub_what_category_id', $subCategoryId))
             ->when($placeIds !== null, fn ($query) => $query->whereIn('place_id', $placeIds))
             ->where('online', '1')
             ->when($donorId !== null, fn ($query) => $query->whereHas('initiativeDonors', fn ($donors) => $donors->where('donor_id', $donorId)))
