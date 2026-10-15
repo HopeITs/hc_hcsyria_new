@@ -79,23 +79,25 @@ new #[Layout('layouts::app', [
 
     <x-ui.red-rule :ms="600" class="max-sm:hidden"/>
 
-    <div id="initiatives-section" class="section-gap">
+    <div id="initiative-section" class="section-gap">
         <div class="flow-root px-3">
-            <x-ui.reveal :ms="600" class="flex flex-col items-center justify-center">
-                <x-ui.section-title>{{ __('studyzone.activities') }}</x-ui.section-title>
+            <x-ui.reveal :ms="600" class="mb-2 flex flex-col items-center justify-center">
+                <x-ui.section-title class="mt-4">{{ __('studyzone.activities') }}</x-ui.section-title>
             </x-ui.reveal>
         </div>
     </div>
-    <x-ui.red-rule short :ms="600"/>
+    <x-ui.red-rule short :ms="800" style="z-index: -1"/>
 
-    <x-ui.reveal :ms="600">
-        <div style="padding-top: 2vw">
+    <x-ui.reveal :ms="800">
+        <div class="h-[3vw] bg-white"></div>
+        <div class="relative bg-white">
             @foreach ($activities as $activity)
                 <x-site.activity-card :activity="$activity" type="school-to-school" :flip="! $phone && $loop->even"/>
             @endforeach
         </div>
     </x-ui.reveal>
 
+    <x-ui.red-rule :ms="800"/>
     <x-site.funders :ongoing="$ongoing" :previous="$previous"/>
     <x-ui.red-rule class="red-rule--end"/>
 </div>
