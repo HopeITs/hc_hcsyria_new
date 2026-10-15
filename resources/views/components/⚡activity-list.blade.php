@@ -210,12 +210,10 @@ new class extends Component
 };
 ?>
 
-<div>
-    {{-- The bar sticks under the navigation while the list scrolls past, as on the micro-projects list. --}}
-    <div id="initiative-section">
-        <x-site.project-filters :$cities :$donors :$view :title="$title" unit="Activities" :video="$hasVideos" :headings="['activities']"
-                                :applied="['city' => $city, 'donor' => $donor, 'hasVideo' => $hasVideo, 'search' => $search]"/>
-    </div>
+<div id="initiative-section">
+    {{-- The bar sticks under the navigation while the list scrolls past, and is inset as on the micro-projects page. --}}
+    <x-site.project-filters class="mx-3" :$cities :$donors :$view :title="$title" unit="Activities" :video="$hasVideos" :headings="['activities']"
+                            :applied="['city' => $city, 'donor' => $donor, 'hasVideo' => $hasVideo, 'search' => $search]"/>
 
     <x-ui.reveal :ms="800">
         <div class="h-[3vw] bg-white"></div>

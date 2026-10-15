@@ -12,7 +12,7 @@
     them) and follows them when they change under it (the back button). The
     list's own state comes through $wire.
 --}}
-<div class="project-filters" wire:ignore
+<div {{ $attributes->class('project-filters') }} wire:ignore
      x-data="projectFilters(@js(['cities' => $cities->pluck('name', 'slug'), 'donors' => $donors->pluck('name', 'slug'), 'applied' => $applied, 'unit' => $unit]))">
     <div class="project-filters__row">
         <div class="project-filters__col project-filters__col--end">
@@ -41,15 +41,14 @@
     <div class="project-filters__row project-filters__row--tools">
         <div class="project-filters__col project-filters__col--end">
             <x-ui.view-switch :$view/>
-            @if ($video)
-            <div class="project-video">
+            {{-- Without a video filter its place stays, so the view switch sits where it does on the micro-projects list. --}}
+            <div class="project-video" @unless ($video) aria-hidden="true" inert style="visibility: hidden" @endunless>
                 <label class="project-video__switch" :class="{ 'is-on': draft.hasVideo }">
                     <input type="checkbox" x-model="draft.hasVideo" aria-label="Project with Video"
                            @mouseenter="tip($el, 'project with video')">
                     <img class="project-video__icon" :src="draft.hasVideo ? '/images/ico/reverst-video.svg' : '/images/ico/search-video-icon.svg'" alt="">
                 </label>
             </div>
-            @endif
         </div>
         <div class="project-filters__gap"></div>
         <div class="project-filters__col project-filters__col--bottom" @search-box="draft.search = $event.detail">
