@@ -26,6 +26,10 @@
 @import './ui/pagination.css';
 @import './ui/lightbox.css';
 @import './ui/mailbox.css';
+@import './ui/verse-video.css';
+@import './ui/family-survey.css';
+@import './ui/partner-showcase.css';
+@import './ui/family-map.css';
 @import './ui/school-stats.css';
 @import './ui/activity-tabs.css';
 @import './ui/activity-card.css';

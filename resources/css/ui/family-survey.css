@@ -1,0 +1,67 @@
+/*
+ * Family to Family's survey results: a grey band with a sentence and the
+ * findings as drawn figures. Legacy #Family .statistics-container,
+ * .statistics-description and .general-info (family_page_new.css), measured
+ * on /projects/family-to-family. The figures were drawn to overlap a little,
+ * so each is nudged sideways and tucked up under the one above.
+ */
+@layer components {
+    .family-survey__band {
+        margin: 0 -0.75rem 1vw;
+        padding: 1.5vw 0;
+        background: var(--color-surface-100);
+    }
+
+    .family-survey__intro {
+        padding-bottom: 1vw;
+        font-size: 1.3vw;
+        font-weight: 700;
+        color: var(--color-ink-600);
+        text-align: center;
+
+        @media (width < 576px) {
+            font-size: 2.3vw;
+        }
+    }
+
+    .family-survey__figure {
+        position: relative;
+        padding: 0 9%;
+
+        /* Inline, as legacy's was, so each figure carries the few pixels under a line of text. */
+        & img {
+            display: inline;
+            width: 100%;
+            vertical-align: baseline;
+        }
+
+        &:nth-of-type(2) {
+            left: 0.3vw;
+            margin-bottom: -0.8vw;
+        }
+
+        &:nth-of-type(3) {
+            left: -1vw;
+            margin-bottom: -0.4vw;
+        }
+
+        &:nth-of-type(4) {
+            left: 0.3vw;
+        }
+
+        @media (width < 576px) {
+            padding: 0;
+
+            &:nth-of-type(2),
+            &:nth-of-type(3),
+            &:nth-of-type(4) {
+                left: -0.9vw;
+                margin-bottom: 0;
+            }
+
+            &:nth-of-type(5) {
+                left: -0.5vw;
+            }
+        }
+    }
+}

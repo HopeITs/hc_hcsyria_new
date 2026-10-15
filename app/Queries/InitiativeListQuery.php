@@ -51,19 +51,20 @@ final class InitiativeListQuery
     }
 
     /**
-     * Every online activity of a programme that has no towns or tabs, in the
+     * Every online activity of a programme (or sub-category) that has no towns or tabs, in the
      * order its editors ranked them (School to School).
      *
      * @return Collection<int, Initiative>
      */
-    public static function ranked(int $categoryId): Collection
+    public static function ranked(?int $categoryId, ?int $subCategoryId = null): Collection
     {
         return Initiative::query()
             ->with([
                 'content',
                 'initiativeImages' => fn ($images) => $images->orderBy('image_order')->orderBy('id'),
             ])
-            ->where('what_category_id', $categoryId)
+            ->when($categoryId !== null, fn ($query) => $query->where('what_category_id', $categoryId))
+            ->when($subCategoryId !== null, fn ($query) => $query->where('sub_what_category_id', $subCategoryId))
             ->where('online', '1')
             ->orderBy('rank')
             ->get();

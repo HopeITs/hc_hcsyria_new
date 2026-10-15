@@ -1,0 +1,150 @@
+/*
+ * Family to Family's partners: a grey panel (logo, name, a few words, Read
+ * More) beside the partner's photograph. Legacy #partner-section,
+ * #animatedCarousel1/2, .animated-* and .readmore-btn (main-new.css,
+ * family_page_new.css), measured on /projects/family-to-family.
+ */
+@layer components {
+    .partner-showcase {
+        padding-bottom: 1vw;
+
+        @media (width < 576px) {
+            padding-bottom: 6vw;
+        }
+    }
+
+    .partner-showcase__band {
+        margin-top: 5vw;
+
+        @media (width < 576px) {
+            margin-top: 9vw;
+        }
+    }
+
+    .partner-showcase__half {
+        position: relative;
+        padding: 0;
+    }
+
+    .partner-showcase__half--text {
+        background: var(--color-surface-100);
+    }
+
+    .partner-showcase__track {
+        height: 28vw;
+
+        @media (width < 576px) {
+            height: 40vw;
+        }
+    }
+
+    .partner-showcase__track--text {
+        @media (width < 576px) {
+            height: 70vw;
+        }
+    }
+
+    .partner-showcase__photo {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    /* The text slides change at once, without the photograph's sideways move; the panel has no controls of its own. */
+    .partner-showcase__panel {
+        position: relative;
+        height: 100%;
+        padding: 2vw calc(1vw + 1.5rem) 0 calc(3.7vw + 1.5rem);
+
+        @media (width < 576px) {
+            padding-top: 3vw;
+            padding-right: calc(1vw + 1.5rem);
+            padding-left: calc(1vw + 1.5rem);
+        }
+    }
+
+    /* Holds the logo's own top margin inside it, as legacy's flex row did. */
+    .partner-showcase__logo-row {
+        display: flow-root;
+    }
+
+    .partner-showcase__logo {
+        width: 4.5vw;
+        height: 5.5vw;
+        margin-bottom: 1rem;
+        object-fit: contain;
+
+        @media (width < 576px) {
+            width: 9.5vw;
+            height: 9.5vw;
+            margin-top: 4vw;
+        }
+    }
+
+    .partner-showcase__title {
+        flex: 0 0 83.333%;
+        margin-top: 1vw;
+        font-size: 1.8vw;
+        font-weight: 900;
+        color: var(--accent);
+
+        @media (width < 576px) {
+            font-size: 4vw;
+        }
+    }
+
+    .partner-showcase__video {
+        width: 1.14vw;
+
+        @media (width < 576px) {
+            width: 3.5vw;
+        }
+    }
+
+    .partner-showcase__rule {
+        height: 0.7vw;
+        margin-bottom: 0.7vw;
+        border-bottom: 1px solid #b2b2b2;
+
+        @media (width < 576px) {
+            margin-bottom: 2vw;
+        }
+    }
+
+    .partner-showcase__story {
+        height: 14vw;
+        margin-top: 1rem;
+        font-size: 1.3vw;
+        color: var(--color-ink-600);
+
+        @media (width < 576px) {
+            font-size: 3vw;
+        }
+    }
+
+    .partner-showcase__more {
+        position: absolute;
+        bottom: 1vw;
+        right: 0;
+        padding: 0.5% 3%;
+        margin-right: 2.5vw;
+        font-size: 1.3vw;
+        color: var(--color-ink-600);
+        background: transparent;
+        border: 0.15vw solid #b2b2b2;
+
+        &:hover,
+        &:focus {
+            color: #fff;
+            background: var(--color-brand-600);
+            border: 2px solid var(--color-brand-600);
+        }
+
+        @media (width < 576px) {
+            bottom: 3vw;
+            margin-right: 7.5vw;
+            font-size: 2.3vw;
+        }
+    }
+}
