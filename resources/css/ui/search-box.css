@@ -1,7 +1,8 @@
 /*
  * The search box under a list's title. Legacy .search-container, #search-input
  * (study_new.css) and typeahead.js's menu (typeahead.css), measured on
- * /projects/study-zone.
+ * /projects/study-zone. A page may widen the box and its icon on phones with
+ * --search-width-phone and --search-icon-phone (Children University does).
  */
 @layer components {
     .search-box {
@@ -24,6 +25,11 @@
         & img {
             width: 1.5vw;
             height: 1.5vw;
+
+            @media (width < 576px) {
+                width: var(--search-icon-phone, 1.5vw);
+                height: var(--search-icon-phone, 1.5vw);
+            }
         }
     }
 
@@ -42,7 +48,7 @@
         border: none;
 
         @media (width < 576px) {
-            width: 26vw;
+            width: var(--search-width-phone, 26vw);
             font-size: 2.4vw;
         }
 

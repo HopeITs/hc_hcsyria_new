@@ -27,6 +27,8 @@ Route::livewire('/projects/study-zone', 'pages::study-zone')->name('public.study
 
 Route::livewire('/projects/school-to-school', 'pages::school-to-school')->name('new.public.school2school');
 
+Route::livewire('/projects/childrenuni', 'pages::children-university')->name('public.children_uni');
+
 Route::livewire('/projects/micro-projects', 'pages::micro-projects')
     ->name('new.public.micro_project_test');
 

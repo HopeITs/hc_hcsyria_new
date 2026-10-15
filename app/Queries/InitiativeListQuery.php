@@ -20,12 +20,13 @@ final class InitiativeListQuery
     public const PER_PAGE = 5;
 
     /**
+     * @param  int|null  $subCategoryId  only this sub-category's activities; null for a programme without sub-categories (Children University)
      * @param  int|list<int>  $placeId  one town, or several shown as one (Homs and its countryside)
      * @param  string  $pageName  the query-string key of this list's page number
      * @param  string|null  $search  only activities whose title, text or summary contain this
      * @return LengthAwarePaginator<int, Initiative>
      */
-    public static function forPlace(int $categoryId, int $subCategoryId, int|array $placeId, string $pageName, bool $byDate = false, ?string $search = null): LengthAwarePaginator
+    public static function forPlace(int $categoryId, ?int $subCategoryId, int|array $placeId, string $pageName, bool $byDate = false, ?string $search = null): LengthAwarePaginator
     {
         return Initiative::query()
             ->with([
@@ -33,7 +34,7 @@ final class InitiativeListQuery
                 'initiativeImages' => fn ($images) => $images->orderBy('image_order')->orderBy('id'),
             ])
             ->where('what_category_id', $categoryId)
-            ->where('sub_what_category_id', $subCategoryId)
+            ->when($subCategoryId !== null, fn ($query) => $query->where('sub_what_category_id', $subCategoryId))
             ->whereIn('place_id', (array) $placeId)
             ->where('online', '1')
             ->when(filled($search), function ($query) use ($search) {
