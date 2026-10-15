@@ -209,7 +209,7 @@ new class extends Component
 };
 ?>
 
-<div id="initiative-section">
+<div id="initiative-section" class="section-gap">
     {{-- The bar sticks under the navigation while the list scrolls past, and is inset as on the micro-projects page. --}}
     <x-site.project-filters class="mx-3" :$cities :$donors :$view :title="$title" unit="Activities" :headings="['activities']"
                             :applied="['city' => $city, 'donor' => $donor, 'hasVideo' => $hasVideo, 'search' => $search]"/>
@@ -258,7 +258,6 @@ new class extends Component
                 @if ($hasMore)
                     <x-ui.load-more/>
                 @endif
-                <x-ui.red-rule short :ms="600"/>
             </div>
 
             <div wire:loading.block wire:target="loadMore">
