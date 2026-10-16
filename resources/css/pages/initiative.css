@@ -1,0 +1,152 @@
+/*
+ * One activity's page (/projects/{category}/{id}-{title}). Legacy
+ * initiative.css (public/css) with main-new.css, measured on
+ * /projects/relief/289-... at 1440px and on a phone.
+ */
+@layer components {
+    /* The grey card with a shadow that holds the whole activity. */
+    .initiative {
+        display: block;
+        background: #f4f4f4;
+        box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
+    }
+
+    .initiative__title {
+        margin-top: 1vw;
+        font-size: 1.5vw;
+        font-weight: 900;
+        line-height: 1.5;
+        color: var(--accent);
+
+        @media (width < 576px) {
+            font-size: 4vw;
+        }
+    }
+
+    .initiative__carousel {
+        height: auto;
+        margin-top: 1vw;
+        margin-bottom: 3vw;
+
+        @media (width < 576px) {
+            margin-bottom: 6vw;
+        }
+    }
+
+    .initiative__track {
+        height: 24vw;
+        margin-left: -0.2vw;
+
+        @media (width < 576px) {
+            height: 40vw;
+        }
+    }
+
+    .initiative__dots {
+        @media (width >= 576px) {
+            bottom: -2vw;
+        }
+    }
+
+    .initiative__organization {
+        font-size: 1.2vw;
+        color: #616262;
+
+        @media (width < 576px) {
+            font-size: 2.7vw;
+        }
+    }
+
+    /* The text runs down three columns, one on a phone. */
+    .initiative__content {
+        padding-bottom: 2vw;
+        margin-top: 2vw;
+        font-size: 1.1vw;
+        line-height: 1.6vw;
+        color: #616262;
+        column-count: 3;
+
+        & p {
+            margin-bottom: 1rem;
+        }
+
+        @media (width < 576px) {
+            font-size: 2.7vw;
+            line-height: 3.3vw;
+            column-count: 1;
+        }
+    }
+
+    /* "Funded by:" and the funders' logos, sitting on the rule above. */
+    .initiative__funded {
+        display: flex;
+        align-items: center;
+        height: fit-content;
+        padding: 0.5vw 0.5vw 0;
+        font-size: 1.1vw;
+        line-height: 1vw;
+        color: #58595b;
+        background: #f4f4f4;
+
+        & img {
+            width: 5.5vw;
+            height: 3.5vw;
+            padding-left: 1vw;
+        }
+
+        @media (width < 576px) {
+            font-size: 2.1vw;
+
+            & img {
+                width: 12.5vw;
+                height: 7.5vw;
+            }
+        }
+    }
+
+    .initiative__results {
+        margin-top: 3vw;
+    }
+
+    .initiative__related {
+        margin-top: 4vw;
+
+        @media (width < 576px) {
+            height: 40vw;
+            margin-bottom: 2vw;
+        }
+    }
+
+    .initiative__heading {
+        padding-bottom: 1vw;
+        font-size: 2vw;
+        font-weight: 900;
+        color: #575756;
+        text-align: left;
+
+        @media (width < 576px) {
+            font-size: 3vw;
+        }
+    }
+
+    .container-fluid-24 {
+        padding: 0 1.5rem;
+    }
+
+    /* The programme's logo, top right of the hero. */
+    .initiative-logo {
+        --logo-width: 16vw;
+        --logo-width-phone: 20vw;
+    }
+
+    .initiative-logo--square,
+    .initiative-logo--study {
+        --logo-width: 5vw;
+        --logo-width-phone: 5vw;
+    }
+
+    .initiative-logo--disc {
+        --logo-width: 8vw;
+        --logo-width-phone: 8vw;
+    }
+}
