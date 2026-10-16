@@ -2372,9 +2372,9 @@
             "action": "PublicController@roots",
             "name": "roots",
             "order": 49,
-            "status": "pending",
-            "notes": null,
-            "ported_from": null,
+            "status": "ported",
+            "notes": "One Livewire page, no state: the editions are read by RootsOfHopeQuery (online rows, last one shown large). Legacy crashed with no edition online; the page is drawn without the latest edition and the list. The layout gained a `fill` switch (off by default) because this page, like legacy, is shorter than a phone window and its footer follows the content; the error pages turn it on.",
+            "ported_from": "6d45ef9",
             "live_status": "200",
             "examples": [
                 {

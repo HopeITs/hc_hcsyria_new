@@ -7,6 +7,7 @@
     'preloader' => false,
     'overlayUntil' => null,
     'meta' => [],
+    'fill' => false,
 ])
 
 {{--
@@ -22,7 +23,9 @@
     default to the organisation's, a page names its own where legacy did, and
     the x-default hreflang link points at the main address. $meta is a page's
     own further tags (description, the share tags): rows of name or property,
-    and content.
+    and content. $fill makes the
+    content grow to the footer on a page shorter than the window (the error
+    pages); on every other page the footer follows the content, as in legacy.
 
     Ported from the legacy page heads: favicon and theme-color. Not ported:
     Google Analytics UA-129097809-1 (Universal Analytics, shut down by Google
@@ -68,8 +71,8 @@
         <x-site.account-menu/>
     @endauth
 
-    {{-- A flex item of the body column that grows, as the legacy page content did. --}}
-    <main id="main" class="flex shrink-0 grow flex-col">
+    {{-- A flex item of the body column, as the legacy page content was. --}}
+    <main id="main" @class(['flex shrink-0 flex-col', 'grow' => $fill])>
         {{ $slot }}
     </main>
 

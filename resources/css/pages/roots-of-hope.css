@@ -1,0 +1,166 @@
+/*
+ * /rootsofhope. Legacy roots.css, with the Bootstrap rules the page leaned
+ * on, measured on the running page (storage/parity/spec/roots-*.json): 375,
+ * 768, 1440, 1920px. Sizes in vw as on the rest of the site; the phone values
+ * are legacy's max-width: 578px.
+ */
+@layer components {
+    .roots-cover {
+        position: relative;
+    }
+
+    /* The latest edition's cover, standing on the page of the photo */
+    .roots-cover__edition {
+        position: absolute;
+        top: 6.5%;
+        left: 28.6%;
+        width: 20.5vw;
+    }
+
+    /* Its title, and the two icons that open and download it */
+    .roots-latest {
+        position: absolute;
+        top: 28%;
+        left: 53%;
+        font-size: 0.8vw;
+        color: #fff;
+    }
+
+    .roots-latest__actions {
+        display: flex;
+        flex-wrap: wrap;
+        height: 1.5vw;
+        margin-bottom: 1vw;
+    }
+
+    .roots-latest__preview {
+        display: inline-flex;
+        height: 100%;
+        padding-right: 0.5rem;
+    }
+
+    .roots-latest__download {
+        display: inline-flex;
+    }
+
+    .roots-latest__preview-icon,
+    .roots-latest__download-icon {
+        display: inline;
+        vertical-align: initial;
+        cursor: pointer;
+    }
+
+    .roots-latest__preview-icon {
+        width: 5vw;
+    }
+
+    .roots-latest__download-icon {
+        width: 1.7vw;
+    }
+
+    /* The magazine's description, bottom right of the photo */
+    .roots-about {
+        position: absolute;
+        bottom: 9%;
+        left: 53%;
+        width: 15%;
+        color: #fff;
+    }
+
+    .roots-about__name {
+        font-size: 1.5vw;
+        font-weight: 900;
+        text-transform: uppercase;
+    }
+
+    .roots-about__rule {
+        width: 2.3vw;
+        height: 0.3vw;
+        padding: 0;
+        margin: 0 0 1vw;
+        color: #fff;
+        background-color: currentcolor;
+        border: 0;
+        opacity: 1;
+    }
+
+    .roots-about__text {
+        font-size: 0.6vw;
+        line-height: 0.8vw;
+
+        @media (width <= 578px) {
+            line-height: 1vw;
+        }
+    }
+
+    /* "All Editions" between two grey lines */
+    .roots-divider {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-block: 2vw;
+    }
+
+    .roots-divider__line {
+        flex-grow: 1;
+        height: 1px;
+        background-color: #999;
+    }
+
+    .roots-divider__label {
+        padding: 0 1vw;
+        font-size: 1.2vw;
+        font-weight: bold;
+        color: #bc1818;
+
+        @media (width <= 578px) {
+            font-size: 2.9vw;
+        }
+    }
+
+    /* Each edition: its cover, its title, the icons that open and download it */
+    .roots-edition__cover {
+        flex-shrink: 0;
+        width: 11vw;
+        max-width: 100%;
+        height: auto;
+        padding-inline: 0.75rem;
+        filter: drop-shadow(1px 1px 4px gray);
+
+        @media (width <= 578px) {
+            width: 100%;
+        }
+    }
+
+    .roots-edition__meta {
+        @media (width >= 768px) {
+            margin-top: 0.5rem;
+        }
+    }
+
+    .roots-edition__title {
+        position: relative;
+        top: -0.2vw;
+        padding-right: 0.3vw;
+        font-size: 0.7vw;
+        color: #666;
+
+        @media (width <= 578px) {
+            top: -0.4vw;
+            font-size: 1vw;
+        }
+    }
+
+    .roots-edition__icon {
+        display: inline;
+        width: 0.95vw;
+        height: auto;
+        vertical-align: initial;
+        cursor: pointer;
+
+        @media (width <= 578px) {
+            width: 1.5vw;
+        }
+    }
+}

@@ -15,7 +15,7 @@
 @php($text = __("errors.$code"))
 
 {{-- The legacy 404 lacks the script that makes the menus open instantly, so they slide. --}}
-<x-layouts::app :title="$text['title']" menu="slide">
+<x-layouts::app :title="$text['title']" menu="slide" fill>
     <div class="error-page">
         <div class="error-page__container">
             <div class="error-page__box">
