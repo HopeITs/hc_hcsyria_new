@@ -29,6 +29,8 @@
  * fonts, so on a machine with Lato installed a page that never loads Lato
  * still renders it. Run on a machine without local Lato for a visitor's view.
  *
+ * A page part that is random on every visit is listed under "hide" (a pattern
+ * for the address, and the selectors to blank on both sides).
  * A page whose photos legitimately differ (legacy shuffles them on every visit)
  * has its own limit under "pixels" in docs/parity-allowlist.json.
  *
@@ -144,6 +146,19 @@ async function capture(browser, url, width) {
     });
     await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {});
     await page.waitForTimeout(500);
+
+    // Parts that are random on every visit (the "related posts" tiles) are blanked on both sides,
+    // their links and photos with them, so the rest of the page is what gets compared.
+    const pathname = new URL(url).pathname;
+    const hidden = Object.entries(allow.hide ?? {}).filter(([pattern]) => new RegExp(pattern).test(pathname)).flatMap(([, selectors]) => selectors);
+    if (hidden.length) {
+        await page.evaluate((selectors) => {
+            for (const el of document.querySelectorAll(selectors.join(','))) {
+                el.style.visibility = 'hidden';
+                el.querySelectorAll('a, img').forEach((n) => { n.removeAttribute('href'); n.removeAttribute('src'); });
+            }
+        }, hidden);
+    }
 
     const facts = await page.evaluate(() => {
         const norm = (u) => { try { const x = new URL(u, location.href); return x.origin === location.origin ? x.pathname + x.search : x.href; } catch { return u; } };

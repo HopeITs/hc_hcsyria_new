@@ -6,6 +6,7 @@
     'menu' => 'instant',
     'preloader' => false,
     'overlayUntil' => null,
+    'meta' => [],
 ])
 
 {{--
@@ -19,7 +20,9 @@
     makes the navbar transparent over a hero (see the header component).
     $keywords and $alternate are head tags every page carries: the keywords
     default to the organisation's, a page names its own where legacy did, and
-    the x-default hreflang link points at the main address.
+    the x-default hreflang link points at the main address. $meta is a page's
+    own further tags (description, the share tags): rows of name or property,
+    and content.
 
     Ported from the legacy page heads: favicon and theme-color. Not ported:
     Google Analytics UA-129097809-1 (Universal Analytics, shut down by Google
@@ -38,6 +41,9 @@
     @if ($keywords)
         <meta name="keywords" content="{{ $keywords }}">
     @endif
+    @foreach ($meta as $tag)
+        <meta @if (isset($tag['property'])) property="{{ $tag['property'] }}" @else name="{{ $tag['name'] }}" @endif content="{{ $tag['content'] }}">
+    @endforeach
     @if ($alternate)
         <link rel="alternate" hreflang="x-default" href="{{ $alternate }}">
     @endif

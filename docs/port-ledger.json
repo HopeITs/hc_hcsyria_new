@@ -2205,9 +2205,9 @@
             "action": "PublicController@initiative",
             "name": "new.public.initiative",
             "order": 19,
-            "status": "pending",
-            "notes": null,
-            "ported_from": null,
+            "status": "ported",
+            "notes": "The activity shows only when the whole address is right (online, not a Family to Family story, category and title slugs both its own); anything else is a real 404 where legacy answered its 404 design under a 200 (a non-numeric id crashed it). The id in the address is digits only. The big photo carousel is drawn only for more than one photo, as legacy did. The three related tiles are random on every visit, as legacy's were (hidden from the parity comparison, docs/parity-allowlist.json). Not kept: the 0 legacy put in the page keywords when there was no partner. Replaced: twentytwenty (before/after slider) and Owl Carousel (related posts). The legacy share tags (og:*, description) are kept, on the site's own address.",
+            "ported_from": "6d45ef9",
             "live_status": "200",
             "examples": [
                 {

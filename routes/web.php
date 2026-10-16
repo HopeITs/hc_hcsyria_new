@@ -38,6 +38,11 @@ Route::livewire('/projects/family-to-family', 'pages::family-to-family')->name('
 Route::livewire('/projects/micro-projects', 'pages::micro-projects')
     ->name('new.public.micro_project_test');
 
+// One activity. The id is digits only, so that a title with a hyphen in it cannot be read as part of the id.
+Route::livewire('/projects/{type}/{id}-{slug}', 'pages::initiative')
+    ->whereNumber('id')
+    ->name('new.public.initiative');
+
 // A category's activities: social activities, rehabilitation, relief, earthquake response.
 // After every programme page above, which this would otherwise swallow.
 Route::livewire('/projects/{type}', 'pages::project-category')->name('public.initiatives.type');
