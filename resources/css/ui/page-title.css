@@ -49,6 +49,7 @@
     .page-title__line--strong {
         font-size: var(--title-strong, 2.5vw);
         font-weight: 900;
+        text-transform: var(--title-strong-case, uppercase);
 
         @media (width < 576px) {
             font-size: var(--title-strong-phone, 2.5vw);
@@ -100,7 +101,7 @@
         padding-right: 0.75rem;
     }
 
-    /* A page that wants another size sets --logo-width (and --logo-width-phone) on its wrapper; likewise --title-line and --title-strong for its title's type, and --title-line-phone, --title-strong-phone and --title-lh-phone for the phone's. */
+    /* A page that wants another size sets --logo-width (and --logo-width-phone) on its wrapper; likewise --title-line and --title-strong for its title's type (--title-strong-case for its case), and --title-line-phone, --title-strong-phone and --title-lh-phone for the phone's. */
     .page-title__logo {
         display: block;
         width: var(--logo-width, 12vw);

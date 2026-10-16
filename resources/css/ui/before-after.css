@@ -1,0 +1,143 @@
+/*
+ * The before-and-after slider. Legacy twentytwenty.css (public/css), drawn
+ * the same: a white round handle with arrows and a line above and below it,
+ * the photos dimmed on hover with "Before" / "After" in a pale box.
+ */
+@layer components {
+    .before-after {
+        position: relative;
+        z-index: 0;
+        overflow: hidden;
+        user-select: none;
+    }
+
+    .before-after__before {
+        display: block;
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .before-after__after {
+        position: absolute;
+        top: 0;
+        left: 0;
+        display: block;
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .before-after__overlay {
+        position: absolute;
+        top: 0;
+        z-index: 25;
+        width: 100%;
+        height: 100%;
+        background: rgb(0 0 0 / 0);
+        transition: background 0.5s;
+
+        &:hover {
+            background: rgb(0 0 0 / 0.5);
+        }
+    }
+
+    .before-after__label {
+        position: absolute;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        transition: opacity 0.5s;
+
+        &::before {
+            position: absolute;
+            top: 50%;
+            padding: 0 20px;
+            margin-top: -19px;
+            font-size: 13px;
+            line-height: 38px;
+            letter-spacing: 0.1em;
+            color: #fff;
+            content: attr(data-content);
+            background: rgb(255 255 255 / 0.2);
+            border-radius: 2px;
+        }
+    }
+
+    .before-after__label--before::before { left: 10px; }
+    .before-after__label--after::before { right: 10px; }
+
+    .before-after__overlay:hover .before-after__label {
+        opacity: 1;
+    }
+
+    /* Held: no dimming, no labels */
+    .before-after.is-dragging .before-after__overlay {
+        background: rgb(0 0 0 / 0);
+    }
+
+    .before-after.is-dragging .before-after__label {
+        opacity: 0;
+    }
+
+    .before-after__handle {
+        position: absolute;
+        top: 50%;
+        z-index: 40;
+        box-sizing: content-box;
+        width: 38px;
+        height: 38px;
+        margin-top: -22px;
+        margin-left: -22px;
+        cursor: pointer;
+        border: 3px solid #fff;
+        border-radius: 1000px;
+        box-shadow: 0 0 12px rgb(51 51 51 / 0.5);
+        touch-action: none;
+
+        &::before,
+        &::after {
+            position: absolute;
+            left: 50%;
+            z-index: 30;
+            display: block;
+            width: 3px;
+            height: 9999px;
+            margin-left: -1.5px;
+            content: ' ';
+            background: #fff;
+        }
+
+        &::before {
+            bottom: 50%;
+            margin-bottom: 22px;
+            box-shadow: 0 3px 0 #fff, 0 0 12px rgb(51 51 51 / 0.5);
+        }
+
+        &::after {
+            top: 50%;
+            margin-top: 22px;
+            box-shadow: 0 -3px 0 #fff, 0 0 12px rgb(51 51 51 / 0.5);
+        }
+    }
+
+    .before-after__arrow {
+        position: absolute;
+        top: 50%;
+        width: 0;
+        height: 0;
+        margin-top: -6px;
+        border: 6px solid transparent;
+    }
+
+    .before-after__arrow--left {
+        left: 50%;
+        margin-left: -17px;
+        border-right-color: #fff;
+    }
+
+    .before-after__arrow--right {
+        right: 50%;
+        margin-right: -17px;
+        border-left-color: #fff;
+    }
+}

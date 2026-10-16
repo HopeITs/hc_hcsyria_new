@@ -1,4 +1,4 @@
-@props(['title' => null, 'subtitle' => null, 'compact' => false, 'solo' => false])
+@props(['title' => null, 'subtitle' => null, 'compact' => false, 'solo' => false, 'html' => false])
 
 {{--
     The hero title under the navbar: a red corner with two lines of capitals
@@ -6,7 +6,8 @@
     unless the page puts something in the slot (a programme's logo), and
     otherwise only fixes the frame at half the width, as in the legacy markup.
     :compact is the smaller type the programme pages use; :solo is for the
-    pages with no first line, whose one line (HTML allowed) is larger. A page
+    pages with no first line, whose one line (HTML allowed) is larger. :html
+    lets the subtitle carry HTML without the larger type. A page
     with neither (the Christian Youth page, whose heading sits below the
     cover) gets the red corner alone.
 --}}
@@ -20,7 +21,7 @@
                         @if ($title)
                             <x-ui.reveal :ms="600" class="page-title__line">{{ $title }}</x-ui.reveal>
                         @endif
-                        <x-ui.reveal :ms="1000" class="page-title__line page-title__line--strong">{!! $solo ? $subtitle : e($subtitle) !!}</x-ui.reveal>
+                        <x-ui.reveal :ms="1000" class="page-title__line page-title__line--strong">{!! $solo || $html ? $subtitle : e($subtitle) !!}</x-ui.reveal>
                     </div>
                 @endif
             </div>
