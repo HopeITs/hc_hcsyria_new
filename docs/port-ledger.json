@@ -793,9 +793,9 @@
             "action": "PublicController@newsletter",
             "name": "new.public.newsletter",
             "order": 23,
-            "status": "pending",
-            "notes": null,
-            "ported_from": null,
+            "status": "ported",
+            "notes": "One Livewire page (`pages::our-news`) with a nested `newsletter-subscribe` component. Reads are in NewsListQuery (lead, ordinary, pinned, headlines, edition), the cards' words in NewsPresenter, the sign-up write in SubscribeToNewsletter. Not ported: the filter window (its button was commented out of the legacy page, so it could not be opened), the page-view count and the French switch. The sign-up is a Livewire action, so legacy's POST /our-news/subscribe has no counterpart (same ten tries a minute, same messages). Deliberate differences, for sign-off: (1) the navigation menus open (they slide); on the legacy page neither hover nor click opens them; (2) the time on the cover photo shows at every width (legacy lost it below 992px after the first redraw until the next minute); (3) a story with no photo draws no image (legacy asked picsum.photos for a stock picture, which the content security policy forbids); (4) the email is validated on the server. The story pages /our-news/{id}-{city}-{date} are linked by address and port separately.",
+            "ported_from": "6d45ef9",
             "live_status": "200",
             "examples": [
                 {
