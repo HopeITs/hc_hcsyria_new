@@ -161,7 +161,8 @@ async function capture(browser, url, width) {
     }
 
     const facts = await page.evaluate(() => {
-        const norm = (u) => { try { const x = new URL(u, location.href); return x.origin === location.origin ? x.pathname + x.search : x.href; } catch { return u; } };
+        // A share link carries the page's own address, host and port included: compare it by path.
+        const norm = (u) => { try { const x = new URL(u, location.href); return x.origin === location.origin ? x.pathname + x.search : x.href.replaceAll(encodeURIComponent(location.origin), '%ORIGIN%'); } catch { return u; } };
         return {
             text: document.body.innerText.split('\n').map((l) => l.replace(/\s+/g, ' ').trim()).filter(Boolean),
             links: [...new Set([

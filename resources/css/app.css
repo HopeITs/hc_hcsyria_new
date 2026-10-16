@@ -64,6 +64,7 @@
 @import './pages/initiative.css';
 @import './pages/roots-of-hope.css';
 @import './pages/news.css';
+@import './pages/news-story.css';
 
 /* Only our own Blade views: every utility emitted is one a page uses. */
 @source '../views/**/*.blade.php';
