@@ -38,14 +38,7 @@
                     </div>
                 </div>
 
-                <div class="verse-video__media flex w-full justify-start sm:w-1/2">
-                    <x-ui.reveal :ms="600" class="verse-video__frame">
-                        <iframe class="verse-video__video" src="https://www.youtube-nocookie.com/embed/ApyHAvgggcE" title="Family to Family" loading="lazy"
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                                allowfullscreen></iframe>
-                        <img class="torn-edge verse-video__edge" src="/images/home/image-mask.png" alt="">
-                    </x-ui.reveal>
-                </div>
+                <x-site.video-column src="https://www.youtube-nocookie.com/embed/ApyHAvgggcE" title="Family to Family"/>
             </div>
         </div>
     </x-ui.reveal>

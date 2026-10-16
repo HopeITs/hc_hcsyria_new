@@ -2,7 +2,8 @@
  * Scroll reveal (resources/js/reveal.js), the look of AOS "fade-up": fades
  * in while rising 100px. Elements start hidden in the HTML so there is no
  * flash before the script runs. --reveal-ms is the per-element duration
- * (the legacy data-aos-duration).
+ * (the legacy data-aos-duration). .reveal--zoom is the other effect the
+ * pages use, data-aos="zoom-in".
  */
 @layer components {
     .reveal {
@@ -10,6 +11,11 @@
         pointer-events: none;
         transform: translate3d(0, 100px, 0);
         transition: opacity var(--reveal-ms, 400ms) ease, transform var(--reveal-ms, 400ms) ease;
+    }
+
+    /* data-aos="zoom-in": grows from 60% instead of rising. */
+    .reveal--zoom {
+        transform: scale(0.6);
     }
 
     .reveal--shown {
