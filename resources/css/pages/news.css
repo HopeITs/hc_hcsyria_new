@@ -5,9 +5,11 @@
  * #b5121b, not the brand red of the rest of the site.
  */
 @layer components {
-    .news-page {
+    :root {
         --news-red: #b5121b;
+    }
 
+    .news-page {
         max-width: 1140px;
         padding: 0 15px;
         margin: 8rem auto 0;
@@ -647,6 +649,19 @@
 
         @media (width >= 2560px) {
             max-width: min(84vw, 1960px);
+        }
+    }
+
+    /* A story's page: Bootstrap's col-12 col-md-10 col-lg-8 */
+    .news-signup__column--narrow {
+        max-width: none;
+
+        @media (width >= 768px) {
+            width: 83.333333%;
+        }
+
+        @media (width >= 992px) {
+            width: 66.666667%;
         }
     }
 }

@@ -155,13 +155,5 @@ new #[Layout('layouts::app', [
         </div>
     </div>
 
-    <x-ui.reveal :ms="800" class="news-signup-title">
-        <x-ui.section-title>Get Latest Updates On Our News</x-ui.section-title>
-    </x-ui.reveal>
-
-    <x-ui.reveal :ms="800" class="news-signup">
-        <div class="news-signup__column">
-            <livewire:newsletter-subscribe/>
-        </div>
-    </x-ui.reveal>
+    <x-site.news-signup/>
 </div>

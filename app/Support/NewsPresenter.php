@@ -51,6 +51,32 @@ final class NewsPresenter
         return $this->news->date === null ? null : Carbon::parse($this->news->date);
     }
 
+    /** The date over a story's page: 6/6/2026. */
+    public function articleDate(): string
+    {
+        return $this->date()?->format('j/n/Y') ?? '';
+    }
+
+    /**
+     * The id of the story's YouTube video, whichever form of address the
+     * admin pasted (embed, watch or youtu.be); null for no video or any
+     * other host.
+     */
+    public function videoId(): ?string
+    {
+        preg_match('~^https://(?:www\.)?(?:youtube(?:-nocookie)?\.com/(?:embed/|watch\?v=)|youtu\.be/)([\w-]+)~', trim((string) $this->news->video), $match);
+
+        return $match[1] ?? null;
+    }
+
+    /** The name of the attached file, as it shows when the paperclip is pointed at: /files/news/ is cut off. */
+    public function fileName(): ?string
+    {
+        $file = (string) $this->news->file;
+
+        return $file === '' || $file === '0' ? null : substr($file, 12);
+    }
+
     /** The line over a card's title: 06/06/2026 - Homs. */
     public function meta(): string
     {
