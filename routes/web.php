@@ -35,6 +35,9 @@ Route::livewire('/christianyouth', 'pages::christian-youth')->name('public.youth
 
 Route::livewire('/rootsofhope', 'pages::roots-of-hope')->name('roots');
 
+// The stories' own pages, /our-news/{id}-{city}-{date}, are ported separately.
+Route::livewire('/our-news', 'pages::our-news')->name('new.public.newsletter');
+
 Route::livewire('/projects/family-to-family', 'pages::family-to-family')->name('new.public.family2family');
 
 Route::livewire('/projects/micro-projects', 'pages::micro-projects')

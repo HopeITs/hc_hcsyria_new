@@ -1,0 +1,141 @@
+/*
+ * The newsletter sign-up box (resources/views/components/⚡newsletter-subscribe.blade.php).
+ * Legacy newsletter.css (.subscribe-container, .subscription, the phone
+ * sizes under 576px) with the changes our-news.css made to them, measured on
+ * /our-news at 375, 768, 1440 and 1920px. Sizes are in vw as on the legacy
+ * page; the red here is the brand red of the button, and the page's own red
+ * (#be1e2d) is the box's focus ring.
+ */
+@layer components {
+    .subscribe-container {
+        width: 100%;
+        padding: 2vw;
+        text-align: center;
+        background: #f9f9f9;
+        border-radius: 10px;
+
+        /* Inline on the text baseline, as Bootstrap leaves an image, so the text-align centres it. */
+        & > img {
+            display: inline;
+            vertical-align: baseline;
+            width: 100px;
+            height: auto;
+            padding-bottom: 1.5vw;
+            margin-bottom: 10px;
+        }
+    }
+
+    .subscribe-title {
+        padding-bottom: 1.5vw;
+        margin-bottom: 0.5rem;
+        font-family: 'Archivo', sans-serif;
+        font-size: 1.1rem;
+        font-weight: 400;
+        line-height: 1.2;
+        color: #555;
+        text-align: center;
+        text-transform: capitalize;
+    }
+
+    .subscription {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        max-width: 550px;
+        padding: 5px;
+        margin: 0 auto;
+        background: #fff;
+        border: 1px solid #ddd;
+        border-radius: 50px;
+        transition: all 0.3s ease;
+
+        &:focus-within {
+            border-color: #be1e2d;
+            box-shadow: 0 0 8px rgb(190 30 45 / 0.15);
+        }
+    }
+
+    .add-email {
+        z-index: 1;
+        flex: 1;
+        width: 25vw;
+        height: 2.5vw;
+        padding: 0 20px;
+        font-size: 1.1vw;
+        color: #616261;
+        background: transparent;
+        border-radius: 2vw;
+        outline: none;
+
+        &::placeholder {
+            color: #d8d8d8;
+        }
+
+        @media (width < 576px) {
+            width: 33vw;
+            height: 4vw;
+            font-size: 2.1vw;
+        }
+    }
+
+    .submit-email {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 2.5vw;
+        padding: 0 1vw;
+        margin-left: 0.5vw;
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #fff;
+        text-transform: uppercase;
+        cursor: pointer;
+        background: #bc1818;
+        border-radius: 60px;
+        outline: none;
+        transition: width 0.35s ease-in-out, background 0.35s ease-in-out;
+
+        & > span {
+            font-size: 1.1vw;
+            font-weight: 700;
+
+            @media (width < 576px) {
+                font-size: 2vw;
+                line-height: 2.8vw;
+            }
+        }
+
+        &:hover {
+            background-color: #a01926;
+        }
+
+        &:active {
+            transform: scale(0.98);
+        }
+
+        @media (width < 576px) {
+            width: 13vw;
+            height: 4vw;
+            margin: 1px;
+        }
+    }
+
+    /* Under the box: what came of the last try */
+    .subscribe-note {
+        min-height: 24px;
+        margin-top: 0.5rem;
+        text-align: center;
+    }
+
+    .subscribe-note__text {
+        font-size: 14px;
+        color: red;
+    }
+
+    .subscribe-note__text--exists {
+        font-size: 15px;
+        font-weight: 500;
+    }
+}
