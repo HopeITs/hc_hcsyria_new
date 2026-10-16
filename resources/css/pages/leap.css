@@ -14,7 +14,7 @@
         justify-content: center;
     }
 
-    /* .category: no ring or shadow (leap.css), the pale blue of the others when pointed at */
+    /* .category: no ring, shadow or pale blue when pointed at: #LEAP .category (leap.css) outranks the hover rule */
     .leap-aspects__button {
         z-index: 1;
         display: flex;
@@ -31,9 +31,7 @@
             margin: 3vw;
         }
 
-        &:hover,
         &:focus {
-            background-color: #c8dee8;
             outline: none;
         }
 
