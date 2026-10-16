@@ -4,6 +4,7 @@ namespace App\Queries;
 
 use App\Models\Initiative;
 use App\Models\InitiativeDonor;
+use App\Models\InitiativeImage;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -129,6 +130,39 @@ final class InitiativeListQuery
             ->when(filled($search), fn ($query) => self::matching($query, $search))
             ->orderBy('rank')
             ->get();
+    }
+
+    /**
+     * Every online activity of a category, newest first, with its photos in the
+     * order the editors set. A rehabilitation project also has before-and-after
+     * pairs (initiatives_images_rehabilitation); they follow its photos, one
+     * after the other. Legacy shuffled them in with the rest on every visit; the
+     * order here is fixed.
+     *
+     * @return Collection<int, Initiative>
+     */
+    public static function latest(int $categoryId): Collection
+    {
+        $activities = Initiative::query()
+            ->with([
+                'content',
+                'initiativeImages' => fn ($images) => $images->orderBy('image_order')->orderBy('id'),
+                'initiativeImageRehabilitations',
+            ])
+            ->where('what_category_id', $categoryId)
+            ->where('online', '1')
+            ->orderByDesc('id')
+            ->get();
+
+        foreach ($activities as $activity) {
+            $pairs = $activity->initiativeImageRehabilitations
+                ->flatMap(fn ($pair) => [$pair->path_1, $pair->path_2])
+                ->map(fn ($path) => new InitiativeImage(['path' => $path]));
+
+            $activity->setRelation('initiativeImages', $activity->initiativeImages->concat($pairs));
+        }
+
+        return $activities;
     }
 
     /**

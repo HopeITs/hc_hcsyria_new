@@ -1,4 +1,4 @@
-@props(['activity', 'type', 'flip' => false])
+@props(['activity', 'type', 'flip' => false, 'summary' => false, 'mirrored' => false])
 
 {{--
     One activity of a programme in a list (legacy initiative card): its photos
@@ -11,22 +11,31 @@
 
     The text is HTML an editor wrote; it is stripped to plain text for the
     excerpt. A video, when there is one, opens from the small icon by the title.
+
+    :summary is the other list, a category's (/projects/social-activities): the
+    date stands alone (no "Date: "), the excerpt is the short description, fifty
+    words of it, shown whole when it is no longer than fifty characters, and a
+    date the editors left empty still takes its line, as in legacy. Flipped, its photos lose their left padding rather than their right, and its text's inset moves to the right only from 576px up (its phone list was never flipped), except in a :mirrored list (Relief's), whose phone list keeps it on the right in every card.
 --}}
 @php
     $content = $activity->content;
     $photos = $activity->initiativeImages;
-    $excerpt = strlen($content?->content ?? '') > 30
-        ? implode(' ', array_slice(explode(' ', strip_tags($content->content)), 0, 30)).'...'
+    $words = $summary ? 50 : 30;
+    $text = $summary ? $content?->description : $content?->content;
+    $excerpt = strlen($text ?? '') > ($summary ? 50 : 30)
+        ? implode(' ', array_slice(explode(' ', strip_tags($text)), 0, $words)).'...'
         : null;
-    $date = $content?->date_string !== '0' ? $content?->date_string : null;
+    $date = $content?->date_string !== '0' ? (string) $content?->date_string : null;
     $organization = $content?->organization !== '0' ? $content?->organization : null;
+    $showDate = $summary ? $date !== null : filled($date);
+    $showOrganization = filled($organization);
     $href = '/projects/'.$type.'/'.$activity->id.'-'.Str::slug(strtolower((string) $content?->title));
 @endphp
 
 <div class="activity-card">
     <div class="activity-card__inner">
         <div class="-mx-3 flex flex-wrap">
-            <div @class(['activity-card__photos flex w-full justify-end px-3 sm:w-1/2 sm:pr-0', 'sm:order-2' => $flip])>
+            <div @class(['activity-card__photos flex w-full justify-end px-3 sm:w-1/2', 'sm:pr-0' => ! ($summary && $flip), 'sm:pl-0' => $summary && $flip, 'sm:order-2' => $flip])>
                 <x-ui.carousel :count="$photos->count()" :interval="5000" class="activity-card__carousel w-full">
                     <x-ui.carousel.track class="activity-card__track">
                         @foreach ($photos as $i => $photo)
@@ -44,7 +53,7 @@
             </div>
 
             <div class="relative w-full px-3 sm:w-1/2">
-                <div @class(['activity-card__text', 'activity-card__text--flipped' => $flip])>
+                <div @class(['activity-card__text', 'activity-card__text--flipped' => $flip && ! $summary, 'sm:pr-[0.6vw] sm:pl-0' => $flip && $summary, 'max-sm:pr-[0.6vw] max-sm:pl-0' => $mirrored])>
                     <div class="-mx-3 mt-[1vw] flex flex-wrap items-center">
                         <div class="w-5/6 px-3"><div class="activity-card__title">{{ $content?->title }}</div></div>
                         <div class="w-1/6 px-3 text-right">
@@ -58,17 +67,19 @@
                     </div>
 
                     <div class="activity-card__content">
-                        @if ($date)
-                            <div><strong>Date: </strong>{{ $date }}</div>
+                        @if ($showDate)
+                            <div>@unless ($summary)<strong>Date: </strong>{{ $date }}@else<strong>{{ $date }}</strong>@endunless</div>
                         @endif
-                        @if ($organization)
+                        @if ($showOrganization)
                             <strong> {{ __('initiatives.by') }}{{ $organization }}</strong>
                         @endif
-                        @if ($date || $organization)
+                        @if ($showDate || $showOrganization)
                             <div><br></div>
                         @endif
                         @if ($excerpt)
                             <div>{!! $excerpt !!}</div>
+                        @elseif ($summary)
+                            <div>{{ $content?->description }}</div>
                         @endif
                     </div>
 

@@ -42,12 +42,12 @@
         color: #575756;
 
         @media (width >= 576px) {
-            font-size: 1.5vw;
+            font-size: var(--title-line, 1.5vw);
         }
     }
 
     .page-title__line--strong {
-        font-size: 2.5vw;
+        font-size: var(--title-strong, 2.5vw);
         font-weight: 900;
 
         @media (width < 576px) {
@@ -100,7 +100,7 @@
         padding-right: 0.75rem;
     }
 
-    /* A page that wants another size sets --logo-width (and --logo-width-phone) on its wrapper; likewise --title-line-phone, --title-strong-phone and --title-lh-phone for its title's phone type. */
+    /* A page that wants another size sets --logo-width (and --logo-width-phone) on its wrapper; likewise --title-line and --title-strong for its title's type, and --title-line-phone, --title-strong-phone and --title-lh-phone for the phone's. */
     .page-title__logo {
         display: block;
         width: var(--logo-width, 12vw);
