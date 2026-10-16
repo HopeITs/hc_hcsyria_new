@@ -21,6 +21,6 @@ final class CoverQuery
             ->orderBy('image_order')
             // image_order is not unique; id keeps tied rows in a fixed order.
             ->orderBy('id')
-            ->get(['id', 'image_path']);
+            ->get(['id', 'image_path', 'caption']);
     }
 }
