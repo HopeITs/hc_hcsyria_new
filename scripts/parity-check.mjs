@@ -29,6 +29,9 @@
  * fonts, so on a machine with Lato installed a page that never loads Lato
  * still renders it. Run on a machine without local Lato for a visitor's view.
  *
+ * A page whose photos legitimately differ (legacy shuffles them on every visit)
+ * has its own limit under "pixels" in docs/parity-allowlist.json.
+ *
  * Exits 1 when any page exceeds --max-diff (percent of pixels) or differs in
  * text, links or fonts, or the new page logs an error.
  */
@@ -234,7 +237,7 @@ for (const pagePath of paths) {
             newPageErrors: fresh.errors,
         };
         const pass = entry.status[0] === entry.status[1]
-            && entry.pixelDiffPercent <= maxDiff
+            && entry.pixelDiffPercent <= (allow.pixels?.[pagePath]?.max ?? maxDiff)
             && (entry.text?.length ?? 0) === 0
             && (entry.links?.length ?? 0) === 0
             && entry.fonts.length === 0
