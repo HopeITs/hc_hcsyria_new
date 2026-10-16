@@ -1,4 +1,4 @@
-@props(['centers', 'columns' => ['sm:w-1/4', 'sm:w-1/4', 'sm:w-1/4', 'sm:w-1/4'], 'upper' => false, 'align' => ['', 'justify-center', 'justify-end', 'justify-end']])
+@props(['centers', 'columns' => ['sm:w-1/4', 'sm:w-1/4', 'sm:w-1/4', 'sm:w-1/4'], 'upper' => false, 'closed' => false, 'align' => ['', 'justify-center', 'justify-end', 'justify-end']])
 
 {{--
     The grey strip above the red bands of the programme footers: where the
@@ -8,7 +8,8 @@
     :columns gives each column's width on wide screens (Tailwind classes);
     the first column keeps to the left, the second sits in the middle and
     the rest to the right (:align changes that: where each column puts its
-    content, '' for left). :upper writes the towns in capitals.
+    content, '' for left). :upper writes the towns in capitals. :closed puts
+    the short rule under the last centre on phones too (LEAP).
 --}}
 @php
     $last = count($centers) - 1;
@@ -32,7 +33,7 @@
             @foreach ($centers as $i => $center)
                 <div class="site-footer__col text-center">
                     <x-site.footer.center :center="$center" :upper="$upper"/>
-                    @if ($i < $last)
+                    @if ($i < $last || $closed)
                         <div class="-mx-3 mb-2 flex items-center justify-center">
                             <div class="w-1/3 px-3"><img class="site-footer__rule" src="/images/home/footerline.svg" alt=""></div>
                         </div>

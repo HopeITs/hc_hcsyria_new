@@ -37,7 +37,7 @@
     }
 
     .page-title__line {
-        font-size: 2.1vw;
+        font-size: var(--title-line-phone, 2.1vw);
         text-transform: uppercase;
         color: #575756;
 
@@ -100,7 +100,7 @@
         padding-right: 0.75rem;
     }
 
-    /* A page that wants another size sets --logo-width (and --logo-width-phone) on its wrapper; likewise --title-strong-phone and --title-lh-phone for its title's phone type. */
+    /* A page that wants another size sets --logo-width (and --logo-width-phone) on its wrapper; likewise --title-line-phone, --title-strong-phone and --title-lh-phone for its title's phone type. */
     .page-title__logo {
         display: block;
         width: var(--logo-width, 12vw);

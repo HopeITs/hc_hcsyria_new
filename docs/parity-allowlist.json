@@ -17,6 +17,8 @@
         "+ iframe https://www.youtube-nocookie.com/embed/ApyHAvgggcE": "As above.",
         "- iframe https://www.youtube.com/embed/vdU-_krIovw": "Programme videos are framed from youtube-nocookie.com (the privacy host the content security policy allows) instead of youtube.com; same video.",
         "+ iframe https://www.youtube-nocookie.com/embed/vdU-_krIovw": "As above.",
+        "- iframe https://www.youtube.com/embed/7s0jhebp-3A": "Programme videos are framed from youtube-nocookie.com (the privacy host the content security policy allows) instead of youtube.com; same video.",
+        "+ iframe https://www.youtube-nocookie.com/embed/7s0jhebp-3A": "As above.",
         "+ img /images/home/school-statistics.svg": "School to School's statistics scene: legacy drew it as 5.7 MB of inline SVG; it is an image now (the five hover areas are an overlay)."
     },
     "fonts": {
