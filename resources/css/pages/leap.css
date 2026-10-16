@@ -1,0 +1,78 @@
+/*
+ * /projects/leap: the four aspects of the programme. Legacy leap.css and the
+ * .categories-content, .category and #categories-section rules of
+ * main-new.css, measured on the running page.
+ *
+ * Four buttons, each a picture, over a block of text that changes with the
+ * button pointed at. The block is as tall as the tallest text (legacy
+ * .categories-container), so the sections below do not move.
+ */
+@layer components {
+    .leap-aspects__buttons {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* .category: no ring or shadow (leap.css), the pale blue of the others when pointed at */
+    .leap-aspects__button {
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1px 6px;
+        margin: 4vw 1.3vw;
+        cursor: pointer;
+        background: none;
+        border: none;
+        border-radius: 50%;
+
+        @media (width >= 576px) {
+            margin: 3vw;
+        }
+
+        &:hover,
+        &:focus {
+            background-color: #c8dee8;
+            outline: none;
+        }
+
+        & img {
+            width: 75%;
+            height: auto;
+        }
+    }
+
+    .leap-aspects__body {
+        height: 70vw;
+
+        @media (width >= 576px) {
+            height: 15vw;
+        }
+    }
+
+    /* The two titles are smaller than the usual section title: 1.7vw, and 3vw on phones. */
+    .leap-aspects .section-title {
+        @media (width < 576px) {
+            font-size: 3vw;
+        }
+    }
+
+    .leap-aspects__title {
+        padding: 0.5rem 2.3vw 0 0;
+        font-size: 3vw;
+        color: #3ba5af;
+
+        @media (width >= 576px) {
+            font-size: 1.7vw;
+        }
+    }
+
+    .leap-aspects__text {
+        margin-bottom: 0;
+    }
+
+    .leap-aspects__list {
+        margin-left: 3rem;
+    }
+}

@@ -65,6 +65,12 @@ final class InitiativeListQuery
         return array_values($ids);
     }
 
+    /** Whether a programme has any online activity at all, which is when its page shows the activities section (LEAP's does not until it has one). */
+    public static function hasAny(int $categoryId): bool
+    {
+        return self::base($categoryId, null, null, null)->exists();
+    }
+
     /** Whether any of a programme's activities has a video, which is when its filter offers one. */
     public static function hasVideos(int $categoryId, ?int $subCategoryId): bool
     {

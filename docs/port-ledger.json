@@ -1553,9 +1553,9 @@
             "action": "PublicController@leap",
             "name": "public.leap",
             "order": 14,
-            "status": "pending",
-            "notes": null,
-            "ported_from": null,
+            "status": "ported",
+            "notes": "The activities section shows only once the programme has an online activity, as legacy did (none today); it is the shared activity list, not legacy's tabs. The aspects' text, written twice in legacy's script (hover and click), is written once; what the page shows before a button is used keeps its two run-together words (role rotation:Leaders, Life coachingis). Phone footer closes with the short rule under Homs, as legacy drew it. The title stays teal for every aspect, as legacy's inline style left it.",
+            "ported_from": "6d45ef9",
             "live_status": "200",
             "examples": [
                 {
