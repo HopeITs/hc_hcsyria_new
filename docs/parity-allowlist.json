@@ -1,5 +1,8 @@
 {
-    "_comment": "Differences from the legacy site that were approved on purpose. scripts/parity-check.mjs ignores a text, link or font diff line that matches an entry exactly. A page listed under pixels may differ by that percentage of pixels. Every entry needs a reason; anything not listed here fails the check.",
+    "_comment": "Differences from the legacy site that were approved on purpose. scripts/parity-check.mjs ignores a text, link or font diff line that matches an entry exactly. A selector listed under hide is blanked on both pages before they are compared (parts that are random on every visit: the related posts tiles). A page listed under pixels may differ by that percentage of pixels. Every entry needs a reason; anything not listed here fails the check.",
+    "hide": {
+        "^/projects/[^/]+/[0-9]+-[^/]+$": [".related-posts", ".initiative__related"]
+    },
     "pixels": {
         "/projects/rehabilitation": {
             "max": 25,
