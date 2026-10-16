@@ -19,7 +19,9 @@
         "+ iframe https://www.youtube-nocookie.com/embed/vdU-_krIovw": "As above.",
         "- iframe https://www.youtube.com/embed/7s0jhebp-3A": "Programme videos are framed from youtube-nocookie.com (the privacy host the content security policy allows) instead of youtube.com; same video.",
         "+ iframe https://www.youtube-nocookie.com/embed/7s0jhebp-3A": "As above.",
-        "+ img /images/home/school-statistics.svg": "School to School's statistics scene: legacy drew it as 5.7 MB of inline SVG; it is an image now (the five hover areas are an overlay)."
+        "+ img /images/home/school-statistics.svg": "School to School's statistics scene: legacy drew it as 5.7 MB of inline SVG; it is an image now (the five hover areas are an overlay).",
+        "- iframe https://www.youtube.com/embed/gF8AzxiWRos": "Programme videos are framed from youtube-nocookie.com (the privacy host the content security policy allows) instead of youtube.com; same video.",
+        "+ iframe https://www.youtube-nocookie.com/embed/gF8AzxiWRos": "As above."
     },
     "fonts": {
         "- FontAwesome normal normal": "FontAwesome 4.7 icon font replaced by inline SVG of the glyphs used (components/ui/icon.blade.php).",

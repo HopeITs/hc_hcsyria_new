@@ -91,9 +91,9 @@
             "action": "PublicController@christian_youth",
             "name": "public.youth",
             "order": 42,
-            "status": "pending",
-            "notes": null,
-            "ported_from": null,
+            "status": "ported",
+            "notes": "The phone and wide layouts of the description, brief, lists and figures are one markup, stacked on phones (legacy wrote the page out twice). The emblem zooms in on scroll as legacy's did (reveal--zoom). Programme video from the cookieless host. The member cards (/christianyouth/{id}) are a separate route, still pending.",
+            "ported_from": "6d45ef9",
             "live_status": "200",
             "examples": [
                 {

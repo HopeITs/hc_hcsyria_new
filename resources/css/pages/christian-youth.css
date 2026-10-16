@@ -1,0 +1,148 @@
+/*
+ * /christianyouth. Legacy youth_new.css (its "member youth" half belongs to
+ * the member page) and the section rules of main-new.css, measured on the
+ * running page (storage/parity/spec/youth-*.json): 375, 768, 1440, 1920px.
+ * Sizes in vw as on the rest of the site, the phone values under 576px.
+ */
+@layer components {
+    /* .main-title: the page's heading, between the red corner and the cover */
+    .youth-title {
+        padding-bottom: 1.5vw;
+        font-size: 2.8vw;
+        font-weight: 800;
+        line-height: normal;
+        color: #575756;
+        text-align: center;
+    }
+
+    /* .youth-logo: hangs over the cover, 19vw from the top of the page */
+    .youth-emblem {
+        position: absolute;
+        top: 19vw;
+    }
+
+    .youth-emblem__image {
+        width: auto;
+        height: 12vw;
+    }
+
+    /* .youth-description, under the cover */
+    .youth-description {
+        margin: 1% 4.7% 0;
+        font-size: 2.5vw;
+        letter-spacing: 0.05vw;
+        color: #575756;
+        text-align: center;
+
+        @media (width >= 576px) {
+            font-size: 1.5vw;
+        }
+    }
+
+    /* The thin white band the opening section starts with (.seperator-line) */
+    .youth-seam {
+        height: 1vw;
+        background: #fff;
+    }
+
+    /* First-about's bar: long, and behind the video (.first-about .horizontal-line) */
+    .youth-opening-rule {
+        z-index: 1;
+        height: 60vw;
+        margin-top: 1vw;
+    }
+
+    /* Second-about's bar starts above the section, in front (.second-about .horizontal-line) */
+    .youth-second-rule {
+        z-index: 999;
+        height: 43vw;
+        margin-top: -6vw;
+    }
+
+    /* #plan's bar runs behind the photos */
+    .youth-plan-rule {
+        z-index: -1;
+        height: 37vw;
+    }
+
+    /* .padding-screen: the inset of the text beside a photo */
+    .youth-copy {
+        margin-top: 3vw;
+        padding: 0 4.7vw;
+
+        @media (width >= 576px) {
+            margin-top: 1vw;
+        }
+    }
+
+    .youth-brief {
+        font-size: 2.5vw;
+        letter-spacing: 0.06vw;
+        color: #575756;
+        text-align: center;
+
+        @media (width >= 576px) {
+            font-size: 1.5vw;
+            text-align: end;
+        }
+    }
+
+    .youth-quote {
+        margin-top: 2vw;
+        font-size: 3.1vw;
+        font-weight: 800;
+        color: var(--color-brand-600);
+    }
+
+    /* The photos beside the two lists: 28vw tall, 40vw on phones */
+    .youth-slides {
+        width: 100%;
+        height: auto;
+    }
+
+    .youth-slides__track {
+        height: 40vw;
+
+        @media (width >= 576px) {
+            height: 28vw;
+        }
+    }
+
+    /* #Youth .title */
+    .youth-heading {
+        font-size: 3vw;
+        font-weight: 800;
+        color: var(--color-brand-600);
+
+        @media (width >= 576px) {
+            font-size: 1.5vw;
+        }
+    }
+
+    /* #Youth .content: the bulleted lists */
+    .youth-list {
+        margin-top: 1.5vw;
+        font-size: 2.7vw;
+        letter-spacing: 0.06vw;
+        color: #575756;
+        list-style: disc;
+
+        @media (width >= 576px) {
+            font-size: 1.35vw;
+        }
+    }
+
+    /* #Youth #statistic-section .section-title: no padding below */
+    .youth-participants-title {
+        padding-bottom: 0;
+    }
+
+    /* #statistic-section span: the figures stand out a little on wide screens only */
+    .youth-figure {
+        @media (width >= 576px) {
+            padding-right: 0.5vw;
+            font-size: 1.2vw;
+            color: var(--color-ink-600);
+        }
+    }
+}
