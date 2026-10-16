@@ -2126,9 +2126,9 @@
             "action": "PublicController@initiatives_by_type",
             "name": "public.initiatives.type",
             "order": 22,
-            "status": "pending",
-            "notes": null,
-            "ported_from": null,
+            "status": "ported",
+            "notes": "Only the four categories the navbar links to have a page (social-activities, rehabilitation, relief, earthquake-response); the legacy answered every other name with an empty hero (development, hope-from-syria, ...) or a 500 (homework-room), and answered an unknown name with its 404 design under a 200 status; here they are all a real 404. The legacy matched the name with SQL built from the address; it is bound here. Legacy wrote the list twice (phone and wide) and shuffled a rehabilitation project's photos on every visit; here it is written once and the photos keep a fixed order (parity allowlist, pixels). The cover slideshow's start slide differs per load.",
+            "ported_from": "6d45ef9",
             "live_status": "200",
             "examples": [
                 {

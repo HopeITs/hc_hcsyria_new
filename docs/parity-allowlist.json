@@ -1,5 +1,11 @@
 {
-    "_comment": "Differences from the legacy site that were approved on purpose. scripts/parity-check.mjs ignores a text, link or font diff line that matches an entry exactly. Every entry needs a reason; anything not listed here fails the check.",
+    "_comment": "Differences from the legacy site that were approved on purpose. scripts/parity-check.mjs ignores a text, link or font diff line that matches an entry exactly. A page listed under "pixels" may differ by that percentage of pixels. Every entry needs a reason; anything not listed here fails the check.",
+    "pixels": {
+        "/projects/rehabilitation": {
+            "max": 25,
+            "reason": "Legacy shuffles each rehabilitation project's photos on every visit, so the slide showing differs from one load to the next. The set of photos in every card is identical (checked by comparing each card's image list); the order here is fixed. Everything outside the photos matches."
+        }
+    },
     "text": {
         "+ Skip to content": "Keyboard skip link, visually hidden until focused (accessibility; upgrade-plan §2.4).",
         "- Previous": "Carousel buttons: the legacy visually-hidden <span> is now the button's aria-label; screen readers say the same, nothing visible changes.",

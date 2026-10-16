@@ -38,6 +38,10 @@ Route::livewire('/projects/family-to-family', 'pages::family-to-family')->name('
 Route::livewire('/projects/micro-projects', 'pages::micro-projects')
     ->name('new.public.micro_project_test');
 
+// A category's activities: social activities, rehabilitation, relief, earthquake response.
+// After every programme page above, which this would otherwise swallow.
+Route::livewire('/projects/{type}', 'pages::project-category')->name('public.initiatives.type');
+
 // Images, files and video, from MEDIA_ROOT, at the URLs the legacy site used.
 Route::get('/{area}/{path}', ServeMedia::class)
     ->where('area', 'images|files|video')
