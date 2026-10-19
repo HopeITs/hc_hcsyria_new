@@ -104,6 +104,7 @@ new #[Layout('layouts::admin', ['title' => 'Newsletter'])] class extends Compone
             @endif
         </x-slot:actions>
     </x-admin.page-header>
+    <x-admin.news-nav />
 
     <x-admin.panel x-data="{ selected: [] }">
         <x-admin.tabs :tabs="AdminNewsIndexQuery::TABS" :counts="$counts" :current="$tab" />

@@ -32,6 +32,9 @@ Route::prefix('admin')->name('admin.')->middleware(['web', 'auth', 'admin.access
 
     Route::livewire('/news', 'pages::admin.news.index')->name('news.index');
     Route::livewire('/news/create', 'pages::admin.news.form')->name('news.create');
+    Route::livewire('/news/tags', 'pages::admin.news.tags')->name('news.tags');
+    Route::livewire('/news/editions', 'pages::admin.news.editions')->name('news.editions');
+    Route::livewire('/news/subscribers', 'pages::admin.news.subscribers')->name('news.subscribers');
     Route::livewire('/news/{news}/edit', 'pages::admin.news.form')->whereNumber('news')->name('news.edit');
     Route::livewire('/news/{news}', 'pages::admin.news.show')->whereNumber('news')->name('news.show');
 });

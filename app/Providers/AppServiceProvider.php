@@ -2,14 +2,17 @@
 
 namespace App\Providers;
 
+use App\Enums\AdminCapability;
 use App\Models\Initiative;
 use App\Models\News;
 use App\Models\Project;
 use App\Models\Success;
+use App\Models\User;
 use App\Policies\InitiativePolicy;
 use App\Policies\NewsPolicy;
 use App\Policies\ProjectPolicy;
 use App\Policies\SuccessPolicy;
+use App\Queries\AdminAccessQuery;
 use App\Queries\MemberAccessQuery;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Console\Events\CommandStarting;
@@ -87,6 +90,11 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Initiative::class, InitiativePolicy::class);
         Gate::policy(Success::class, SuccessPolicy::class);
         Gate::policy(News::class, NewsPolicy::class);
+
+        // The pages that are not one item (tags, editions, subscribers) ask for a capability by name: 'admin.edit', 'admin.view-subscribers'...
+        foreach (AdminCapability::cases() as $capability) {
+            Gate::define('admin.'.$capability->value, fn (User $user): bool => AdminAccessQuery::can($user, $capability));
+        }
     }
 
     /*

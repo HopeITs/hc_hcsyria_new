@@ -53,6 +53,21 @@ return [
             'removed' => ':label removed from news #:number.',
             'priority' => 'News #:number is now :priority.',
         ],
+        'tags' => [
+            'created' => 'Tag “:name” created.',
+            'renamed' => 'Tag renamed to “:name”.',
+            'deleted' => 'Tag “:name” deleted and taken off its news items.',
+        ],
+        'editions' => [
+            'created' => 'Edition “:name” created. It is offline until you put it online.',
+            'online' => 'Edition “:name” is online.',
+            'offline' => 'Edition “:name” is offline.',
+            'deleted' => 'Edition “:name” deleted.',
+        ],
+        'subscribers' => [
+            'deleted' => 'Subscriber removed from the list.',
+            'gone' => 'That subscriber is no longer on the list.',
+        ],
         'invalid' => 'Some fields need attention. They are marked below.',
         'forbidden' => 'Your role cannot do that.',
         'gone' => 'That :noun no longer exists.',
@@ -65,6 +80,9 @@ return [
         'has_successes' => ':Noun #:number has success stories attached. Remove or reassign them first.',
         'path_too_long' => 'The picture could not be saved: its folder name is too long for the database. Shorten the category name or ask for help.',
         'testimony_gone' => 'That testimony no longer exists.',
+        'tag_exists' => 'There is already a tag called “:name”.',
+        'edition_exists' => 'There is already an edition called “:name”.',
+        'edition_in_use' => 'Edition “:name” belongs to :count news items. Take it off them first.',
         'duplicate' => 'There is already a project #:number in :city.',
     ],
 

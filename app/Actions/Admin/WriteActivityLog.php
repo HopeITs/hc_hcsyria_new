@@ -17,6 +17,13 @@ class WriteActivityLog
     /** Legacy's category for micro-projects. */
     public const PROJECT = 0;
 
+    /** Legacy's categories for the newsletter's own lists. */
+    public const EDITIONS = 4;
+
+    public const SUBSCRIBERS = 6;
+
+    public const TAGS = 35;
+
     public function project(User $by, int $projectId, string $operation, mixed $previous = null, mixed $current = null): void
     {
         $this->item($by, ContentKind::Project, $projectId, $operation, $previous, $current);
@@ -24,8 +31,14 @@ class WriteActivityLog
 
     public function item(User $by, ContentKind $kind, int $id, string $operation, mixed $previous = null, mixed $current = null): void
     {
+        $this->record($by, $kind->logCategory(), $id, $operation, $previous, $current);
+    }
+
+    /** A row for something that is not one item (a tag, an edition, a subscriber): the category is legacy's. */
+    public function record(User $by, int $category, int $id, string $operation, mixed $previous = null, mixed $current = null): void
+    {
         Log::query()->create([
-            'category' => $kind->logCategory(),
+            'category' => $category,
             'project_id' => $id,
             'operation' => $operation,
             'user_id' => $by->getKey(),
