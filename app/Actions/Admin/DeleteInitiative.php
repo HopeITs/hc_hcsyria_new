@@ -3,7 +3,7 @@
 namespace App\Actions\Admin;
 
 use App\Models\Initiative;
-use App\Support\Admin\ProjectPhotoFiles;
+use App\Support\Admin\PhotoFiles;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
 
@@ -33,11 +33,12 @@ class DeleteInitiative
             ->merge(DB::table('initiatives_images')->where('initiative_id', $initiativeId)->pluck('path'))
             ->merge(DB::table('initiatives_images_rehabilitation')->where('initiative_id', $initiativeId)->pluck('path_1'))
             ->merge(DB::table('initiatives_images_rehabilitation')->where('initiative_id', $initiativeId)->pluck('path_2'))
+            ->merge(DB::table('testimonies')->where('initiative_id', $initiativeId)->pluck('image_path'))
             ->filter(fn ($path): bool => is_string($path) && $path !== '0' && $path !== '')
             ->unique();
 
         DB::transaction(fn () => DB::table('initiatives')->where('id', $initiativeId)->delete());
 
-        return $paths->sum(fn (string $path): int => ProjectPhotoFiles::delete($path));
+        return $paths->sum(fn (string $path): int => PhotoFiles::delete($path));
     }
 }

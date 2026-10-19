@@ -4,7 +4,7 @@ namespace App\Actions;
 
 use App\Exceptions\AdminActionRefused;
 use App\Models\Project;
-use App\Support\Admin\ProjectPhotoFiles;
+use App\Support\Admin\PhotoFiles;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
 
@@ -67,7 +67,7 @@ class DeleteProject
         $missing = 0;
 
         foreach ($paths as $path) {
-            $removed = ProjectPhotoFiles::delete($path);
+            $removed = PhotoFiles::delete($path);
             $deleted += $removed;
             $missing += 2 - $removed;
         }

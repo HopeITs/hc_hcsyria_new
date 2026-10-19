@@ -3,6 +3,7 @@
 use App\Models\Image;
 use App\Models\Initiative;
 use App\Models\InitiativeContent;
+use App\Models\Log;
 use App\Models\Project;
 use App\Models\ProjectContent;
 use App\Models\Role;
@@ -123,4 +124,10 @@ function adminInitiative(array $attributes = [], array $content = []): Initiativ
     DB::table('initiatives_donors')->insert(['initiative_id' => $initiative->id, 'donor_id' => DB::table('donors')->orderBy('id')->value('id')]);
 
     return $initiative;
+}
+
+/** The activity-log rows of an initiative (logs category 1). */
+function initiativeLogs(Initiative $initiative)
+{
+    return Log::query()->where(['project_id' => $initiative->id, 'category' => 1]);
 }

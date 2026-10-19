@@ -15,9 +15,9 @@ use Livewire\Component;
 /*
  * /admin/initiatives/{id}: one initiative, for staff: its text, donors, logo and
  * photos, whether its English is checked, and what was done to it. Replaces
- * legacy's initiatives view. The buttons are the shared ones. Photos, the
- * before-and-after pairs and the testimonies are listed here; changing them
- * arrives with the images update.
+ * legacy's initiatives view. The buttons are the shared ones. Its logo, photos,
+ * before-and-after pairs (rehabilitation) and testimonies (programme initiatives)
+ * are panels of their own below.
  */
 new #[Layout('layouts::admin', ['title' => 'Initiative'])] class extends Component
 {
@@ -58,7 +58,6 @@ new #[Layout('layouts::admin', ['title' => 'Initiative'])] class extends Compone
             'initiative' => $initiative,
             'status' => ProjectStatus::of($initiative->published, 1, $initiative->hidden),
             'donors' => AdminInitiativeQuery::donors($this->initiativeId),
-            'photos' => AdminInitiativeQuery::photos($this->initiativeId),
             'history' => AdminProjectQuery::history($this->initiativeId, kind: ContentKind::Initiative),
         ];
     }
@@ -82,6 +81,8 @@ new #[Layout('layouts::admin', ['title' => 'Initiative'])] class extends Compone
 
         <div class="cols">
             <div class="stack">
+                <livewire:admin.initiative-logo :initiative-id="$initiative->id" :key="'logo-'.$initiative->id" />
+
                 <x-admin.panel title="Details">
                     <dl class="facts" style="margin: 0">
                         @foreach ([
@@ -92,7 +93,6 @@ new #[Layout('layouts::admin', ['title' => 'Initiative'])] class extends Compone
                             'Serves' => $initiative->serves,
                             'Video' => $initiative->video !== '0' ? $initiative->video : '—',
                             'Donors' => $donors->isEmpty() ? '—' : $donors->pluck('name')->implode(', '),
-                            'Logo' => $initiative->logo !== '0' ? basename($initiative->logo) : 'None',
                             'Testimonies' => $initiative->testimonies,
                         ] as $label => $value)
                             <div class="fact"><dt>{{ $label }}</dt><dd>{{ $value }}</dd></div>
@@ -106,20 +106,15 @@ new #[Layout('layouts::admin', ['title' => 'Initiative'])] class extends Compone
 
                 <x-admin.panel title="Content"><div class="story">{!! SafeHtml::text($initiative->content) !!}</div></x-admin.panel>
 
-                <x-admin.panel title="Photos" :count="$photos->count()">
-                    @if ($photos->isEmpty())
-                        <x-admin.empty-state icon="img" title="No photos yet">Photos are added with the images update.</x-admin.empty-state>
-                    @else
-                        <div class="gal">
-                            @foreach ($photos as $photo)
-                                <div class="ph" style="background: var(--head)">
-                                    <img src="{{ $photo->path }}" alt="Photo {{ $loop->iteration }} of initiative #{{ $initiative->number }}" loading="lazy">
-                                    @if ($loop->first)<span class="tg">Cover</span>@endif
-                                </div>
-                            @endforeach
-                        </div>
-                    @endif
-                </x-admin.panel>
+                @if ($initiative->category_id === 3)
+                    <livewire:admin.before-after :initiative-id="$initiative->id" :key="'pairs-'.$initiative->id" />
+                @endif
+
+                <livewire:admin.content-photos kind="initiative" :item-id="$initiative->id" :key="'photos-'.$initiative->id" />
+
+                @if (in_array($initiative->category_id, \App\Queries\ContentLookups::TESTIMONY_CATEGORIES, true))
+                    <livewire:admin.initiative-testimonies :initiative-id="$initiative->id" :key="'testimonies-'.$initiative->id" />
+                @endif
             </div>
 
             <aside class="stack" aria-label="Status">

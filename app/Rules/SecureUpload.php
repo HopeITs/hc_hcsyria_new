@@ -14,7 +14,7 @@ use Illuminate\Http\UploadedFile;
  * the same name, cut down to the one kind of file this site takes in; the
  * extension and `image` rules trust the file name, this opens the file.
  *
- * The picture is then re-encoded (ProjectPhotoFiles), which drops anything else
+ * The picture is then re-encoded (PhotoFiles), which drops anything else
  * that was inside it, including the GPS position some phones write.
  */
 class SecureUpload implements ValidationRule

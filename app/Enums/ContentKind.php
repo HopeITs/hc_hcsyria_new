@@ -6,9 +6,11 @@ use App\Actions\Admin\DeleteInitiative;
 use App\Actions\DeleteProject;
 use App\Models\Initiative;
 use App\Models\Project;
+use App\Support\Admin\PhotoFolders;
 use App\Support\Admin\ProjectReadiness;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 /*
@@ -61,6 +63,58 @@ enum ContentKind: string
             self::Project => 0,
             self::Initiative => 1,
         };
+    }
+
+    /**
+     * The table holding its gallery photos, and the columns that link and name them.
+     *
+     * @return array{table: string, owner: string, path: string}
+     */
+    public function photoTable(): array
+    {
+        return match ($this) {
+            self::Project => ['table' => 'images', 'owner' => 'project_id', 'path' => 'MPI_Path'],
+            self::Initiative => ['table' => 'initiatives_images', 'owner' => 'initiative_id', 'path' => 'path'],
+        };
+    }
+
+    /**
+     * Columns every new photo row needs besides the owner, the path and the order.
+     *
+     * @return array<string, int>
+     */
+    public function photoExtras(Model $item): array
+    {
+        return $this === self::Project ? ['MicroProject_ID' => $this->number($item)] : [];
+    }
+
+    /** The folder under MEDIA_ROOT its photos go in. */
+    public function photoDirectory(Model $item): string
+    {
+        return match (true) {
+            $item instanceof Project => PhotoFolders::project((string) DB::table('places')->where('id', $item->MPE_City)->value('name'), (int) $item->MicroProject_ID),
+            $item instanceof Initiative => PhotoFolders::initiative((string) DB::table('what_categories')->where('id', $item->what_category_id)->value('name'), (int) $item->getKey()),
+            default => '/images/other',
+        };
+    }
+
+    /**
+     * The sizes of a gallery photo: the small one is cut to exactly its box, the big one scaled down to fit its box.
+     *
+     * @return array{small: array{0: int<1, max>, 1: int<1, max>}, big: array{0: int<1, max>, 1: int<1, max>}}
+     */
+    public function photoSizes(): array
+    {
+        return match ($this) {
+            self::Project => ['small' => [630, 420], 'big' => [1620, 1080]],
+            self::Initiative => ['small' => [720, 480], 'big' => [2000, 1333]],
+        };
+    }
+
+    /** Legacy sent an online project back to the pending list when its photos changed; initiatives were left online. */
+    public function photosChangeTakesOffline(): bool
+    {
+        return $this === self::Project;
     }
 
     /** The action that deletes one and its files; its handle() takes the id. @return class-string */

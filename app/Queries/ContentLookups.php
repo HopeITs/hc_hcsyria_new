@@ -61,6 +61,9 @@ final class ContentLookups
     /** The initiative categories managed in the Initiatives section; the programmes (DISC, Study Zone, ...) have their own. */
     public const INITIATIVE_CATEGORIES = [1, 3, 4, 8, 18];
 
+    /** The categories whose initiatives have testimonies, as in legacy: DISC, Homework Room, Study Zone. */
+    public const TESTIMONY_CATEGORIES = [5, 6, 7];
+
     /** The Family to Family category, whose initiatives are either partners or stories. */
     public const FAMILY_TO_FAMILY = 8;
 
