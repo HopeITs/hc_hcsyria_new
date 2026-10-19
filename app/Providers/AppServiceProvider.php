@@ -3,9 +3,11 @@
 namespace App\Providers;
 
 use App\Models\Initiative;
+use App\Models\News;
 use App\Models\Project;
 use App\Models\Success;
 use App\Policies\InitiativePolicy;
+use App\Policies\NewsPolicy;
 use App\Policies\ProjectPolicy;
 use App\Policies\SuccessPolicy;
 use App\Queries\MemberAccessQuery;
@@ -84,6 +86,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Project::class, ProjectPolicy::class);
         Gate::policy(Initiative::class, InitiativePolicy::class);
         Gate::policy(Success::class, SuccessPolicy::class);
+        Gate::policy(News::class, NewsPolicy::class);
     }
 
     /*

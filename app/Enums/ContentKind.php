@@ -3,9 +3,11 @@
 namespace App\Enums;
 
 use App\Actions\Admin\DeleteInitiative;
+use App\Actions\Admin\DeleteNews;
 use App\Actions\Admin\DeleteSuccess;
 use App\Actions\DeleteProject;
 use App\Models\Initiative;
+use App\Models\News;
 use App\Models\Project;
 use App\Models\Success;
 use App\Support\Admin\PhotoFolders;
@@ -28,12 +30,14 @@ enum ContentKind: string
     case Project = 'project';
     case Initiative = 'initiative';
     case Success = 'success';
+    case News = 'news';
 
     public static function of(Model $item): self
     {
         return match (true) {
             $item instanceof Initiative => self::Initiative,
             $item instanceof Success => self::Success,
+            $item instanceof News => self::News,
             default => self::Project,
         };
     }
@@ -45,6 +49,7 @@ enum ContentKind: string
             self::Project => Project::class,
             self::Initiative => Initiative::class,
             self::Success => Success::class,
+            self::News => News::class,
         };
     }
 
@@ -72,6 +77,7 @@ enum ContentKind: string
             self::Project => 0,
             self::Initiative => 1,
             self::Success => 2,
+            self::News => 3,
         };
     }
 
@@ -85,7 +91,7 @@ enum ContentKind: string
         return match ($this) {
             self::Project => ['table' => 'images', 'owner' => 'project_id', 'path' => 'MPI_Path'],
             self::Initiative => ['table' => 'initiatives_images', 'owner' => 'initiative_id', 'path' => 'path'],
-            self::Success => throw new LogicException('A success story has one picture, not a gallery.'),
+            self::Success, self::News => throw new LogicException('This kind has no gallery of the shared kind.'),
         };
     }
 
@@ -119,7 +125,7 @@ enum ContentKind: string
         return match ($this) {
             self::Project => ['small' => [630, 420], 'big' => [1620, 1080]],
             self::Initiative => ['small' => [720, 480], 'big' => [2000, 1333]],
-            self::Success => throw new LogicException('A success story has one picture, not a gallery.'),
+            self::Success, self::News => throw new LogicException('This kind has no gallery of the shared kind.'),
         };
     }
 
@@ -136,6 +142,7 @@ enum ContentKind: string
             self::Project => DeleteProject::class,
             self::Initiative => DeleteInitiative::class,
             self::Success => DeleteSuccess::class,
+            self::News => DeleteNews::class,
         };
     }
 
@@ -146,6 +153,7 @@ enum ContentKind: string
             self::Project => 'Project Deleted',
             self::Initiative => 'Initiative deleted',
             self::Success => 'Success deleted',
+            self::News => 'News deleted',
         };
     }
 
@@ -179,6 +187,13 @@ enum ContentKind: string
                 ContentTransition::CheckEnglish => ['english_check' => 1],
                 ContentTransition::Hide, ContentTransition::Unhide => [],
             },
+            self::News => match ($transition) {
+                ContentTransition::Publish => ['online' => 1, 'hidden' => false],
+                ContentTransition::Unpublish => ['online' => 0],
+                ContentTransition::Hide => ['online' => 0, 'hidden' => true],
+                ContentTransition::Unhide => ['hidden' => false],
+                ContentTransition::CheckEnglish => ['english_check' => 1],
+            },
         });
     }
 
@@ -206,6 +221,13 @@ enum ContentKind: string
                 ContentTransition::CheckEnglish => 'English Checked',
                 ContentTransition::Hide, ContentTransition::Unhide => '',
             },
+            self::News => match ($transition) {
+                ContentTransition::Publish => 'News Status: Online',
+                ContentTransition::Unpublish => 'News Status: Offline',
+                ContentTransition::Hide => 'News Status: Hidden',
+                ContentTransition::Unhide => 'News Status: Pending to publish',
+                ContentTransition::CheckEnglish => 'English Content Checked',
+            },
         };
     }
 
@@ -224,7 +246,7 @@ enum ContentKind: string
             ]);
         }
 
-        return ($item instanceof Initiative || $item instanceof Success) && (int) $item->english_check !== 1 ? ['english'] : [];
+        return ($item instanceof Initiative || $item instanceof Success || $item instanceof News) && (int) $item->english_check !== 1 ? ['english'] : [];
     }
 
     /**
@@ -237,7 +259,7 @@ enum ContentKind: string
     {
         return match ($this) {
             self::Project => ProjectReadiness::blockers($row),
-            self::Initiative, self::Success => (int) $row->english_check === 1 ? [] : ['english'],
+            self::Initiative, self::Success, self::News => (int) $row->english_check === 1 ? [] : ['english'],
         };
     }
 

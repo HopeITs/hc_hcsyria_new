@@ -76,6 +76,12 @@ final class ContentLookups
 
     public const MICRO_PROJECTS = 10;
 
+    /** What kind of newsletter item it is: legacy's type column. */
+    public const NEWS_TYPES = [0 => 'Article', 1 => 'Product', 2 => 'Short paragraph', 3 => 'Video'];
+
+    /** The kind that must have a video link. */
+    public const NEWS_VIDEO = 3;
+
     /** The Family to Family category, whose initiatives are either partners or stories. */
     public const FAMILY_TO_FAMILY = 8;
 
@@ -151,5 +157,17 @@ final class ContentLookups
             ->orderByDesc('projects.MicroProject_ID')
             ->limit($limit)
             ->get(['projects.id', 'projects.MicroProject_ID as number', 'projects_english.MPE_Name as name', 'places.name as city']);
+    }
+
+    /** The magazine editions a newsletter item may belong to. @return Collection<int, object{id: int, name: string}> */
+    public static function editions(): Collection
+    {
+        return DB::table('editions')->orderBy('id')->get(['id', 'name']);
+    }
+
+    /** Every tag, by name. @return Collection<int, object{id: int, name: string}> */
+    public static function tags(): Collection
+    {
+        return DB::table('tags')->orderBy('name')->get(['id', 'name']);
     }
 }
