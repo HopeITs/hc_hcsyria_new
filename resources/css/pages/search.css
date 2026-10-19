@@ -1,0 +1,28 @@
+/*
+ * /search: the projects, which a member sees above the activities, sit in the
+ * same inset as the activities' tiles and rows, in both views, in place of
+ * the micro-projects list's own margins: 17.5% of the width either side
+ * (resources/css/ui/activity-tile.css and activity-card.css), except the
+ * tiles on phones, which the activities pull in to 5%.
+ */
+@layer components {
+    .search-projects {
+        padding: 0;
+
+        & .card-grid {
+            margin-inline: 17.5%;
+
+            @media (width < 576px) {
+                margin-inline: 5%;
+            }
+        }
+
+        & .project-rows {
+            margin-inline: 17.5%;
+        }
+
+        & .project-row__inner {
+            margin-inline: 0;
+        }
+    }
+}
