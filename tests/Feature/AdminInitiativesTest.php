@@ -3,8 +3,7 @@
 use App\Enums\ContentKind;
 use App\Models\Initiative;
 use App\Models\InitiativeContent;
-use App\Models\Log;
-use App\Support\Admin\ProjectPhotoFiles;
+use App\Support\Admin\PhotoFiles;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Livewire\Livewire;
@@ -15,11 +14,6 @@ use Livewire\Livewire;
  * delete forms. Like every feature test these run against hcsyria_db inside a
  * rolled-back transaction and use initiatives they create themselves.
  */
-
-function initiativeLogs(Initiative $initiative)
-{
-    return Log::query()->where(['project_id' => $initiative->id, 'category' => 1]);
-}
 
 function initiativeForm(array $overrides = []): array
 {
@@ -281,5 +275,5 @@ it('tells the two kinds of content apart', function () {
     expect(ContentKind::of(adminInitiative()))->toBe(ContentKind::Initiative)
         ->and(ContentKind::of(adminProject()))->toBe(ContentKind::Project)
         ->and(ContentKind::Initiative->route('edit'))->toBe('admin.initiatives.edit')
-        ->and(ProjectPhotoFiles::bigPath('/images/a/1.jpg'))->toBe('/images/a/1b.jpg');
+        ->and(PhotoFiles::bigPath('/images/a/1.jpg'))->toBe('/images/a/1b.jpg');
 });

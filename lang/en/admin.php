@@ -28,12 +28,25 @@ return [
         'deleted' => ':Noun #:number deleted.',
         // Photos (ManageProjectPhotos).
         'photos' => [
-            'added' => ':count photo added to project #:number.|:count photos added to project #:number.',
-            'added_offline' => ':count photo added to project #:number. It went back to the pending list because its photos changed.|:count photos added to project #:number. It went back to the pending list because its photos changed.',
-            'removed' => 'Photo removed from project #:number.',
-            'removed_offline' => 'Photo removed from project #:number. It went back to the pending list because its photos changed.',
+            'added' => ':count photo added to :noun #:number.|:count photos added to :noun #:number.',
+            'added_offline' => ':count photo added to :noun #:number. It went back to the pending list because its photos changed.|:count photos added to :noun #:number. It went back to the pending list because its photos changed.',
+            'removed' => 'Photo removed from :noun #:number.',
+            'removed_offline' => 'Photo removed from :noun #:number. It went back to the pending list because its photos changed.',
             'rejected' => 'Not saved: :reason',
             'unavailable' => 'Photos cannot be processed on this server: the GD image extension is not enabled.',
+        ],
+        'logo' => [
+            'saved' => 'Logo saved for initiative #:number.',
+            'removed' => 'Logo removed from initiative #:number.',
+        ],
+        'pairs' => [
+            'added' => 'Before and after pair added to initiative #:number.',
+            'removed' => 'Before and after pair removed from initiative #:number.',
+        ],
+        'testimonies' => [
+            'created' => 'Testimony added to initiative #:number.',
+            'saved' => 'Testimony saved.',
+            'deleted' => 'Testimony removed from initiative #:number.',
         ],
         'invalid' => 'Some fields need attention. They are marked below.',
         'forbidden' => 'Your role cannot do that.',
@@ -45,6 +58,8 @@ return [
     'refusals' => [
         'not_ready' => ':Noun #:number is not ready: :missing.',
         'has_successes' => ':Noun #:number has success stories attached. Remove or reassign them first.',
+        'path_too_long' => 'The picture could not be saved: its folder name is too long for the database. Shorten the category name or ask for help.',
+        'testimony_gone' => 'That testimony no longer exists.',
         'duplicate' => 'There is already a project #:number in :city.',
     ],
 

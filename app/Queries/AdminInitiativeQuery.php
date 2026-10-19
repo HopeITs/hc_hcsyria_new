@@ -56,10 +56,4 @@ final class AdminInitiativeQuery
             ->orderBy('donors.name')
             ->get(['donors.id', 'donors.name']);
     }
-
-    /** @return Collection<int, object{id: int, path: string}> */
-    public static function photos(int $id): Collection
-    {
-        return DB::table('initiatives_images')->where('initiative_id', $id)->orderBy('image_order')->orderBy('id')->get(['id', 'path']);
-    }
 }

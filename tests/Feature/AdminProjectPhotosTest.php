@@ -3,7 +3,7 @@
 use App\Models\Image;
 use App\Models\Log;
 use App\Models\Project;
-use App\Support\Admin\ProjectPhotoFiles;
+use App\Support\Admin\PhotoFiles;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\File;
 use Livewire\Livewire;
@@ -35,7 +35,7 @@ function pick(int $count = 1, int $width = 2400, int $height = 1800): array
 
 function panel(string $role, Project $project, array $cities = [])
 {
-    return Livewire::actingAs(staff($role, $cities))->test('admin.project-photos', ['projectId' => $project->id]);
+    return Livewire::actingAs(staff($role, $cities))->test('admin.content-photos', ['kind' => 'project', 'itemId' => $project->id]);
 }
 
 describe('with GD', function () {
@@ -43,7 +43,7 @@ describe('with GD', function () {
         $project = adminProject(photos: 0);
         $user = staff('Photos Editor');
 
-        Livewire::actingAs($user)->test('admin.project-photos', ['projectId' => $project->id])
+        Livewire::actingAs($user)->test('admin.content-photos', ['kind' => 'project', 'itemId' => $project->id])
             ->set('uploads', pick(2))
             ->assertDispatched('photos-changed')
             ->assertDispatched('admin-alert', alertOf('success'));
@@ -55,7 +55,7 @@ describe('with GD', function () {
         foreach ($images as $image) {
             expect($image->MPI_Path)->toStartWith('/images/projects/'.$project->MicroProject_ID.'/')->toEndWith('.jpg');
             [$smallWidth, $smallHeight] = getimagesize($this->media.$image->MPI_Path);
-            [$bigWidth, $bigHeight] = getimagesize($this->media.ProjectPhotoFiles::bigPath($image->MPI_Path));
+            [$bigWidth, $bigHeight] = getimagesize($this->media.PhotoFiles::bigPath($image->MPI_Path));
             expect([$smallWidth, $smallHeight])->toBe([630, 420])
                 ->and([$bigWidth, $bigHeight])->toBe([1440, 1080]);
         }
@@ -69,7 +69,7 @@ describe('with GD', function () {
         panel('Photos Editor', $project)->set('uploads', pick(1, 400, 300));
 
         $image = Image::query()->where('project_id', $project->id)->firstOrFail();
-        expect(getimagesize($this->media.ProjectPhotoFiles::bigPath($image->MPI_Path))[0])->toBe(400);
+        expect(getimagesize($this->media.PhotoFiles::bigPath($image->MPI_Path))[0])->toBe(400);
     });
 
     it('sends an online project back to the pending list when its photos change, as legacy did', function () {
@@ -136,7 +136,7 @@ describe('with GD', function () {
         expect(photos($project))->toBe([$first, $third])
             ->and(Image::query()->whereIn('id', [$first, $third])->orderBy('image_order')->pluck('image_order')->all())->toBe([1, 2])
             ->and(File::exists($this->media.$removed))->toBeFalse()
-            ->and(File::exists($this->media.ProjectPhotoFiles::bigPath($removed)))->toBeFalse()
+            ->and(File::exists($this->media.PhotoFiles::bigPath($removed)))->toBeFalse()
             ->and(Log::query()->where(['project_id' => $project->id, 'category' => 0, 'operation' => 'Image Deleted'])->exists())->toBeTrue();
     });
 
@@ -173,7 +173,7 @@ describe('with GD', function () {
 
         Livewire::actingAs(staff('Admin'))->test('pages::admin.projects.index')->call('deleteItem', $project->id);
 
-        expect(File::exists($this->media.$path))->toBeFalse()->and(File::exists($this->media.ProjectPhotoFiles::bigPath($path)))->toBeFalse();
+        expect(File::exists($this->media.$path))->toBeFalse()->and(File::exists($this->media.PhotoFiles::bigPath($path)))->toBeFalse();
     });
 })->skip(! extension_loaded('gd'), 'The GD extension is not enabled.');
 
@@ -181,17 +181,17 @@ it('leaves alone any file outside the images folder, whatever a stored path says
     file_put_contents($this->media.'/secret.txt', 'keep');
     file_put_contents($this->media.'/images/inside.jpg', 'x');
 
-    expect(ProjectPhotoFiles::delete('/images/../secret.txt'))->toBe(0)
-        ->and(ProjectPhotoFiles::delete('/etc/passwd'))->toBe(0)
+    expect(PhotoFiles::delete('/images/../secret.txt'))->toBe(0)
+        ->and(PhotoFiles::delete('/etc/passwd'))->toBe(0)
         ->and(File::exists($this->media.'/secret.txt'))->toBeTrue()
-        ->and(ProjectPhotoFiles::delete('/images/inside.jpg'))->toBe(1)
+        ->and(PhotoFiles::delete('/images/inside.jpg'))->toBe(1)
         ->and(File::exists($this->media.'/images/inside.jpg'))->toBeFalse();
 });
 
 it('says why it cannot take a picture when the image extension is missing', function () {
     $project = adminProject(photos: 0);
 
-    Livewire::actingAs(staff('Admin'))->test('admin.project-photos', ['projectId' => $project->id])
+    Livewire::actingAs(staff('Admin'))->test('admin.content-photos', ['kind' => 'project', 'itemId' => $project->id])
         ->set('uploads', [UploadedFile::fake()->create('a.jpg', 10)])
         ->assertDispatched('admin-alert', fn (string $event, array $params): bool => str_contains($params['message'], 'GD'));
 })->skip(extension_loaded('gd'), 'GD is enabled here.');

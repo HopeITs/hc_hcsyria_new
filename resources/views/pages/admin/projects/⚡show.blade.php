@@ -111,7 +111,7 @@ new #[Layout('layouts::admin', ['title' => 'Micro project'])] class extends Comp
                     @endif
                 </x-admin.panel>
 
-                <livewire:admin.project-photos :project-id="$project->id" :key="'photos-'.$project->id" />
+                <livewire:admin.content-photos kind="project" :item-id="$project->id" :key="'photos-'.$project->id" />
             </div>
 
             <aside class="stack" aria-label="Status">

@@ -61,16 +61,6 @@ final class AdminProjectQuery
             ->first();
     }
 
-    /** @return Collection<int, object{id: int, path: string, order: int}> */
-    public static function photos(int $projectId): Collection
-    {
-        return DB::table('images')
-            ->where('project_id', $projectId)
-            ->orderBy('image_order')
-            ->orderBy('id')
-            ->get(['id', 'MPI_Path as path', 'image_order as order']);
-    }
-
     /** The last things done to a project (or an initiative, by $kind), newest first. @return Collection<int, object{operation: string, by: ?string, at: string}> */
     public static function history(int $projectId, int $limit = 8, ContentKind $kind = ContentKind::Project): Collection
     {
