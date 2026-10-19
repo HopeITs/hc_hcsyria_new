@@ -16,6 +16,7 @@ namespace App\Enums;
  *  - Photos: Admin or Photos Editor; Publisher too, as on the legacy home page.
  *  - Subscribers (their addresses are personal data): Admin and Publisher, who send the
  *    newsletter, may see the list; only the Admin removes an address.
+ *  - Users and the activity log: Admin only (legacy's `admin` middleware).
  *  - View: every role. Legacy gave Publisher and English Checker only a Home
  *    page, so they could not open the project they were asked to review; they
  *    can here (a deliberate change, recorded in docs/upgrade-plan.md).
@@ -33,6 +34,8 @@ enum AdminCapability: string
     case ManagePhotos = 'manage-photos';
     case ViewSubscribers = 'view-subscribers';
     case DeleteSubscribers = 'delete-subscribers';
+    case ManageUsers = 'manage-users';
+    case ViewLog = 'view-log';
 
     /** @return list<string> role names, as stored in the `roles` table */
     public function roles(): array
@@ -45,7 +48,7 @@ enum AdminCapability: string
             self::CheckEnglish => ['Admin', 'English Checker'],
             self::ManagePhotos => ['Admin', 'Photos Editor', 'Publisher'],
             self::ViewSubscribers => ['Admin', 'Publisher'],
-            self::DeleteSubscribers => ['Admin'],
+            self::DeleteSubscribers, self::ManageUsers, self::ViewLog => ['Admin'],
         };
     }
 
@@ -63,6 +66,8 @@ enum AdminCapability: string
             self::ManagePhotos => 'Manage photos',
             self::ViewSubscribers => 'See newsletter subscribers',
             self::DeleteSubscribers => 'Remove subscribers',
+            self::ManageUsers => 'Manage users and roles',
+            self::ViewLog => 'See the activity log',
         };
     }
 }
