@@ -1,4 +1,4 @@
-@props(['project'])
+@props(['project', 'highlight' => null])
 
 {{--
     A project as a tile: its first photo (the rest wait behind it for the
@@ -15,10 +15,10 @@
                 </a>
             @endforeach
         </div>
-        <div class="card-title">{{ $presenter->tileTitle() }}</div>
-        <div class="card-subtitle"><span>{{ implode(', ', $presenter->people()) }}</span></div>
+        <div class="card-title">{{ \App\Support\Highlight::text($presenter->tileTitle(), $highlight) }}</div>
+        <div class="card-subtitle"><span>{{ \App\Support\Highlight::text(implode(', ', $presenter->people()), $highlight) }}</span></div>
         <div class="project-card__foot">
-            <div class="card-content">{{ $presenter->city() }} , {{ $presenter->donor() }}</div>
+            <div class="card-content">{{ \App\Support\Highlight::text($presenter->city(), $highlight) }} , {{ \App\Support\Highlight::text($presenter->donor(), $highlight) }}</div>
             <div class="project-card__actions">
                 <x-site.project-actions :$presenter layout="tile"/>
             </div>

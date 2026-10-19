@@ -192,7 +192,7 @@ it('shows and searches the projects only for those who may see them', function (
 
     $this->actingAs(searchMember())->get('/search?search=zqxw')
         ->assertOk()
-        ->assertSeeInOrder(['Projects (1)', 'zqxw workshop', 'Initiatives (0)']);
+        ->assertSeeInOrder(['Projects (1)', '</span> workshop', 'Initiatives (0)'], false);
 });
 
 it('counts no projects for a visitor, even for words that match one', function () {
@@ -216,4 +216,22 @@ it('finds a project by its number', function () {
     Livewire::actingAs(searchMember())->withQueryParams(['search' => '99997'])->test('pages::search')
         ->assertSet('projectCount', 1)
         ->assertSee('zqxw workshop');
+});
+
+it('marks the searched words in each activity, and in a project for those who may see it', function () {
+    searchActivity();
+    searchProject();
+
+    $this->get('/search?search=zqxw')->assertSee('<span class="highlight">Zqxw</span> gathering', false);
+
+    $this->actingAs(searchMember())->get('/search?search=zqxw')
+        ->assertSee('<span class="highlight">zqxw</span> workshop', false)
+        ->assertSee('<span class="highlight">Zqxw</span> beneficiary', false);
+});
+
+it('marks only what was searched, never markup it carried in', function () {
+    searchActivity([], ['title' => 'Zqxw <i>tag</i> story']);
+
+    $this->get('/search?search='.urlencode('<i>'))->assertDontSee('<i>tag</i>', false);
+    $this->get('/search?search=zqxw')->assertSee('<span class="highlight">Zqxw</span> &lt;i&gt;tag&lt;/i&gt; story', false);
 });

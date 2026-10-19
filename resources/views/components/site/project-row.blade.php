@@ -1,4 +1,4 @@
-@props(['project', 'mobile' => false, 'flip' => false])
+@props(['project', 'mobile' => false, 'flip' => false, 'highlight' => null])
 
 {{--
     A project as a row: its photos moving on by themselves beside a card
@@ -13,7 +13,7 @@
 
         <div class="project-row__card">
             <div class="project-row__head">
-                <div class="card-title">{{ $presenter->heading() }}</div>
+                <div class="card-title">{{ \App\Support\Highlight::text($presenter->heading(), $highlight) }}</div>
                 <div class="project-row__icons">
                     <x-site.project-actions :$presenter layout="row"/>
                 </div>
@@ -22,16 +22,16 @@
 
             <div class="project-row__facts">
                 <div>
-                    <x-site.project-facts :$presenter/>
+                    <x-site.project-facts :$presenter :$highlight/>
                 </div>
                 <div class="project-row__side"><x-site.project-logo :$presenter/></div>
             </div>
 
             @if ($presenter->skills() !== '')
-                <div class="project-fact"><strong>{{ __('projects.skills') }}</strong> <span>{{ $presenter->skills() }}</span></div>
+                <div class="project-fact"><strong>{{ __('projects.skills') }}</strong> <span>{{ \App\Support\Highlight::text($presenter->skills(), $highlight) }}</span></div>
             @endif
             <div class="card-content">
-                <p>{!! $presenter->excerpt($flip || $mobile ? 15 : 8) !!}</p>
+                <p>{{ \App\Support\Highlight::html($presenter->excerpt($flip || $mobile ? 15 : 8), $highlight) }}</p>
             </div>
 
             @if ($presenter->hasDetails())

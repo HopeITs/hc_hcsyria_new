@@ -1,0 +1,10 @@
+/*
+ * The words a visitor searched for, marked in the results (legacy .highlight
+ * in search.blade.php: white on #BC1818). See App\Support\Highlight.
+ */
+@layer components {
+    .highlight {
+        color: #fff;
+        background: #bc1818;
+    }
+}

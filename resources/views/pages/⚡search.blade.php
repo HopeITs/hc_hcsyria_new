@@ -27,11 +27,11 @@ use Livewire\Component;
  * from, and the projects (the members' micro-projects) are only searched,
  * counted and listed for those who pass 'view-micro-projects'.
  *
- * Not ported: the red highlight over each matching word (legacy built it
- * with an unescaped regular expression from the visitor's text and printed
- * the result as HTML) and the centre's name as something to match; the
- * English/French switch. What is matched is in ActivitySearch and
- * ProjectSearch (:matchingDonorAndCity).
+ * The red mark over each matching word is kept, but built by
+ * App\Support\Highlight (legacy made it with an unescaped regular expression
+ * from the visitor's text and printed the result as HTML). Not ported: the
+ * centre's name as something to match; the English/French switch. What is
+ * matched is in ActivitySearch and ProjectSearch (:matchingDonorAndCity).
  */
 new #[Layout('layouts::app', [
     'title' => 'Hope Center Search',
@@ -268,12 +268,12 @@ new #[Layout('layouts::app', [
                                     <div class="page-margin">
                                         <div class="card-grid" x-show="$wire.view === 'tiles'" @if ($view !== 'tiles') style="display: none" @endif>
                                             @foreach ($projects as $project)
-                                                <x-site.project-tile :$project wire:key="project-tile-{{ $project->id }}"/>
+                                                <x-site.project-tile :$project :highlight="$search" wire:key="project-tile-{{ $project->id }}"/>
                                             @endforeach
                                         </div>
                                         <div class="project-rows" x-show="$wire.view === 'grid'" @if ($view !== 'grid') style="display: none" @endif>
                                             @foreach ($projects as $project)
-                                                <x-site.project-row :$project :$mobile :flip="! $mobile && $loop->even" wire:key="project-row-{{ $project->id }}"/>
+                                                <x-site.project-row :$project :$mobile :highlight="$search" :flip="! $mobile && $loop->even" wire:key="project-row-{{ $project->id }}"/>
                                             @endforeach
                                         </div>
                                     </div>
@@ -295,12 +295,12 @@ new #[Layout('layouts::app', [
                             {{-- Both layouts are drawn and the view switch only shows one of them. --}}
                             <div class="card-grid activity-tiles" x-show="$wire.view === 'tiles'" @if ($view !== 'tiles') style="display: none" @endif>
                                 @foreach ($activities as $activity)
-                                    <x-site.activity-tile :$activity :type="Str::slug(strtolower($activity->whatCategory->name))" wire:key="tile-{{ $activity->id }}"/>
+                                    <x-site.activity-tile :$activity :highlight="$search" :type="Str::slug(strtolower($activity->whatCategory->name))" wire:key="tile-{{ $activity->id }}"/>
                                 @endforeach
                             </div>
                             <div x-show="$wire.view === 'grid'" @if ($view !== 'grid') style="display: none" @endif>
                                 @foreach ($activities as $activity)
-                                    <x-site.activity-card :$activity :type="Str::slug(strtolower($activity->whatCategory->name))" :flip="! $phone && $loop->even" wire:key="card-{{ $activity->id }}"/>
+                                    <x-site.activity-card :$activity :highlight="$search" :type="Str::slug(strtolower($activity->whatCategory->name))" :flip="! $phone && $loop->even" wire:key="card-{{ $activity->id }}"/>
                                 @endforeach
                             </div>
 
