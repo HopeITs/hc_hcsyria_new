@@ -29,7 +29,7 @@ use Illuminate\Support\Facades\DB;
  */
 class ChangeContentState
 {
-    public function __construct(private readonly WriteActivityLog $log) {}
+    public function __construct(private readonly WriteActivityLog $log, private readonly SetNewsPriority $priority) {}
 
     /** @throws AdminActionRefused */
     public function handle(Model $item, ContentTransition $transition, User $by): void
@@ -52,32 +52,9 @@ class ChangeContentState
             $item->save();
             $this->log->item($by, $kind, $item->getKey(), $kind->operation($transition));
 
-            if ($kind === ContentKind::News && $transition === ContentTransition::Publish) {
-                $this->replaceImportant($item, $by);
+            if ($item instanceof News && $transition === ContentTransition::Publish && (int) $item->priority_status === SetNewsPriority::IMPORTANT) {
+                $this->priority->replaceOthers($item, $by);
             }
         });
-    }
-
-    /**
-     * Only one news item at a time may be the Important one: publishing an Important item
-     * makes the one that was online a regular item, and says so in the log, as legacy did.
-     */
-    private function replaceImportant(Model $news, User $by): void
-    {
-        if (! $news instanceof News || (int) $news->priority_status !== 1) {
-            return;
-        }
-
-        $replaced = DB::table('news')->where('online', 1)->where('priority_status', 1)->where('id', '!=', $news->getKey())->lockForUpdate()->pluck('id');
-
-        if ($replaced->isEmpty()) {
-            return;
-        }
-
-        DB::table('news')->whereIn('id', $replaced)->update(['priority_status' => 0]);
-
-        foreach ($replaced as $id) {
-            $this->log->item($by, ContentKind::News, (int) $id, 'Important status replaced by News #'.$news->getKey());
-        }
     }
 }

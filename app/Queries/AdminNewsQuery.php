@@ -47,6 +47,16 @@ final class AdminNewsQuery
             ->first();
     }
 
+    /**
+     * The paths of its thumbnail (0), Important picture (1) and Pinned picture (2), by kind; a kind it has none of is absent.
+     *
+     * @return array<int, string>
+     */
+    public static function singles(int $id): array
+    {
+        return DB::table('news_images')->where('news_id', $id)->whereIn('sizetype', [0, 1, 2])->orderBy('id')->pluck('path', 'sizetype')->all();
+    }
+
     /** @return Collection<int, object{id: int, name: string}> */
     public static function tags(int $id): Collection
     {

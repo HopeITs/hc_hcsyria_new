@@ -48,6 +48,11 @@ return [
             'saved' => 'Testimony saved.',
             'deleted' => 'Testimony removed from initiative #:number.',
         ],
+        'news_pictures' => [
+            'saved' => ':label saved for news #:number.',
+            'removed' => ':label removed from news #:number.',
+            'priority' => 'News #:number is now :priority.',
+        ],
         'invalid' => 'Some fields need attention. They are marked below.',
         'forbidden' => 'Your role cannot do that.',
         'gone' => 'That :noun no longer exists.',
