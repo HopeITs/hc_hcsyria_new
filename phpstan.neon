@@ -11,3 +11,44 @@ parameters:
 
     # Same level as the Tracking app.
     level: 7
+
+    # The admin reads rows from the query builder (plain objects whose columns the
+    # queries name), and its Livewire traits are used by the SFC pages under
+    # resources/views, which PHPStan does not scan. Those are covered by
+    # tests/Feature/AdminProjectsTest.php instead.
+    ignoreErrors:
+        -
+            identifier: property.notFound
+            paths:
+                - app/Support/Admin/*
+                - app/Enums/ProjectTransition.php
+                - app/Livewire/Forms/ProjectForm.php
+        -
+            identifier: trait.unused
+            paths:
+                - app/Livewire/Concerns/*
+        -
+            identifier: missingType.iterableValue
+            paths:
+                - app/Queries/Admin*
+                - app/Queries/ProjectLookups.php
+                - app/Support/Admin/*
+                - app/Livewire/Forms/ProjectForm.php
+        -
+            identifier: missingType.generics
+            paths:
+                - app/Queries/Admin*
+                - app/Queries/ProjectLookups.php
+        -
+            identifier: arrayValues.list
+            paths:
+                - app/Support/Admin/Navigation.php
+        -
+            identifier: assign.propertyType
+            paths:
+                - app/Queries/AdminAccessQuery.php
+        -
+            identifier: return.type
+            paths:
+                - app/Queries/Admin*
+                - app/Queries/ProjectLookups.php

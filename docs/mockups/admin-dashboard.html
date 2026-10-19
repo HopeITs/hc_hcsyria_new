@@ -1,0 +1,770 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin Dashboard Mockup v2 (Tracking theme)</title>
+<style>
+/* Tokens copied from the Tracking app (resources/css/tokens.css): Somar Sans, brand red #be1f24, grey scale, Graphite dark. */
+@font-face{font-family:'Somar Sans';font-weight:400;src:url('../../resources/fonts/somar-sans/SomarSans-Regular.woff2') format('woff2')}
+@font-face{font-family:'Somar Sans';font-weight:500;src:url('../../resources/fonts/somar-sans/SomarSans-Medium.woff2') format('woff2')}
+@font-face{font-family:'Somar Sans';font-weight:600 800;src:url('../../resources/fonts/somar-sans/SomarSans-SemiBold.woff2') format('woff2')}
+:root{
+  --primary:#be1f24; --primary-h:#a81b20;
+  --s-dark:#58595b; --s-med:#6d6e71; --s-light:#939598; --s-soft:#dcddde;
+  --good:#1d7a4c; --good-s:#e6f2ec; --warn:#9a6412; --warn-s:#f7eedd; --crit:#be1f24; --crit-s:#f8e4e4; --active:#2563a8; --active-s:#e5eef7;
+  --ground:#f3f3f4; --board:#fff; --head:#f8f8f9; --page:#fff;
+  --ink:#58595b; --ink-m:#6d6e71; --ink-f:#939598; --line:#dcddde; --field:#939598;
+  --brand-text:#be1f24;
+  --card:0 1px 2px rgb(16 24 40/.04),0 1px 3px rgb(16 24 40/.06); --card-h:0 2px 4px rgb(16 24 40/.06),0 4px 8px rgb(16 24 40/.08);
+  --ease:cubic-bezier(.32,.72,0,1); --sw:17rem;
+  --font:'Somar Sans',ui-sans-serif,system-ui,sans-serif;
+}
+.dark{--page:#151618;--board:#1c1d20;--head:#242528;--ground:#151618;--ink:#ececee;--ink-m:#a8aaae;--ink-f:#8a8c93;--line:#34353a;--field:#6b6d74;--s-soft:#34353a;--s-dark:#ececee;--s-med:#a8aaae;--s-light:#8a8c93;--brand-text:#ff7b7f;--primary:#d4343a;--primary-h:#e04046;
+  --good:#5fd09a;--good-s:#14281e;--warn:#e8b050;--warn-s:#2c2313;--crit:#ff8a86;--crit-s:#381a1c;--active:#7db3ec;--active-s:#172637;--card:inset 0 1px 0 rgb(255 255 255/.04);--card-h:inset 0 1px 0 rgb(255 255 255/.04)}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{font:400 14px/1.5 var(--font);color:var(--ink);background:var(--page);-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none;padding:0}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+svg.i{width:18px;height:18px;flex:none;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.sm svg.i,.i16{width:16px;height:16px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.muted{color:var(--ink-m)}.faint{color:var(--ink-f)}
+.tnum{font-variant-numeric:tabular-nums}
+
+/* ===== sidebar (Tracking: white rail, red current pill, tiny uppercase group labels) ===== */
+.app{display:grid;grid-template-columns:var(--sw) minmax(0,1fr);min-height:100vh;transition:grid-template-columns .3s var(--ease)}
+.app.collapsed{--sw:4.06rem}
+.side{position:sticky;top:0;height:100vh;background:var(--board);border-inline-end:1px solid var(--line);display:flex;flex-direction:column;padding:12px;gap:12px;z-index:60}
+.side-h{height:64px;margin:-12px -12px 0;padding:0 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;flex:none}
+.logo{width:34px;height:34px;border-radius:9px;background:var(--primary);color:#fff;display:grid;place-items:center;font-weight:800;font-size:13px;flex:none}
+.wm{font-weight:700;font-size:16px;color:var(--s-dark);line-height:1.1;white-space:nowrap}.wm small{display:block;font-weight:500;font-size:11px;color:var(--s-light);letter-spacing:.04em}
+.edge{position:absolute;inset-inline-end:-16px;top:15px;width:32px;height:32px;border-radius:50%;border:1px solid var(--line);background:var(--board);color:var(--s-med);display:grid;place-items:center;box-shadow:0 1px 2px rgb(16 24 40/.08);z-index:3}
+.edge:hover{color:var(--ink)}
+.app.collapsed .edge svg{transform:rotate(180deg)}
+[dir=rtl] .edge svg{transform:scaleX(-1)}[dir=rtl] .app.collapsed .edge svg{transform:none}
+nav.menu{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column;gap:12px;scrollbar-width:thin;scrollbar-color:var(--s-soft) transparent}
+.grp{display:flex;flex-direction:column;gap:2px}
+.grp>.gh{padding:10px 8px 6px;color:var(--s-light);font-size:11px;font-weight:700;line-height:16px;letter-spacing:.12em;text-transform:uppercase;white-space:nowrap}
+.app.collapsed .grp>.gh{font-size:0;padding:6px 12px 4px}
+.app.collapsed .grp>.gh::after{content:"";display:block;height:1px;background:var(--line)}
+.item{display:flex;align-items:center;gap:12px;height:36px;padding:0 10px;border-radius:8px;color:var(--s-dark);font-weight:500;white-space:nowrap;position:relative;border:1px solid transparent;transition:background .15s}
+.dark .item{color:var(--ink-m)}
+.item:hover{background:rgb(220 221 222/.7)}.dark .item:hover{background:rgb(255 255 255/.06);color:var(--ink)}
+.item[aria-current=page]{background:var(--primary);color:#fff;font-weight:600;box-shadow:0 1px 2px rgb(0 0 0/.1)}
+.dark .item[aria-current=page]{background:var(--head);color:var(--ink)}
+.dark .item[aria-current=page]::before{content:"";position:absolute;inset-block:6px;inset-inline-start:0;width:2px;border-radius:2px;background:var(--primary)}
+.item .b{margin-inline-start:auto;min-width:20px;text-align:center;border-radius:999px;background:var(--primary);color:#fff;font-size:10px;font-weight:700;line-height:20px;padding:0 6px}
+.item[aria-current=page] .b{background:rgb(255 255 255/.25)}
+.app.collapsed .item{width:32px;height:32px;border-radius:16px;padding:0;justify-content:center;margin-inline-start:6px}
+.app.collapsed .item .t,.app.collapsed .item .b,.app.collapsed .wm{display:none}
+.app.collapsed .side-h{justify-content:center;padding:0}
+.lock{margin-inline-start:auto;opacity:.5}
+
+/* ===== header ===== */
+.main{min-width:0;display:flex;flex-direction:column}
+.top{position:sticky;top:0;z-index:50;height:64px;display:flex;align-items:center;gap:12px;padding:0 16px;background:var(--board);border-bottom:1px solid var(--line)}
+.search{display:flex;align-items:center;gap:10px;height:36px;min-width:min(340px,40vw);padding:0 12px;border:1px solid var(--field);border-radius:8px;color:var(--ink-f);background:var(--board)}
+.search:hover{border-color:var(--s-med)}
+kbd{font:600 11px var(--font);border:1px solid var(--line);border-radius:5px;padding:0 6px;background:var(--head);color:var(--ink-m)}
+.sp{flex:1}
+.pillgrp{display:inline-flex;align-items:center;gap:6px;border-radius:999px;background:rgb(220 221 222/.4);padding:4px}
+.dark .pillgrp{background:var(--head)}
+.ibtn{width:32px;height:32px;border-radius:999px;display:grid;place-items:center;color:var(--s-med);position:relative}
+.ibtn:hover{background:var(--board);color:var(--s-dark);box-shadow:0 1px 2px rgb(0 0 0/.08)}
+.dark .ibtn:hover{background:var(--line);color:var(--ink)}
+.ibtn .dot{position:absolute;top:2px;inset-inline-end:2px;min-width:15px;height:15px;border-radius:8px;background:var(--primary);color:#fff;font-size:9px;font-weight:700;display:grid;place-items:center;border:2px solid var(--board)}
+.loc{display:inline-flex;gap:4px;border-radius:999px;background:rgb(220 221 222/.4);padding:4px}.dark .loc{background:var(--head)}
+.loc button{border-radius:999px;padding:6px 14px;font-size:12px;font-weight:600;color:var(--s-med)}
+.loc button[aria-pressed=true]{background:var(--board);color:var(--s-dark);font-weight:700;box-shadow:0 1px 2px rgb(0 0 0/.1)}
+.dark .loc button[aria-pressed=true]{background:var(--line);color:var(--ink)}
+.user{display:flex;align-items:center;gap:10px;padding:4px 6px 4px 10px;border-inline-start:1px solid var(--line);margin-inline-start:4px;border-radius:8px}
+.av{width:32px;height:32px;border-radius:8px;background:var(--s-soft);color:var(--s-dark);display:grid;place-items:center;font-weight:700;font-size:12px;flex:none}
+.user b{display:block;font-size:13px;line-height:1.2;color:var(--s-dark)}.user small{font-size:11px;color:var(--ink-m)}
+.preview{display:flex;align-items:center;gap:8px;border:1px dashed var(--active);background:var(--active-s);color:var(--active);border-radius:8px;padding:0 6px 0 10px;height:36px;font-size:12px;font-weight:600;white-space:nowrap}
+.preview select{border:0;background:var(--board);color:var(--ink);border-radius:6px;height:26px;font-weight:600;padding:0 6px}
+.wrap{position:relative}
+.pop{position:absolute;inset-inline-end:0;top:calc(100% + 8px);min-width:260px;background:var(--board);border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 32px rgb(16 24 40/.18);z-index:80;display:none;overflow:hidden}
+.pop.open{display:block;animation:pin .14s ease-out}
+@keyframes pin{from{opacity:0;transform:translateY(-4px)}}
+.pop .ph{padding:12px 14px;border-bottom:1px solid var(--line)}
+.pop .mi{display:flex;align-items:center;gap:10px;width:100%;padding:9px 14px;text-align:start;font-weight:500;color:var(--ink)}
+.pop .mi:hover{background:var(--head)}
+.pop .mi.danger{color:var(--brand-text)}
+.pop .sep{height:1px;background:var(--line);margin:4px 0}
+.pop .mi.off{opacity:.45;cursor:not-allowed}
+.perm{display:flex;flex-wrap:wrap;gap:6px;padding:12px 14px}
+.perm span{font-size:11px;font-weight:600;border-radius:6px;padding:2px 8px}
+.perm .y{background:var(--good-s);color:var(--good)}.perm .n{background:var(--head);color:var(--ink-f);text-decoration:line-through}
+
+/* ===== page ===== */
+.page{padding:32px;max-width:1500px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:24px}
+.ph-head{display:flex;flex-wrap:wrap;gap:16px 24px;align-items:flex-end;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:28px}
+h1{margin:0;font-size:30px;line-height:1;font-weight:700;color:var(--s-dark);display:flex;align-items:center;gap:10px}
+.dark h1{color:var(--ink)}
+.cnt{display:inline-flex;min-width:28px;justify-content:center;border-radius:6px;background:var(--primary);color:#fff;font-size:12px;font-weight:700;padding:2px 8px}
+.dark .cnt{background:rgb(255 255 255/.1);color:var(--ink)}
+.sub{margin:8px 0 0;color:var(--ink-m)}
+.crumbs{display:flex;gap:6px;font-size:12px;color:var(--ink-m);align-items:center;margin-bottom:10px}
+.crumbs a:hover{color:var(--ink)}.crumbs b{color:var(--s-dark);font-weight:600}.dark .crumbs b{color:var(--ink)}
+.panel{background:var(--board);border:1px solid var(--line);border-radius:12px;box-shadow:var(--card);overflow:hidden}
+.panel-h{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;min-height:48px;padding:10px 16px;border-bottom:1px solid var(--line)}
+.panel-h h2{margin:0;font-size:16px;font-weight:700;color:var(--s-dark);display:flex;align-items:center;gap:8px}.dark .panel-h h2{color:var(--ink)}
+.badge{display:inline-flex;min-width:24px;justify-content:center;border-radius:999px;background:var(--s-soft);color:var(--s-dark);font-size:11px;font-weight:600;padding:2px 8px}
+.dark .badge{background:var(--head);color:var(--ink)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:36px;padding:0 14px;border-radius:8px;font-weight:600;font-size:14px;border:1px solid transparent;white-space:nowrap;transition:background .15s,border-color .15s}
+.btn.s{height:30px;padding:0 10px;font-size:13px;gap:6px}.btn.s svg.i{width:16px;height:16px}
+.btn-p{background:var(--primary);color:#fff}.btn-p:hover{background:var(--primary-h)}
+.btn-o{background:var(--board);border-color:var(--field);color:var(--ink)}.btn-o:hover{background:var(--head)}
+.btn-g{color:var(--s-med)}.btn-g:hover{background:rgb(220 221 222/.6);color:var(--ink)}
+.btn-d{color:var(--brand-text);border-color:var(--crit-s);background:var(--crit-s)}
+.btn[disabled],.btn.off{opacity:.45;cursor:not-allowed;pointer-events:none}
+.pill{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:2px 10px;font-size:12px;font-weight:600;white-space:nowrap}
+.pill i{width:6px;height:6px;border-radius:50%;background:currentColor}
+.p-good{background:var(--good-s);color:var(--good)}.p-warn{background:var(--warn-s);color:var(--warn)}.p-crit{background:var(--crit-s);color:var(--crit)}.p-act{background:var(--active-s);color:var(--active)}.p-grey{background:var(--head);color:var(--ink-m);box-shadow:inset 0 0 0 1px var(--line)}
+
+/* stat tiles */
+.tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.tile{display:block;text-align:start;background:var(--board);border:1px solid var(--line);border-radius:12px;padding:16px;box-shadow:var(--card);transition:transform .15s,box-shadow .15s}
+a.tile:hover,button.tile:hover{transform:translateY(-2px);box-shadow:var(--card-h)}
+.tile .l{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-m)}
+.tile .v{margin-top:8px;font-size:30px;font-weight:700;line-height:1;color:var(--s-dark);font-variant-numeric:tabular-nums}.dark .tile .v{color:var(--ink)}
+.tile .v small{font-size:13px;font-weight:400;color:var(--ink-m)}
+.tile .ic{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:var(--s-soft);color:var(--s-dark)}
+.tile .top{display:flex;justify-content:space-between;gap:12px}
+.tile.good .v{color:var(--good)}.tile.warn .v{color:var(--warn)}.tile.crit .v{color:var(--brand-text)}
+.tile.good .ic{background:var(--good-s);color:var(--good)}.tile.warn .ic{background:var(--warn-s);color:var(--warn)}.tile.crit .ic{background:var(--crit-s);color:var(--crit)}.tile.act .ic{background:var(--active-s);color:var(--active)}
+.tile .hint{margin-top:6px;font-size:12px;color:var(--ink-m)}
+
+.cols{display:grid;grid-template-columns:minmax(0,1fr) 22rem;gap:24px;align-items:start}
+.stack{display:flex;flex-direction:column;gap:24px;min-width:0}
+
+/* toolbar + filters */
+.bar{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end}
+.field{display:flex;flex-direction:column;gap:4px;min-width:150px;flex:1}
+.field>label,.lbl{font-size:12px;font-weight:600;color:var(--ink-m)}
+.inp,.sel,.ta{width:100%;height:36px;border:1px solid var(--field);border-radius:8px;background:var(--board);padding:0 12px;color:var(--ink)}
+.ta{height:auto;padding:8px 12px;min-height:92px;resize:vertical}
+.inp:focus,.sel:focus,.ta:focus{outline:2px solid var(--primary);outline-offset:-1px;border-color:var(--primary)}
+.inp:disabled,.sel:disabled,.ta:disabled{background:var(--head);color:var(--ink-m);border-color:var(--line);cursor:not-allowed}
+.inwrap{position:relative}.inwrap svg{position:absolute;inset-inline-start:10px;top:9px;color:var(--ink-f)}.inwrap .inp{padding-inline-start:34px}
+.seg{display:inline-flex;flex-wrap:wrap;gap:4px;padding:4px;border-radius:10px;background:rgb(220 221 222/.4)}.dark .seg{background:var(--head)}
+.seg label{cursor:pointer}
+.seg input{position:absolute;opacity:0}
+.seg span{display:block;padding:6px 14px;border-radius:7px;font-weight:600;font-size:13px;color:var(--s-med)}
+.seg input:checked+span{background:var(--board);color:var(--s-dark);box-shadow:0 1px 2px rgb(0 0 0/.12)}.dark .seg input:checked+span{background:var(--line);color:var(--ink)}
+.seg input:focus-visible+span{outline:2px solid var(--primary)}
+.seg input:disabled+span{opacity:.5;cursor:not-allowed}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 10px;border-radius:999px;border:1px solid var(--line);font-size:12px;font-weight:600;color:var(--ink-m);background:var(--board)}
+.chip button{display:grid;place-items:center;color:var(--ink-f)}.chip button:hover{color:var(--primary)}
+.vt{display:inline-flex;border:1px solid var(--field);border-radius:8px;overflow:hidden}
+.vt button{width:36px;height:34px;display:grid;place-items:center;color:var(--ink-m)}.vt button[aria-pressed=true]{background:var(--primary);color:#fff}
+
+.tabs{display:flex;gap:4px;padding:0 12px;border-bottom:1px solid var(--line);overflow-x:auto;overflow-y:hidden;scrollbar-width:none}
+.tab{padding:11px 10px;font-weight:600;color:var(--ink-m);border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;display:flex;gap:8px;align-items:center}
+.tab:hover{color:var(--ink)}.tab[aria-selected=true]{color:var(--brand-text);border-color:var(--primary)}
+.tab .badge{font-size:11px}.tab[aria-selected=true] .badge{background:var(--crit-s);color:var(--crit)}
+
+/* data table (Tracking data-table) */
+.tbl{width:100%;border-collapse:collapse;text-align:start}
+.tbl thead{background:var(--head)}
+.tbl th{padding:10px 14px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-m);text-align:start;white-space:nowrap}
+.tbl td{padding:12px 14px;border-top:1px solid var(--line);vertical-align:middle}
+.tbl tbody tr{transition:background .12s;cursor:pointer}.tbl tbody tr:hover{background:var(--ground)}
+.tbl tr.sel{background:var(--active-s)}
+.tbl .nm{font-weight:600;color:var(--s-dark);line-height:1.25}.dark .tbl .nm{color:var(--ink)}
+.tbl .id{font-variant-numeric:tabular-nums;color:var(--ink-m);font-weight:600}
+.cb{width:16px;height:16px;accent-color:var(--primary)}
+.acts{display:flex;align-items:center;gap:6px;justify-content:flex-end}
+.info{display:flex;gap:6px;color:var(--ink-f)}.info .y{color:var(--good)}.info .n{opacity:.45}
+.tbl-wrap{overflow-x:auto}
+.foot{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;padding:10px 16px;border-top:1px solid var(--line);color:var(--ink-m);font-size:13px}
+.pager{display:flex;gap:4px}.pager button{min-width:32px;height:32px;border-radius:8px;font-weight:600;color:var(--ink-m)}.pager button:hover{background:var(--head)}.pager button[aria-current]{background:var(--primary);color:#fff}
+.bulk{position:sticky;bottom:16px;margin:0 16px 16px;background:var(--s-dark);color:#fff;border-radius:12px;padding:8px 8px 8px 16px;display:none;align-items:center;gap:8px;box-shadow:0 10px 28px rgb(0 0 0/.3);z-index:20}
+.dark .bulk{background:var(--line)}
+.bulk.on{display:flex;animation:pin .15s}.bulk .btn-g{color:#e7e7e8}.bulk .btn-g:hover{background:rgb(255 255 255/.15);color:#fff}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px;padding:16px}
+.pc{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--board);cursor:pointer;transition:.15s;box-shadow:var(--card)}.pc:hover{transform:translateY(-2px);box-shadow:var(--card-h)}
+.pc .im{height:120px;display:grid;place-items:center;color:#fff}.pc .bd{padding:12px 14px;display:flex;flex-direction:column;gap:6px}
+.empty{padding:56px 20px;text-align:center;color:var(--ink-m)}.empty b{display:block;font-size:16px;color:var(--s-dark);margin:10px 0 4px}.dark .empty b{color:var(--ink)}
+.empty .ic{width:48px;height:48px;border-radius:14px;background:var(--head);display:grid;place-items:center;margin:0 auto;color:var(--ink-f)}
+
+/* queue rows */
+.q{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 16px;border-top:1px solid var(--line)}
+.q:hover{background:var(--ground)}
+.q .nm{font-weight:600;color:var(--s-dark)}.dark .q .nm{color:var(--ink)}
+.q .mt{font-size:12px;color:var(--ink-m);display:flex;gap:4px 10px;flex-wrap:wrap}
+.q.gone{animation:gone .35s forwards}@keyframes gone{to{opacity:0;transform:translateX(24px);height:0;padding:0;border:0}}
+.feed{list-style:none;margin:0;padding:6px 16px}.feed li{display:flex;gap:10px;padding:10px 0}.feed li+li{border-top:1px solid var(--line)}
+.feed p{margin:0;font-size:13px;line-height:1.35}.feed small{color:var(--ink-f);font-size:12px}
+.cities{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr))}
+.city{padding:16px;border-inline-start:1px solid var(--line)}.city:first-child{border:0}
+.city .n{font-size:28px;font-weight:700;color:var(--s-dark);line-height:1}.dark .city .n{color:var(--ink)}
+.trk{height:6px;border-radius:3px;background:var(--s-soft);margin:10px 0 6px;overflow:hidden}.trk i{display:block;height:100%;background:var(--primary);border-radius:3px;width:0;transition:width .8s var(--ease)}
+
+/* form with Tracking's section rail */
+.form{display:flex;flex-direction:column}
+.fs{display:grid;grid-template-columns:15rem minmax(0,1fr);gap:24px;padding:24px 0;border-top:1px solid var(--line)}
+.fs:first-child{border-top:0;padding-top:0}
+.fs-rail h3{margin:0;font-size:14px;font-weight:700;color:var(--s-dark);display:flex;align-items:center;gap:10px}.dark .fs-rail h3{color:var(--ink)}
+.fs-rail .dotk{width:10px;height:10px;border-radius:50%;border:2px solid var(--s-light)}
+.fs.done .dotk{background:var(--good);border-color:var(--good)}.fs.bad .dotk{background:var(--primary);border-color:var(--primary)}
+.fs-rail p{margin:6px 0 0 20px;font-size:12px;color:var(--ink-m)}
+.fs-f{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.fs-f .full{grid-column:1/-1}
+.req{color:var(--primary)}
+.help{font-size:12px;color:var(--ink-f)}
+.err{font-size:12px;color:var(--crit);display:none}.field.bad .err{display:block}.field.bad .inp,.field.bad .ta{border-color:var(--primary)}
+.sticky-bar{position:sticky;bottom:0;z-index:30;display:flex;gap:10px;align-items:center;justify-content:flex-end;padding:12px 16px;margin:0 -32px -32px;background:var(--board);border-top:1px solid var(--line);flex-wrap:wrap}
+.dirty{display:none;align-items:center;gap:8px;margin-inline-end:auto;color:var(--warn);font-weight:600;font-size:13px}.dirty.on{display:flex}
+.note{display:flex;gap:10px;align-items:flex-start;border-radius:10px;padding:12px 14px;font-size:13px}
+.note.info{background:var(--active-s);color:var(--active)}.note.warn{background:var(--warn-s);color:var(--warn)}.note.lock{background:var(--head);color:var(--ink-m);box-shadow:inset 0 0 0 1px var(--line)}
+.note b{font-weight:700}
+
+/* show page */
+.facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0}
+.fact{padding:14px 16px;border-top:1px solid var(--line)}.fact:nth-child(-n+3){border-top:0}
+.fact dt{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-m)}
+.fact dd{margin:4px 0 0;font-weight:600;color:var(--s-dark)}.dark .fact dd{color:var(--ink)}
+.gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;padding:16px}
+.ph{aspect-ratio:4/3;border-radius:10px;position:relative;display:grid;place-items:center;color:rgb(255 255 255/.85);overflow:hidden}
+.ph .tg{position:absolute;inset-inline-start:8px;top:8px;background:rgb(0 0 0/.55);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:1px 8px}
+.ph .rm{position:absolute;inset-inline-end:6px;top:6px;width:28px;height:28px;border-radius:8px;background:rgb(0 0 0/.55);color:#fff;display:grid;place-items:center}
+.ph .rm:hover{background:var(--primary)}
+.ph .gr{position:absolute;inset-inline-start:8px;bottom:8px;color:#fff;opacity:.9}
+.drop{border:2px dashed var(--field);border-radius:10px;aspect-ratio:4/3;display:grid;place-items:center;text-align:center;color:var(--ink-m);font-weight:600;font-size:13px;padding:8px}
+.drop:hover{border-color:var(--primary);color:var(--primary)}
+.chk{list-style:none;margin:0;padding:6px 16px 12px}
+.chk li{display:flex;gap:10px;align-items:flex-start;padding:9px 0;font-size:13px}.chk li+li{border-top:1px solid var(--line)}
+.chk .m{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;flex:none;margin-top:1px}
+.chk .ok .m{background:var(--good-s);color:var(--good)}.chk .no .m{background:var(--warn-s);color:var(--warn)}
+.chk .m svg{width:12px;height:12px;stroke-width:2.5}
+.chk a{color:var(--brand-text);font-weight:600;margin-inline-start:auto;white-space:nowrap}
+.story{padding:16px;line-height:1.65;color:var(--ink)}
+.tl{list-style:none;margin:0;padding:8px 16px 8px 28px;position:relative}
+.tl::before{content:"";position:absolute;inset-inline-start:21px;top:16px;bottom:16px;width:1px;background:var(--line)}
+.tl li{position:relative;padding:8px 0 8px 10px;font-size:13px}.tl li::before{content:"";position:absolute;inset-inline-start:-11px;top:14px;width:9px;height:9px;border-radius:50%;background:var(--board);border:2px solid var(--s-light)}
+.tl li.now::before{background:var(--primary);border-color:var(--primary)}
+.tl small{display:block;color:var(--ink-f)}
+
+/* matrix */
+.mx{width:100%;border-collapse:collapse}.mx th,.mx td{padding:10px 14px;border-top:1px solid var(--line);text-align:center}.mx th:first-child,.mx td:first-child{text-align:start}
+.mx thead th{border-top:0;background:var(--head);font-size:12px;font-weight:700;color:var(--ink-m)}
+.mx .y{color:var(--good)}.mx .n{color:var(--ink-f);opacity:.5}.mx tr.me td,.mx th.me{background:var(--active-s)}
+
+/* palette / modal / toast */
+.scrim{position:fixed;inset:0;background:rgb(10 10 10/.5);backdrop-filter:blur(2px);display:none;z-index:100;align-items:flex-start;justify-content:center;padding-top:12vh}
+.scrim.open{display:flex}
+.dlg{width:min(560px,92vw);background:var(--board);border-radius:16px;box-shadow:0 24px 64px rgb(0 0 0/.35);overflow:hidden;animation:pin .15s}
+.dlg .in{padding:20px}.dlg h3{margin:0 0 6px;font-size:18px}
+.dlg .ft{display:flex;gap:8px;justify-content:flex-end;padding:12px 20px;border-top:1px solid var(--line);background:var(--head)}
+.cmd input{width:100%;height:52px;border:0;border-bottom:1px solid var(--line);padding:0 18px;font-size:16px;background:transparent;outline:0}
+.cmd ul{list-style:none;margin:0;padding:8px;max-height:320px;overflow:auto}
+.cmd li{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px}.cmd li[aria-selected=true]{background:var(--head)}.cmd li small{margin-inline-start:auto;color:var(--ink-f)}
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);background:var(--s-dark);color:#fff;padding:10px 14px 10px 16px;border-radius:12px;box-shadow:0 10px 28px rgb(0 0 0/.3);display:flex;gap:14px;align-items:center;opacity:0;pointer-events:none;transition:.25s;z-index:120}
+.dark .toast{background:var(--line);color:var(--ink)}
+.toast.on{opacity:1;transform:translate(-50%,0);pointer-events:auto}.toast button{font-weight:700;color:#ffb3b5}
+.mbtn{display:none}
+.forbid{max-width:460px;margin:40px auto;text-align:center}
+
+@media (max-width:1280px){.hide-m{display:none}}
+@media (max-width:1180px){.cols{grid-template-columns:1fr}.tiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:1023px){
+  .app,.app.collapsed{grid-template-columns:1fr}
+  .side{position:fixed;inset-block:0;inset-inline-start:0;width:min(18rem,calc(100vw - 2.75rem));transform:translateX(-105%);transition:transform .3s var(--ease);box-shadow:none}
+  [dir=rtl] .side{transform:translateX(105%)}
+  .app.drawer .side{transform:none;box-shadow:0 0 0 100vmax rgb(10 10 10/.5)}
+  .edge{display:none}.mbtn{display:grid}
+  .app.collapsed .item{width:auto;height:44px;border-radius:8px;padding:0 10px;justify-content:flex-start;margin:0}
+  .app.collapsed .item .t,.app.collapsed .item .b,.app.collapsed .wm{display:revert}
+  .app.collapsed .grp>.gh{font-size:11px;padding:10px 8px 6px}.app.collapsed .grp>.gh::after{display:none}
+  .page{padding:20px 16px}.sticky-bar{margin:0 -16px -20px}
+  .search{min-width:0;flex:1}.search span,.search kbd{display:none}.search{flex:none;width:36px;justify-content:center;padding:0}
+  .user div,.preview span,.loc{display:none}
+}
+@media (max-width:760px){
+  .tiles{grid-template-columns:1fr 1fr}.fs{grid-template-columns:1fr;gap:12px}.fs-f{grid-template-columns:1fr}
+  .facts{grid-template-columns:1fr 1fr}.fact:nth-child(3){border-top:1px solid var(--line)}
+  .cities{grid-template-columns:1fr}.city{border-inline-start:0;border-top:1px solid var(--line)}
+  .tbl thead{display:none}.tbl,.tbl tbody,.tbl tr,.tbl td{display:block}
+  .tbl tr{display:grid;grid-template-columns:24px 1fr;padding:10px 12px;border-top:1px solid var(--line);gap:4px 10px}.tbl td{border:0;padding:0}
+  .tbl td.hide-s{display:none}.tbl td.acell{grid-column:2}
+  h1{font-size:24px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="home" viewBox="0 0 24 24"><path d="M2.25 12l8.95-8.95a1.5 1.5 0 012.1 0L22.25 12M4.5 9.75V20.1c0 .6.5 1.1 1.1 1.1H9.75v-4.5c0-.6.5-1.1 1.1-1.1h2.3c.6 0 1.1.5 1.1 1.1v4.5h4.15c.6 0 1.1-.5 1.1-1.1V9.75"/></symbol>
+<symbol id="folder" viewBox="0 0 24 24"><path d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.06-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.38a1.5 1.5 0 01-1.06-.44z"/></symbol>
+<symbol id="spark" viewBox="0 0 24 24"><path d="M9.8 15.9L9 18.75l-.8-2.85a4.5 4.5 0 00-3.1-3.1L2.25 12l2.85-.8a4.5 4.5 0 003.1-3.1L9 5.25l.8 2.85a4.5 4.5 0 003.1 3.1l2.85.8-2.85.8a4.5 4.5 0 00-3.1 3.1zM18.3 8.8l-.3 1.2-.3-1.2a3.4 3.4 0 00-2.4-2.4L14.1 6l1.2-.3a3.4 3.4 0 002.4-2.4L18 2.1l.3 1.2a3.4 3.4 0 002.4 2.4l1.2.3-1.2.3a3.4 3.4 0 00-2.4 2.4z"/></symbol>
+<symbol id="trophy" viewBox="0 0 24 24"><path d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-3.4m-9 3.4v-3.4m0 0a6.7 6.7 0 01-3.2-3.2M7.5 14.35A6.7 6.7 0 009 14.5h6a6.7 6.7 0 001.5-.15m0 0a6.7 6.7 0 003.2-3.2M7.5 4.2V4A.75.75 0 018.25 3.4h7.5a.75.75 0 01.75.75v.05m-9 0a48 48 0 00-3.7.4.75.75 0 00-.6.8 6.4 6.4 0 004.2 5.7M16.5 4.2c1.2.1 2.5.2 3.7.4a.75.75 0 01.6.8 6.4 6.4 0 01-4.2 5.7"/></symbol>
+<symbol id="news" viewBox="0 0 24 24"><path d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.4a1.1 1.1 0 011.1 1.1V18a2.25 2.25 0 01-2.25 2.25M16.5 7.5V18a2.25 2.25 0 002.25 2.25M16.5 7.5V4.9a1.1 1.1 0 00-1.1-1.1H4.1A1.1 1.1 0 003 4.9V18a2.25 2.25 0 002.25 2.25h13.5M6 7.5h3v3H6z"/></symbol>
+<symbol id="users" viewBox="0 0 24 24"><path d="M15 19.13a9.4 9.4 0 002.63.37 9.3 9.3 0 004.12-.95 4.1 4.1 0 00-7.54-2.12M15 19.13V19.1c0-1.1-.28-2.14-.78-3.04m.78 3.07v.1A12.3 12.3 0 018.62 21c-2.33 0-4.51-.65-6.37-1.78v-.1a6.4 6.4 0 0111.96-3.2M12 6.37a3.4 3.4 0 11-6.8 0 3.4 3.4 0 016.8 0zm8.25 2.25a2.6 2.6 0 11-5.2 0 2.6 2.6 0 015.2 0z"/></symbol>
+<symbol id="book" viewBox="0 0 24 24"><path d="M12 6.04A8.97 8.97 0 006 3.75c-1.05 0-2.06.18-3 .51v14.25A9 9 0 016 18c2.3 0 4.4.87 6 2.29m0-14.25a8.97 8.97 0 016-2.29c1.05 0 2.06.18 3 .51v14.25A9 9 0 0018 18a8.97 8.97 0 00-6 2.29m0-14.25v14.25"/></symbol>
+<symbol id="img" viewBox="0 0 24 24"><path d="M2.25 15.75l5.16-5.16a2.25 2.25 0 013.18 0l5.16 5.16m-1.5-1.5l1.41-1.41a2.25 2.25 0 013.18 0l2.16 2.16m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.01v.01h-.01V8.25zm.38 0a.38.38 0 11-.76 0 .38.38 0 01.76 0z"/></symbol>
+<symbol id="doc" viewBox="0 0 24 24"><path d="M19.5 14.25v-2.63a3.375 3.375 0 00-3.375-3.37h-1.5a1.125 1.125 0 01-1.125-1.13v-1.5A3.375 3.375 0 009.75 3.88H8.25m2.25 0H5.62c-.62 0-1.12.5-1.12 1.12v14.25c0 .62.5 1.12 1.12 1.12h12.76c.62 0 1.12-.5 1.12-1.12V12.75A9 9 0 0010.5 3.75z"/></symbol>
+<symbol id="log" viewBox="0 0 24 24"><path d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></symbol>
+<symbol id="shield" viewBox="0 0 24 24"><path d="M9 12.75L11.25 15 15 9.75m-3-7.04A11.96 11.96 0 013.6 6 12 12 0 003 9.75c0 5.59 3.82 10.29 9 11.62 5.18-1.33 9-6.03 9-11.62 0-1.31-.21-2.57-.6-3.75h-.15c-3.2 0-6.1-1.25-8.25-3.29z"/></symbol>
+<symbol id="search" viewBox="0 0 24 24"><path d="M21 21l-5.2-5.2m0 0A7.5 7.5 0 105.2 5.2a7.5 7.5 0 0010.6 10.6z"/></symbol>
+<symbol id="bell" viewBox="0 0 24 24"><path d="M14.86 17.08a23.8 23.8 0 005.45-1.31A8.97 8.97 0 0118 9.75V9A6 6 0 006 9v.75a8.97 8.97 0 01-2.31 6.02 23.85 23.85 0 005.45 1.31m5.72 0a24.3 24.3 0 01-5.72 0m5.72 0a3 3 0 11-5.72 0"/></symbol>
+<symbol id="plus" viewBox="0 0 24 24"><path d="M12 4.5v15m7.5-7.5h-15"/></symbol>
+<symbol id="menu" viewBox="0 0 24 24"><path d="M3.75 9h16.5m-16.5 6.75h16.5"/></symbol>
+<symbol id="chev" viewBox="0 0 24 24"><path d="M15.75 19.5L8.25 12l7.5-7.5"/></symbol>
+<symbol id="chevd" viewBox="0 0 24 24"><path d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></symbol>
+<symbol id="eye" viewBox="0 0 24 24"><path d="M2.04 12.32a1 1 0 010-.64C3.42 7.51 7.36 4.5 12 4.5c4.64 0 8.57 3.01 9.96 7.18.07.21.07.43 0 .64-1.39 4.17-5.32 7.18-9.96 7.18-4.64 0-8.57-3.01-9.96-7.18zM15 12a3 3 0 11-6 0 3 3 0 016 0z"/></symbol>
+<symbol id="eyeoff" viewBox="0 0 24 24"><path d="M3.98 8.22A10.5 10.5 0 001.93 12c1.39 4.18 5.32 7.18 9.96 7.18 1.1 0 2.17-.17 3.17-.5M6.23 6.23A10.45 10.45 0 0112 4.5c4.64 0 8.57 3.01 9.96 7.18a10.5 10.5 0 01-4.29 5.1M6.23 6.23L3 3m3.23 3.23l3.65 3.65m7.89 7.89L21 21m-3.23-3.23l-3.65-3.65m0 0a3 3 0 10-4.24-4.24m4.24 4.24L9.88 9.88"/></symbol>
+<symbol id="edit" viewBox="0 0 24 24"><path d="M16.86 4.49l1.69-1.69a1.88 1.88 0 112.65 2.65L10.58 16.07a4.5 4.5 0 01-1.9 1.13L6 18l.8-2.69a4.5 4.5 0 011.13-1.9l8.93-8.92zm0 0L19.5 7.13M19 14v4.75A2.25 2.25 0 0116.75 21H5.25A2.25 2.25 0 013 18.75V7.25A2.25 2.25 0 015.25 5H10"/></symbol>
+<symbol id="check" viewBox="0 0 24 24"><path d="M4.5 12.75l6 6 9-13.5"/></symbol>
+<symbol id="globe" viewBox="0 0 24 24"><path d="M12 21a9 9 0 100-18 9 9 0 000 18zm0 0c2.5 0 4.5-4 4.5-9S14.5 3 12 3 7.5 7 7.5 12s2 9 4.5 9zM3.6 9h16.8M3.6 15h16.8"/></symbol>
+<symbol id="pin" viewBox="0 0 24 24"><path d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/><path d="M19.5 10.5c0 7.14-7.5 11.25-7.5 11.25S4.5 17.64 4.5 10.5a7.5 7.5 0 1115 0z"/></symbol>
+<symbol id="phone" viewBox="0 0 24 24"><path d="M2.25 6.75c0 8.28 6.72 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.37c0-.52-.35-.97-.85-1.09l-4.42-1.1a1.12 1.12 0 00-1.17.42l-.97 1.29c-.1.14-.28.2-.44.14a12.04 12.04 0 01-7.14-7.14c-.06-.16 0-.34.14-.44l1.29-.97c.4-.3.58-.8.42-1.17L7.06 3.1a1.12 1.12 0 00-1.09-.85H4.5A2.25 2.25 0 002.25 4.5v2.25z"/></symbol>
+<symbol id="video" viewBox="0 0 24 24"><path d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9A2.25 2.25 0 0013.5 5.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z"/></symbol>
+<symbol id="out" viewBox="0 0 24 24"><path d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9"/></symbol>
+<symbol id="x" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></symbol>
+<symbol id="trash" viewBox="0 0 24 24"><path d="M14.74 9l-.35 9m-4.78 0L9.26 9m9.97-3.21c.34.05.68.11 1.02.17m-1.02-.17L18.16 19.67a2.25 2.25 0 01-2.24 2.08H8.08a2.25 2.25 0 01-2.24-2.08L4.77 5.79m14.46 0a48 48 0 00-3.48-.4m-12 .57c.34-.06.68-.12 1.02-.17m0 0a48 48 0 013.48-.4m7.5 0v-.92c0-1.18-.91-2.16-2.09-2.2a52 52 0 00-3.32 0c-1.18.04-2.09 1.02-2.09 2.2v.92m7.5 0a48 48 0 00-7.5 0"/></symbol>
+<symbol id="dots" viewBox="0 0 24 24"><path d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm6 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm6 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/></symbol>
+<symbol id="lock" viewBox="0 0 24 24"><path d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/></symbol>
+<symbol id="sun" viewBox="0 0 24 24"><path d="M12 3v2.25m6.36.39l-1.59 1.59M21 12h-2.25m-.39 6.36l-1.59-1.59M12 18.75V21m-4.77-4.23l-1.59 1.59M5.25 12H3m4.23-4.77L5.64 5.64M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"/></symbol>
+<symbol id="moon" viewBox="0 0 24 24"><path d="M21.75 15A9.75 9.75 0 0112.75 2.25a9.75 9.75 0 108.25 12.75z"/></symbol>
+<symbol id="grid" viewBox="0 0 24 24"><path d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zm0 9.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zm0 9.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></symbol>
+<symbol id="list" viewBox="0 0 24 24"><path d="M3.75 5.25h16.5m-16.5 4.5h16.5m-16.5 4.5h16.5m-16.5 4.5h16.5"/></symbol>
+<symbol id="up" viewBox="0 0 24 24"><path d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/></symbol>
+<symbol id="grip" viewBox="0 0 24 24"><path d="M9 6.5h.01M9 12h.01M9 17.5h.01M15 6.5h.01M15 12h.01M15 17.5h.01" stroke-width="3"/></symbol>
+<symbol id="warn" viewBox="0 0 24 24"><path d="M12 9v3.75m-9.3 3.38c-.87 1.5.22 3.37 1.95 3.37h14.7c1.73 0 2.82-1.87 1.95-3.37L13.95 3.5c-.87-1.5-3.03-1.5-3.9 0L2.7 16.13zM12 15.75h.01"/></symbol>
+<symbol id="ext" viewBox="0 0 24 24"><path d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"/></symbol>
+<symbol id="help" viewBox="0 0 24 24"><path d="M9.88 9.88a3 3 0 115.2 1.5c-.48.62-1.2 1.02-1.76 1.57-.5.5-.83 1.1-.83 1.8M12 17.25h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></symbol>
+</defs></svg>
+
+<div class="app" id="app">
+  <aside class="side" aria-label="Application navigation">
+    <button class="edge" id="edge" aria-label="Collapse sidebar"><svg class="i i16"><use href="#chev"/></svg></button>
+    <div class="side-h"><div class="logo">HC</div><div class="wm">Hope Center<small>Dashboard</small></div></div>
+    <nav class="menu" id="menu" aria-label="Primary"></nav>
+  </aside>
+
+  <div class="main">
+    <header class="top">
+      <button class="ibtn mbtn" id="menuBtn" aria-label="Open menu"><svg class="i"><use href="#menu"/></svg></button>
+      <button class="search" id="openCmd" aria-label="Search"><svg class="i"><use href="#search"/></svg><span style="flex:1;text-align:start">Search projects, news, people…</span><kbd>Ctrl K</kbd></button>
+      <div class="sp"></div>
+      <label class="preview" title="Mockup only: pick a role to see how the dashboard adapts"><span>Preview as</span>
+        <select id="roleSel" aria-label="Preview as role"></select></label>
+      <div class="loc" id="loc" aria-label="Language"><button aria-pressed="true" data-l="ltr">EN</button><button aria-pressed="false" data-l="rtl">AR</button></div>
+      <div class="pillgrp">
+        <div class="wrap"><button class="ibtn" id="bellBtn" aria-label="Notifications, 3 new"><svg class="i"><use href="#bell"/></svg><span class="dot" id="bellDot">3</span></button>
+          <div class="pop" id="bellPop" style="width:340px">
+            <div class="ph" style="display:flex;justify-content:space-between"><b>Notifications</b><button id="readAll" style="color:var(--brand-text);font-weight:600;font-size:13px">Mark all read</button></div>
+            <div id="bellList"></div>
+          </div></div>
+        <button class="ibtn" id="themeBtn" aria-label="Light / Dark"><svg class="i" id="themeIc"><use href="#moon"/></svg></button>
+      </div>
+      <div class="wrap"><button class="user" id="userBtn" aria-haspopup="true"><span class="av" id="av">AK</span><div style="text-align:start"><b id="uName">Amal Khoury</b><small id="uRole">Publisher</small></div><svg class="i i16"><use href="#chevd"/></svg></button>
+        <div class="pop" id="userPop" style="width:300px">
+          <div class="ph"><b id="uName2"></b><div class="muted" style="font-size:12px">signed-in account</div></div>
+          <div style="padding:10px 14px 0;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-m)">What your role can do</div>
+          <div class="perm" id="perms"></div>
+          <div class="sep"></div>
+          <button class="mi" data-go="/admin/roles"><svg class="i"><use href="#shield"/></svg>Roles &amp; permissions</button>
+          <button class="mi danger"><svg class="i"><use href="#out"/></svg>Log out</button>
+        </div></div>
+    </header>
+
+    <main class="page" id="view"></main>
+  </div>
+</div>
+
+<div class="scrim" id="scrim"><div class="dlg cmd" role="dialog" aria-label="Search">
+  <input id="cmdIn" placeholder="Jump to a page, or find a project…" autocomplete="off"><ul id="cmdList"></ul>
+  <div class="ft" style="justify-content:flex-start;gap:16px;font-size:12px;color:var(--ink-m)"><span><kbd>↑</kbd> <kbd>↓</kbd> move</span><span><kbd>Enter</kbd> open</span><span><kbd>Esc</kbd> close</span></div></div></div>
+<div class="scrim" id="confirm"><div class="dlg" role="alertdialog" style="margin-top:8vh"><div class="in"><h3 id="cT"></h3><p class="muted" id="cB" style="margin:0"></p></div><div class="ft"><button class="btn btn-o" id="cNo">Cancel</button><button class="btn btn-p" id="cYes">Delete</button></div></div></div>
+<div class="toast" id="toast" role="status"><span id="toastT"></span><button id="undo">Undo</button></div>
+
+<script>
+/* ============ roles & permissions (derived from the legacy checks; marked "proposed" where legacy was inconsistent) ============ */
+const CAPS={view:'View content',create:'Create',edit:'Edit text',delete:'Delete',publish:'Publish / take offline',hide:'Hide / unhide',english:'Mark English checked',images:'Manage photos',notify:'Receive notifications',users:'Manage users',log:'View activity log'};
+const ROLES={
+ 'Admin':{name:'Preview user',av:'PU',caps:Object.keys(CAPS),home:'pending',scope:'All cities'},
+ 'Publisher':{name:'Preview user',av:'PU',caps:['view','publish','hide','images','notify'],home:'pending',scope:'All cities'},
+ 'English Editor':{name:'Preview user',av:'PU',caps:['view','create','edit','delete','english'],home:'english',scope:'Own cities (users_places)'},
+ 'English Checker':{name:'Preview user',av:'PU',caps:['view','english'],home:'english',scope:'Own cities (users_places)'},
+ 'Photos Editor':{name:'Preview user',av:'PU',caps:['view','images'],home:'photos',scope:'All cities'},
+ 'French Editor':{name:'Preview user',av:'PU',caps:['view'],home:'none',scope:'French section (not in use)'},
+ 'Viewer':{name:'Preview user',av:'PU',caps:['view'],home:'none',scope:'All cities'}
+};
+let role='Publisher';
+const can=c=>ROLES[role].caps.includes(c);
+const needs=c=>Object.entries(ROLES).filter(([,r])=>r.caps.includes(c)).map(([n])=>n).join(', ');
+
+/* ============ sample data ============ */
+const KINDS=['Micro Project','Rehabilitation','Agricultural Project'];
+const TYPES={'Vehicles':['Taxi','Other Vehicles','Car Craft'],'Retailers':['Food','Shop'],'Crafts':['Clothes Craft','Crafts'],'Services':['Service','Beauty','Media','Medical','Maintenance'],'Rural Projects':['Agricultural','Livestock','Agricultural Vehicles'],'Culture':['Artistic Craft','Music']};
+const DONORS=['Caritas Poland','SALT',"L'Œuvre d'Orient",'Saint Nicholas','Kerk in Act','Manos Unidas','IF','Hungary Helps','Lamarck','Alma','ACN','MCC','Missio','Polish aid','Religious of Jesus and Mary','Redemptoris','CDCS','ville-de-paris','Syriac Cross','GIZ','Syriac Cross Germany','Région Sud'];
+const CITIES=['Aleppo','Homs','Damascus','Latakia','Al Wadi','Idleb','Tartus'];
+/* Real figures read from hcsyria_db on 2026-10-19 (read-only). Rows below are 12 real projects; beneficiary names, phones, DOB and story text are withheld. */
+const DB={all:2947,pending:46,online:2883,offline:18,hidden:0,english:9,nophoto:41,noloc:1038,users:89,activeUsers:40,lastPublish:'8 Sep 2026',oldestPending:'31 Oct 2024',
+  cities:[['Homs',1140],['Aleppo',883],['Damascus',510],['Latakia',165],['Al Wadi',153],['Idleb',20],['Tartus',12]],
+  pendingByCity:[['Idleb',18],['Aleppo',13],['Damascus',13],['Latakia',2]],
+  roleUsers:{'Admin':10,'English Editor':68,'French Editor':1,'Photos Editor':15,'Viewer':16,'English Checker':6,'Publisher':2}};
+const COL=['#3b6ea8','#2f8f7a','#b0662a','#8a5a9e','#6b7b2a','#a8456e'];
+let P=[{"id": 3854, "name": "Boutique", "ben": "Name withheld in mockup", "city": "Idleb", "kind": "Micro Project", "type": "Retailers", "sub": "Shop", "fund": "2026-05-06", "donor": "Caritas Poland", "mobile": "+963 ••• ••• •••", "loc": 0, "video": 1, "photos": 0, "st": "pending", "hidden": 0, "en": 1, "fam": 4, "dob": null, "lost": 0, "skills": "", "partner": "", "partner2": "", "story": "Story text withheld in the mockup. The real text is in projects_english.MPE_Suffering."}, {"id": 3819, "name": "Photography", "ben": "Name withheld in mockup", "city": "Aleppo", "kind": "Micro Project", "type": "Services", "sub": "Media", "fund": "2026-08-11", "donor": "Caritas Poland", "mobile": "+963 ••• ••• •••", "loc": 0, "video": 1, "photos": 0, "st": "pending", "hidden": 0, "en": 1, "fam": 4, "dob": null, "lost": 0, "skills": "", "partner": "", "partner2": "", "story": "Story text withheld in the mockup. The real text is in projects_english.MPE_Suffering."}, {"id": 3814, "name": "Lighting and Sound Equipment", "ben": "Name withheld in mockup", "city": "Aleppo", "kind": "Micro Project", "type": "Services", "sub": "Service", "fund": "2026-03-25", "donor": "Caritas Poland", "mobile": "+963 ••• ••• •••", "loc": 0, "video": 1, "photos": 0, "st": "pending", "hidden": 0, "en": 1, "fam": 3, "dob": null, "lost": 0, "skills": "", "partner": "", "partner2": "", "story": "Story text withheld in the mockup. The real text is in projects_english.MPE_Suffering."}, {"id": 3782, "name": "Beekeeping", "ben": "Name withheld in mockup", "city": "Aleppo", "kind": "Agricultural Project", "type": "Rural Projects", "sub": "Agricultural", "fund": "2025-12-10", "donor": "Caritas Poland", "mobile": "+963 ••• ••• •••", "loc": 0, "video": 1, "photos": 0, "st": "pending", "hidden": 0, "en": 1, "fam": 2, "dob": null, "lost": 0, "skills": "", "partner": "", "partner2": "", "story": "Story text withheld in the mockup. The real text is in projects_english.MPE_Suffering."}, {"id": 3761, "name": "Sheep Keeping", "ben": "Name withheld in mockup", "city": "Idleb", "kind": "Agricultural Project", "type": "Rural Projects", "sub": "Livestock", "fund": "2026-08-06", "donor": "Caritas Poland", "mobile": "+963 ••• ••• •••", "loc": 0, "video": 1, "photos": 0, "st": "pending", "hidden": 0, "en": 1, "fam": 3, "dob": null, "lost": 0, "skills": "", "partner": "", "partner2": "", "story": "Story text withheld in the mockup. The real text is in projects_english.MPE_Suffering."}, {"id": 3754, "name": "Dairy and cheese production", "ben": "Name withheld in mockup", "city": "Idleb", "kind": "Micro Project", "type": "Retailers", "sub": "Food", "fund": "2026-07-22", "donor": "Caritas Poland", "mobile": "+963 ••• ••• •••", "loc": 0, "video": 1, "photos": 0, "st": "pending", "hidden": 0, "en": 1, "fam": 5, "dob": null, "lost": 0, "skills": "", "partner": "", "partner2": "", "story": "Story text withheld in the mockup. The real text is in projects_english.MPE_Suffering."}, {"id": 3750, "name": "Sheep Keeping", "ben": "Name withheld in mockup", "city": "Idleb", "kind": "Agricultural Project", "type": "Rural Projects", "sub": "Livestock", "fund": "2026-08-06", "donor": "Caritas Poland", "mobile": "+963 ••• ••• •••", "loc": 0, "video": 1, "photos": 0, "st": "pending", "hidden": 0, "en": 1, "fam": 5, "dob": null, "lost": 0, "skills": "", "partner": "", "partner2": "", "story": "Story text withheld in the mockup. The real text is in projects_english.MPE_Suffering."}, {"id": 3889, "name": "Pick-up Truck", "ben": "Name withheld in mockup", "city": "Aleppo", "kind": "Micro Project", "type": "Vehicles", "sub": "Other Vehicles", "fund": "2026-07-15", "donor": "Caritas Poland", "mobile": "+963 ••• ••• •••", "loc": 0, "video": 1, "photos": 6, "st": "online", "hidden": 0, "en": 1, "fam": 4, "dob": null, "lost": 0, "skills": "", "partner": "", "partner2": "", "story": "Story text withheld in the mockup. The real text is in projects_english.MPE_Suffering."}, {"id": 3855, "name": "Tailoring workshop", "ben": "Name withheld in mockup", "city": "Aleppo", "kind": "Micro Project", "type": "Crafts", "sub": "Clothes Craft", "fund": "2026-05-13", "donor": "MCC", "mobile": "+963 ••• ••• •••", "loc": 1, "video": 1, "photos": 6, "st": "online", "hidden": 0, "en": 1, "fam": 5, "dob": null, "lost": 0, "skills": "", "partner": "", "partner2": "", "story": "Story text withheld in the mockup. The real text is in projects_english.MPE_Suffering."}, {"id": 3849, "name": "General and Student Services Office", "ben": "Name withheld in mockup", "city": "Aleppo", "kind": "Micro Project", "type": "Retailers", "sub": "Shop", "fund": "2026-04-09", "donor": "MCC", "mobile": "+963 ••• ••• •••", "loc": 1, "video": 1, "photos": 5, "st": "online", "hidden": 0, "en": 1, "fam": 5, "dob": null, "lost": 0, "skills": "", "partner": "", "partner2": "", "story": "Story text withheld in the mockup. The real text is in projects_english.MPE_Suffering."}, {"id": 3836, "name": "Lawyer", "ben": "Name withheld in mockup", "city": "Aleppo", "kind": "Micro Project", "type": "Services", "sub": "Service", "fund": "2026-04-09", "donor": "MCC", "mobile": "+963 ••• ••• •••", "loc": 1, "video": 1, "photos": 4, "st": "online", "hidden": 0, "en": 1, "fam": 6, "dob": null, "lost": 0, "skills": "", "partner": "", "partner2": "", "story": "Story text withheld in the mockup. The real text is in projects_english.MPE_Suffering."}, {"id": 1494, "name": "Car inspection device", "ben": "Name withheld in mockup", "city": "Aleppo", "kind": "Micro Project", "type": "Vehicles", "sub": "Car Craft", "fund": "2021-08-16", "donor": "Caritas Poland", "mobile": "+963 ••• ••• •••", "loc": 0, "video": 1, "photos": 5, "st": "offline", "hidden": 0, "en": 1, "fam": 4, "dob": null, "lost": 0, "skills": "", "partner": "", "partner2": "", "story": "Story text withheld in the mockup. The real text is in projects_english.MPE_Suffering."}];
+const NEWS=[];
+const stLabel={pending:['Pending publish','warn'],online:['Online','good'],offline:['Offline','grey']};
+const $=s=>document.querySelector(s);
+const ic=(n,c='')=>`<svg class="i ${c}"><use href="#${n}"/></svg>`;
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fdate=d=>d?new Date(d).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}):'—';
+function ago(d){return Math.round((new Date('2026-10-19')-new Date(d))/864e5)}
+function agoT(d){const n=ago(d);return n<60?n+' days ago':Math.round(n/30)+' months ago'}
+const color=id=>COL[id%COL.length];
+function pill(p){const [l,t]=stLabel[p.st];return `<span class="pill p-${t}"><i></i>${l}</span>`+(p.hidden?` <span class="pill p-grey">${ic('eyeoff','i16')}Hidden</span>`:'')}
+const missing=p=>[!p.fund&&'Fund date',!p.donor&&'Donor',!p.loc&&'Location',!p.photos&&'Photos',!p.en&&'English check'].filter(Boolean);
+
+/* ============ shell ============ */
+const NAV=[
+ ['Overview',[['Dashboard','home','/admin',null]]],
+ ['Content',[['Micro projects','folder','/admin/projects','view',()=>P.filter(p=>p.st==='pending').length],['Initiatives','spark','/admin/initiatives','view',()=>3],['Successes','trophy','/admin/successes','view'],['Newsletter','news','/admin/newsletter','view',()=>1],['Our team','users','/admin/team','view']]],
+ ['Programmes',[['Study Zone','book','/admin/study','view'],['DISC','book','/admin/disc','view'],['School to School','book','/admin/school','view'],['Children University','book','/admin/children','view'],['LEAP','book','/admin/leap','view'],['Roots of Hope','book','/admin/roots','view']]],
+ ['Site',[['Home covers','img','/admin/covers','images'],['Page content','doc','/admin/content','edit']]],
+ ['Administration',[['Users & roles','shield','/admin/roles','users'],['Activity log','log','/admin/log','log']]]
+];
+function renderMenu(){
+  const cur=CUR.split('?')[0];
+  $('#menu').innerHTML=NAV.map(([g,items])=>{
+    const vis=items.filter(i=>!i[3]||can(i[3]));if(!vis.length)return'';
+    return `<div class="grp"><div class="gh">${g}</div>${vis.map(([t,i,r,c,n])=>{
+      const active=r==='/admin'?cur==='/admin':cur.startsWith(r);const cnt=n&&(can('publish')||can('english')||role==='Admin')?n():0;
+      return `<a class="item" href="#${r}" ${active?'aria-current="page"':''} title="${t}">${ic(i)}<span class="t">${t}</span>${cnt?`<span class="b">${cnt}</span>`:''}</a>`}).join('')}</div>`}).join('');
+}
+function renderUser(){
+  const r=ROLES[role];$('#av').textContent=r.av;$('#uName').textContent=r.name;$('#uName2').textContent=r.name;$('#uRole').textContent=role;
+  $('#perms').innerHTML=Object.entries(CAPS).map(([k,l])=>`<span class="${can(k)?'y':'n'}">${l}</span>`).join('');
+}
+$('#roleSel').innerHTML=Object.keys(ROLES).map(r=>`<option ${r===role?'selected':''}>${r}</option>`).join('');
+$('#roleSel').onchange=e=>{role=e.target.value;renderUser();route()};
+
+/* ============ router ============ */
+let CUR=location.hash.slice(1)||'/admin';
+function go(p){CUR=p;try{history.replaceState(null,'','#'+p)}catch(e){}route()}
+document.addEventListener('click',e=>{const a=e.target.closest('a[href^="#/"]');if(a){e.preventDefault();go(a.getAttribute('href').slice(1))}});
+function route(){
+  renderMenu();renderUser();
+  const h=CUR.split('?')[0];
+  let m;const v=$('#view');window.scrollTo(0,0);
+  if(h==='/admin')v.innerHTML=Dashboard();
+  else if(h==='/admin/projects')v.innerHTML=List();
+  else if(h==='/admin/projects/create')v.innerHTML=Form(null);
+  else if(m=h.match(/^\/admin\/projects\/(\d+)\/edit$/))v.innerHTML=Form(P.find(p=>p.id==m[1]));
+  else if(m=h.match(/^\/admin\/projects\/(\d+)$/))v.innerHTML=Show(P.find(p=>p.id==m[1]));
+  else if(h==='/admin/roles')v.innerHTML=Roles();
+  else v.innerHTML=Stub(h);
+  after(h);
+}
+window.addEventListener('hashchange',()=>{CUR=location.hash.slice(1)||'/admin';route()});
+
+const Head=(title,{count,sub,crumbs,actions}={})=>`<header class="ph-head"><div>${crumbs?`<nav class="crumbs" aria-label="Breadcrumb">${crumbs.map((c,i)=>(i?'<span>/</span>':'')+(c[1]?`<a href="#${c[1]}">${c[0]}</a>`:`<b>${c[0]}</b>`)).join('')}</nav>`:''}<h1>${title}${count!=null?`<span class="cnt">${count}</span>`:''}</h1>${sub?`<p class="sub">${sub}</p>`:''}</div><div style="display:flex;gap:8px;flex-wrap:wrap">${actions||''}</div></header>`;
+const Forbidden=(what,cap)=>`<div class="forbid">${Head('No access')}<div class="empty"><div class="ic">${ic('lock')}</div><b>Your role can’t ${what}</b>This needs: ${needs(cap)}.<div style="margin-top:16px"><a class="btn btn-o" href="#/admin/projects">Back to projects</a></div></div></div>`;
+const Stub=h=>`${Head('Coming in the next mockup',{crumbs:[['Dashboard','/admin'],[h]]})}<div class="panel"><div class="empty"><div class="ic">${ic('folder')}</div><b>${esc(h)}</b>Only the dashboard, micro projects (list, show, create, edit) and roles are drawn here. Every other section reuses the same list and form patterns.</div></div>`;
+
+/* ============ Dashboard (role aware) ============ */
+const HOME={
+ pending:{title:'Waiting to be published',sel:p=>p.st==='pending',action:'Publish'},
+ english:{title:'Waiting for English check',sel:p=>!p.en,action:'Mark checked'},
+ photos:{title:'Projects without photos',sel:p=>!p.photos,action:'Add photos'},
+ none:{title:'Latest changes',sel:p=>true,action:null}
+};
+function Dashboard(){
+  const r=ROLES[role],home=HOME[r.home],items=P.filter(home.sel);const real=({pending:DB.pending,english:DB.english,photos:DB.nophoto})[r.home]??items.length;
+  const hr=role==='Admin'||role==='Publisher'?'Good morning':'Welcome back';
+  const first=r.name.split(' ')[0];
+  const tiles=[
+    can('publish')||role==='Admin'?`<a class="tile crit" href="#/admin/projects?st=pending"><div class="top"><div><div class="l">Pending publish</div><div class="v">${DB.pending}</div></div><div class="ic">${ic('up')}</div></div><div class="hint">Oldest funded ${DB.oldestPending}</div></a>`:'',
+    `<a class="tile act" href="#/admin/projects"><div class="top"><div><div class="l">Online micro projects</div><div class="v">${DB.online.toLocaleString('en-GB')}</div></div><div class="ic">${ic('folder')}</div></div><div class="hint">Last published ${DB.lastPublish}</div></a>`,
+    can('english')||role==='Admin'?`<a class="tile warn" href="#/admin/projects?st=english"><div class="top"><div><div class="l">English check</div><div class="v">${DB.english}</div></div><div class="ic">${ic('globe')}</div></div><div class="hint">Waiting for an editor</div></a>`:'',
+    can('images')?`<a class="tile warn" href="#/admin/projects?st=nophoto"><div class="top"><div><div class="l">Without photos</div><div class="v">${DB.nophoto}</div></div><div class="ic">${ic('img')}</div></div><div class="hint">Pending projects with no photo</div></a>`:'',
+    `<a class="tile warn" href="#/admin/projects"><div class="top"><div><div class="l">Without location</div><div class="v">${DB.noloc.toLocaleString('en-GB')}</div></div><div class="ic">${ic('pin')}</div></div><div class="hint">Projects with no map pin</div></a>`,
+    can('users')?`<a class="tile" href="#/admin/roles"><div class="top"><div><div class="l">Active accounts</div><div class="v">${DB.activeUsers} <small>/ ${DB.users}</small></div></div><div class="ic">${ic('users')}</div></div><div class="hint">See roles &amp; permissions</div></a>`:''
+  ].filter(Boolean).slice(0,4).join('');
+  return Head(hr,{sub:`Signed in as <b>${role}</b> · ${r.scope}. ${home.action?`<b>${real}</b> ${real===1?'item needs':'items need'} you.`:'You have read-only access.'}`,actions:can('create')?`<a class="btn btn-p" href="#/admin/projects/create">${ic('plus')}New project</a>`:''})+
+  `<section class="tiles" aria-label="At a glance">${tiles}</section>
+   <div class="cols"><div class="stack">
+     <section class="panel"><div class="panel-h"><h2>${home.title}<span class="badge" id="qn">${real}</span></h2><a class="btn btn-g s" href="#/admin/projects">Open list ${ic('chev','i16').replace('<svg class="i i16"','<svg style="transform:scaleX(-1)" class="i i16"')}</a></div>
+       <div id="queue">${items.length?items.slice(0,6).map(Q).join(''):`<div class="empty"><div class="ic">${ic('check')}</div><b>All caught up</b>Nothing is waiting for you.</div>`}</div></section>
+     <section class="panel"><div class="panel-h"><h2>Online micro projects by city<span class="badge">${DB.online.toLocaleString('en-GB')}</span></h2></div><div class="cities">
+       ${DB.cities.map(c=>`<div class="city"><div class="n">${c[1].toLocaleString('en-GB')}</div><div class="trk"><i data-w="${Math.round(c[1]/DB.online*100)}"></i></div><small class="muted"><b style="color:var(--ink)">${c[0]}</b> · ${(c[1]/DB.online*100).toFixed(1)}%</small></div>`).join('')}</div></section>
+   </div><aside class="stack">
+     <section class="panel"><div class="panel-h"><h2>Content health</h2></div><div style="padding:4px 16px 8px">
+        ${[['amber',DB.nophoto,'Pending projects without photos',can('images')],['amber',DB.english,'Waiting for English check',can('english')],['amber',DB.noloc.toLocaleString('en-GB'),'Projects without a map pin',can('edit')],['grey',DB.hidden,'Hidden from the public site',can('hide')]].map(h=>`<div class="q" style="padding:10px 0;grid-template-columns:auto 1fr auto"><span class="pill p-${h[0]==='amber'?'warn':h[0]==='green'?'good':'grey'}">${h[1]}</span><span>${h[2]}</span>${h[3]&&h[1]?`<a class="btn btn-g s" href="#/admin/projects">Review</a>`:''}</div>`).join('')}</div></section>
+     <section class="panel"><div class="panel-h"><h2>Recent activity</h2><a class="btn btn-g s ${can('log')?'':'off'}" href="#/admin/log" ${can('log')?'':`title="Needs: ${needs('log')}"`}>${can('log')?'Full log':ic('lock','i16')+' Full log'}</a></div><ul class="feed">
+        <li><span class="av">PB</span><div><p>Project <b>3044</b> made online</p><small>8 Sep 2026 · 06:16</small></div></li>
+        <li><span class="av">PB</span><div><p>Project <b>3060</b> made online</p><small>8 Sep 2026 · 06:15</small></div></li>
+        <li><span class="av">PH</span><div><p>Photo deleted on project <b>3060</b></p><small>8 Sep 2026 · 06:15</small></div></li></ul></section>
+   </aside></div>`;
+}
+function Q(p){const h=HOME[ROLES[role].home];
+  const btn=h.action==='Publish'&&can('publish')?`<button class="btn btn-p s" data-pub="${p.id}">${ic('check')}Publish</button>`:h.action==='Mark checked'&&can('english')?`<button class="btn btn-p s" data-en="${p.id}">${ic('check')}Mark checked</button>`:h.action==='Add photos'&&can('images')?`<a class="btn btn-p s" href="#/admin/projects/${p.id}/edit?photos">${ic('img')}Add photos</a>`:'';
+  const miss=missing(p);
+  return `<div class="q" data-id="${p.id}"><a href="#/admin/projects/${p.id}"><div class="nm">${esc(p.name)}</div><div class="mt"><span class="tnum">#${p.id}</span><span>${p.city}</span>${p.fund?`<span ${p.st==='pending'&&ago(p.fund)>180?'style="color:var(--brand-text);font-weight:600"':''}>funded ${agoT(p.fund)}</span>`:''}${miss.length&&h.action==='Publish'?`<span style="color:var(--warn)">${ic('warn','i16')} Missing: ${miss.join(', ')}</span>`:''}</div></a><div class="acts"><a class="btn btn-g s" href="#/admin/projects/${p.id}">View</a>${btn}</div></div>`}
+
+/* ============ Micro Projects list ============ */
+const F={q:'',city:'',type:'',donor:'',tab:'all',view:'table',page:1,sel:new Set()};
+const TABS=[['all','All'],['pending','Pending publish'],['online','Online'],['offline','Offline'],['hidden','Hidden'],['english','Needs English'],['nophoto','No photos']];
+function filtered(){return P.filter(p=>{const q=F.q.toLowerCase();
+  if(q&&!(p.name+p.ben+p.id).toLowerCase().includes(q))return 0;if(F.city&&p.city!==F.city)return 0;if(F.type&&p.type!==F.type)return 0;if(F.donor&&p.donor!==F.donor)return 0;
+  const t=F.tab;if(t==='pending'||t==='online'||t==='offline')return p.st===t;if(t==='hidden')return p.hidden;if(t==='english')return!p.en;if(t==='nophoto')return!p.photos;return 1})}
+function List(){
+  const qs=new URLSearchParams((CUR.split('?')[1]||''));if(qs.get('st')){F.tab=qs.get('st');CUR='/admin/projects';history.replaceState(null,'','#/admin/projects')}
+  return Head('Micro projects',{count:DB.all.toLocaleString('en-GB'),sub:'Everything shown on the public micro-projects page, and what is waiting to go there.',actions:`<a class="btn btn-o" href="/projects/micro-projects" target="_blank">${ic('ext')}View public page</a>${can('create')?`<a class="btn btn-p" href="#/admin/projects/create">${ic('plus')}New project</a>`:`<span class="btn btn-o off" title="Needs: ${needs('create')}">${ic('lock')}New project</span>`}`})+
+  `<section class="panel"><div class="tabs" role="tablist" id="ltabs"></div>
+    <div style="padding:14px 16px;border-bottom:1px solid var(--line)"><div class="bar">
+      <div class="field" style="flex:2;min-width:220px"><label for="fq">Search</label><div class="inwrap">${ic('search','i16')}<input id="fq" class="inp" placeholder="Name, beneficiary or number" value="${esc(F.q)}"></div></div>
+      <div class="field"><label for="fc">City</label><select id="fc" class="sel"><option value="">All cities</option>${CITIES.map(c=>`<option ${F.city===c?'selected':''}>${c}</option>`).join('')}</select></div>
+      <div class="field"><label for="ft">Category</label><select id="ft" class="sel"><option value="">All categories</option>${Object.keys(TYPES).map(c=>`<option ${F.type===c?'selected':''}>${c}</option>`).join('')}</select></div>
+      <div class="field"><label for="fd">Donor</label><select id="fd" class="sel"><option value="">All donors</option>${DONORS.map(c=>`<option ${F.donor===c?'selected':''}>${c}</option>`).join('')}</select></div>
+      <div class="vt" role="group" aria-label="View"><button aria-pressed="${F.view==='table'}" data-v="table" aria-label="Table">${ic('list')}</button><button aria-pressed="${F.view==='cards'}" data-v="cards" aria-label="Cards">${ic('grid')}</button></div>
+    </div><div class="chips" id="fchips" style="margin-top:10px"></div></div>
+    <div id="lbody"></div>
+    <div class="bulk" id="bulk" role="region" aria-label="Bulk actions"><b id="bn"></b><span class="sp"></span>
+      <button class="btn btn-g s" id="bClear">Clear</button>
+      ${can('publish')?`<button class="btn btn-p s" id="bPub">${ic('check')}Publish</button>`:''}
+      ${can('hide')?`<button class="btn btn-g s" id="bHide">${ic('eyeoff')}Hide</button>`:''}
+      ${can('english')?`<button class="btn btn-g s" id="bEn">${ic('globe')}English checked</button>`:''}
+    </div></section>`;
+}
+function rowActions(p){
+  const menu=[];
+  if(can('images'))menu.push(['img','Add / reorder photos',`go('/admin/projects/${p.id}/edit?photos')`]);
+  if(can('hide'))menu.push([p.hidden?'eye':'eyeoff',p.hidden?'Unhide':'Hide from public',`toggleHide(${p.id})`]);
+  if(can('publish')&&p.st==='online')menu.push(['out','Take offline',`setSt(${p.id},'offline')`]);
+  if(can('publish')&&p.st==='offline')menu.push(['up','Publish again',`setSt(${p.id},'online')`]);
+  if(can('english')&&!p.en)menu.push(['globe','Mark English checked',`markEn(${p.id})`]);
+  if(can('delete'))menu.push(['trash','Delete…',`askDelete(${p.id})`,'danger']);
+  return `<div class="acts">
+    ${can('publish')&&p.st==='pending'?`<button class="btn btn-p s" data-pub="${p.id}" ${missing(p).filter(x=>x!=='English check').length?`disabled title="Missing: ${missing(p).join(', ')}"`:''}>${ic('check')}Publish</button>`:''}
+    ${can('edit')?`<a class="btn btn-o s" href="#/admin/projects/${p.id}/edit" data-stop>${ic('edit')}Edit</a>`:can('images')?`<a class="btn btn-o s" href="#/admin/projects/${p.id}/edit?photos" data-stop>${ic('img')}Photos</a>`:''}
+    ${menu.length?`<div class="wrap"><button class="btn btn-g s" style="width:30px;padding:0" data-menu aria-label="More actions" aria-haspopup="true">${ic('dots')}</button><div class="pop" style="min-width:210px;padding:4px 0">${menu.map(m=>`<button class="mi ${m[3]||''}" onclick="${m[2]}">${ic(m[0])}${m[1]}</button>`).join('')}</div></div>`:''}
+  </div>`}
+function paintList(){
+  const all=filtered(),per=8,pages=Math.max(1,Math.ceil(all.length/per));F.page=Math.min(F.page,pages);const rows=all.slice((F.page-1)*per,F.page*per);
+  const n=k=>DB[k].toLocaleString('en-GB');
+  $('#ltabs').innerHTML=TABS.map(([k,l])=>`<button class="tab" role="tab" aria-selected="${F.tab===k}" data-t="${k}">${l}<span class="badge">${n(k)}</span></button>`).join('');
+  const ch=[['city',F.city],['type',F.type],['donor',F.donor],['q',F.q&&`“${F.q}”`]].filter(c=>c[1]);
+  $('#fchips').innerHTML=ch.length?ch.map(c=>`<span class="chip">${c[1]}<button data-rm="${c[0]}" aria-label="Remove filter">${ic('x','i16')}</button></span>`).join('')+`<button class="btn btn-g s" id="clr">Clear all</button>`:'';
+  const sel=F.sel;
+  let body;
+  if(!rows.length)body=`<div class="empty"><div class="ic">${ic('search')}</div><b>No projects match</b>Try removing a filter.<div style="margin-top:14px"><button class="btn btn-o" id="clr2">Clear filters</button></div></div>`;
+  else if(F.view==='cards')body=`<div class="cards">${rows.map(p=>`<div class="pc" data-open="${p.id}"><div class="im" style="background:linear-gradient(135deg,${color(p.id)},${color(p.id+2)})">${ic('img')}</div><div class="bd"><div class="nm" style="font-weight:700;color:var(--s-dark)">${esc(p.name)}</div><div class="muted" style="font-size:12px">#${p.id} · ${p.city} · ${p.type}</div><div>${pill(p)}</div></div></div>`).join('')}</div>`;
+  else body=`<div class="tbl-wrap"><table class="tbl"><thead><tr><th style="width:36px"><input class="cb" type="checkbox" id="all" aria-label="Select all on page" ${rows.every(r=>sel.has(r.id))?'checked':''}></th><th>ID</th><th>Project</th><th>City</th><th class="hide-m">Category</th><th class="hide-m">Funded</th><th class="hide-m">Donor</th><th class="hide-m">Has</th><th>Status</th><th style="text-align:end">Actions</th></tr></thead><tbody>
+  ${rows.map(p=>`<tr data-open="${p.id}" class="${sel.has(p.id)?'sel':''}"><td><input class="cb" type="checkbox" data-sel="${p.id}" ${sel.has(p.id)?'checked':''} aria-label="Select ${esc(p.name)}"></td><td class="id hide-s">${p.id}</td>
+   <td><div class="nm">${esc(p.name)}</div><div class="muted" style="font-size:12px">${p.kind}</div></td><td class="hide-s">${p.city}</td><td class="hide-s hide-m">${p.type}<div class="faint" style="font-size:12px">${p.sub}</div></td><td class="hide-s hide-m tnum">${fdate(p.fund)}</td><td class="hide-s hide-m">${p.donor||'<span class="faint">—</span>'}</td>
+   <td class="hide-s hide-m"><div class="info"><span class="${p.mobile?'y':'n'}" title="Mobile">${ic('phone','i16')}</span><span class="${p.loc?'y':'n'}" title="Location">${ic('pin','i16')}</span><span class="${p.video?'y':'n'}" title="Video">${ic('video','i16')}</span><span class="${p.photos?'y':'n'}" title="${p.photos} photos">${ic('img','i16')}</span></div></td>
+   <td>${pill(p)}</td><td class="acell">${rowActions(p)}</td></tr>`).join('')}</tbody></table></div>`;
+  $('#lbody').innerHTML=body+`<div class="foot"><span>Showing ${all.length?(F.page-1)*per+1:0}–${Math.min(all.length,F.page*per)} of ${all.length} sample rows <span class="faint">(mockup loads 12 of ${DB.all.toLocaleString('en-GB')})</span></span><div class="pager">${Array.from({length:pages},(_,i)=>`<button ${F.page===i+1?'aria-current="page"':''} data-pg="${i+1}">${i+1}</button>`).join('')}</div></div>`;
+  $('#bulk').classList.toggle('on',sel.size>0);$('#bn').textContent=sel.size+' selected';
+}
+
+/* ============ Show ============ */
+function Show(p){
+  if(!p)return Stub('Project not found');
+  const miss=missing(p),ready=!miss.filter(x=>x!=='English check').length;
+  const chk=[[p.fund,'Fund date set',`Fund date: ${fdate(p.fund)}`],[p.donor,'Donor chosen',p.donor||'No donor'],[p.loc,'Location on map',p.loc?'Pin set':'No location'],[p.photos,'At least one photo',p.photos+' photos'],[p.en,'English checked',p.en?'Checked':'Not checked yet']];
+  return Head(esc(p.name),{crumbs:[['Dashboard','/admin'],['Micro projects','/admin/projects'],['#'+p.id]],sub:`${p.kind} · ${p.city} · ${p.type} / ${p.sub} &nbsp; ${pill(p)}`,actions:
+    `<a class="btn btn-o" href="#/admin/projects">${ic('chev','i16')}Back</a>
+     <a class="btn btn-o" href="/projects/micro-projects?projectDetailsModal=${p.id}" target="_blank">${ic('ext')}Preview public</a>
+     ${can('edit')?`<a class="btn btn-o" href="#/admin/projects/${p.id}/edit">${ic('edit')}Edit</a>`:''}
+     ${can('publish')&&p.st==='pending'?`<button class="btn btn-p" data-pub="${p.id}" ${ready?'':'disabled'}>${ic('check')}Publish</button>`:''}
+     ${can('publish')&&p.st==='online'?`<button class="btn btn-o" onclick="setSt(${p.id},'offline')">${ic('out')}Take offline</button>`:''}
+     ${can('delete')?`<button class="btn btn-d" onclick="askDelete(${p.id})">${ic('trash')}Delete</button>`:''}`})+
+  `<div class="cols"><div class="stack">
+    <section class="panel"><div class="panel-h"><h2>Details</h2></div><dl class="facts" style="margin:0">
+      ${[['Project number','#'+p.id],['Beneficiary',p.ben],['Year of birth','Withheld'],['Family members',p.fam],['Lost work in the war',p.lost?'Yes':'No'],['Skills',p.skills],['Fund date',fdate(p.fund)],['Donor',p.donor||'—'],['Partner',p.partner||'—'],['Mobile',p.mobile||'—'],['Video',p.video?'Linked':'—'],['Location',p.loc?'Pin set':'Missing']].map(f=>`<div class="fact"><dt>${f[0]}</dt><dd>${esc(f[1])}</dd></div>`).join('')}</dl></section>
+    <section class="panel"><div class="panel-h"><h2>Suffering and need</h2></div><div class="story">${esc(p.story)}</div></section>
+    <section class="panel"><div class="panel-h"><h2>Photos<span class="badge">${p.photos}</span></h2>${can('images')?`<a class="btn btn-o s" href="#/admin/projects/${p.id}/edit?photos">${ic('img')}Manage photos</a>`:''}</div>
+      ${p.photos?`<div class="gal">${Array.from({length:p.photos},(_,i)=>`<div class="ph" style="background:linear-gradient(135deg,${color(p.id+i)},${color(p.id+i+3)})">${ic('img')}${i===0?'<span class="tg">Cover</span>':''}</div>`).join('')}</div>`:`<div class="empty"><div class="ic">${ic('img')}</div><b>No photos yet</b>A project needs at least one before it can be published.</div>`}</section>
+  </div><aside class="stack">
+    <section class="panel"><div class="panel-h"><h2>Ready to publish?</h2><span class="pill p-${ready?'good':'warn'}">${ready?'Ready':miss.length+' to fix'}</span></div>
+      <ul class="chk">${chk.map(c=>`<li class="${c[0]?'ok':'no'}"><span class="m">${ic(c[0]?'check':'warn')}</span><span>${c[1]}<div class="faint" style="font-size:12px">${c[2]}</div></span>${!c[0]&&can('edit')?`<a href="#/admin/projects/${p.id}/edit">Fix</a>`:''}</li>`).join('')}</ul></section>
+    <section class="panel"><div class="panel-h"><h2>History</h2></div><ol class="tl"><li class="now">${p.st==='pending'?'Submitted for publish':'Published'}<small>${p.fund?'Funded '+fdate(p.fund):'No fund date yet'}</small></li></ol></section>
+  </aside></div>`;
+}
+
+/* ============ Create / Edit ============ */
+function Form(p){
+  const edit=!!p,onlyPhotos=CUR.includes('photos'),ro=edit?!can('edit'):false;
+  if(!edit&&!can('create'))return Forbidden('create projects','create');
+  if(edit&&!can('edit')&&!can('images'))return Forbidden('edit projects','edit');
+  const d=p||{id:'',name:'',ben:'',city:'',type:'Services',sub:'Service',kind:'Micro Project',fund:'',donor:'',mobile:'',loc:0,video:0,photos:0,fam:'',dob:'',lost:null,skills:'',partner:'',partner2:'',story:''};
+  const dis=ro?'disabled':'';
+  const seg=(name,opts,val)=>`<div class="seg" role="radiogroup">${opts.map(o=>`<label><input type="radio" name="${name}" value="${o}" ${val===o?'checked':''} ${dis}><span>${o}</span></label>`).join('')}</div>`;
+  const f=(label,input,{req,help,full,k}={})=>`<div class="field ${full?'full':''}" data-k="${k||''}"><label>${label}${req?' <span class="req">*</span>':''}</label>${input}<div class="err">This field is required.</div>${help?`<div class="help">${help}</div>`:''}</div>`;
+  return Head(edit?`Edit project #${p.id}`:'New project',{crumbs:[['Dashboard','/admin'],['Micro projects','/admin/projects'],edit?[`#${p.id}`,`/admin/projects/${p.id}`]:['New'],edit?['Edit']:null].filter(Boolean).map((c,i,a)=>i===a.length-1?[c[0]]:c),sub:edit?esc(p.name):'Fill what you know now. Nothing goes public until someone publishes it.'})+
+  (ro?`<div class="note lock">${ic('lock')}<div><b>Photos only.</b> Your role (${role}) can manage photos on this project but not change its text. To edit details you need: ${needs('edit')}.</div></div>`:'')+
+  `<form class="form panel" style="padding:24px 24px 0;overflow:visible" id="frm" novalidate>
+   <div class="fs" data-s="basics"><div class="fs-rail"><h3><span class="dotk"></span>Basics</h3><p>City, number, name and kind of project.</p></div><div class="fs-f">
+     ${f('City',seg('city',CITIES,d.city),{req:1,full:1,k:'city'})}
+     ${f('Project number',`<input class="inp" name="num" value="${d.id}" ${dis} inputmode="numeric">`,{req:1,k:'num',help:edit?'':'Next free number: 3890'})}
+     ${f('Project name',`<input class="inp" name="name" value="${esc(d.name)}" ${dis}>`,{req:1,k:'name'})}
+     ${f('Project type',seg('kind',KINDS,d.kind||'Micro Project'),{req:1,full:1})}
+     ${f('Category',seg('type',Object.keys(TYPES),d.type),{req:1,full:1,k:'type'})}
+     ${f('Sub category',`<div id="subs">${seg('sub',TYPES[d.type]||[],d.sub)}</div>`,{req:1,full:1,help:'The choices follow the category.'})}
+   </div></div>
+   <div class="fs" data-s="ben"><div class="fs-rail"><h3><span class="dotk"></span>Beneficiary</h3><p>Who the project is for.</p></div><div class="fs-f">
+     ${f('Beneficiary name',`<input class="inp" name="ben" value="${esc(d.ben)}" ${dis}>`,{req:1,k:'ben',full:1})}
+     ${f('Year of birth',`<input class="inp" name="dob" value="${d.dob||''}" ${dis} inputmode="numeric" placeholder="1985">`,{req:1,k:'dob'})}
+     ${f('Family members',`<input class="inp" name="fam" value="${d.fam}" ${dis} inputmode="numeric">`,{req:1,k:'fam'})}
+     ${f('Lost work during the war?',seg('lost',['Yes','No'],d.lost==null?'':d.lost?'Yes':'No'),{req:1,full:1})}
+     ${f('Skills and experience',`<textarea class="ta" name="skills" ${dis}>${esc(d.skills)}</textarea>`,{full:1})}
+   </div></div>
+   <div class="fs" data-s="story"><div class="fs-rail"><h3><span class="dotk"></span>Story</h3><p>Shown to supporters on the public page.</p></div><div class="fs-f">
+     ${f('Suffering and need',`<textarea class="ta" name="story" style="min-height:140px" ${dis}>${esc(d.story)}</textarea>`,{req:1,k:'story',full:1,help:'<span id="cc">0</span> characters'})}
+     ${f('Partner name',`<input class="inp" name="partner" value="${esc(d.partner)}" ${dis}>`)}
+     ${f('Second partner',`<input class="inp" name="partner2" value="${esc(d.partner2)}" ${dis}>`)}
+   </div></div>
+   <div class="fs" data-s="fund"><div class="fs-rail"><h3><span class="dotk"></span>Funding &amp; contact</h3><p>Needed before the project can be published.</p></div><div class="fs-f">
+     ${f('Date of fund',`<input class="inp" type="date" name="fund" value="${d.fund}" min="2018-01-01" max="2026-10-19" ${dis}>`,{help:'Required to publish.'})}
+     ${f('Mobile',`<input class="inp" name="mobile" value="${esc(d.mobile)}" ${dis} inputmode="tel">`)}
+     ${f('Project location',`<input class="inp" name="loc" value="${d.loc?'34.7324, 36.7137':''}" ${dis} placeholder="latitude, longitude">`,{help:'Paste from a map. Required to publish.'})}
+     ${f('Video link',`<input class="inp" name="video" value="${d.video?'https://youtu.be/…':''}" ${dis}>`)}
+     <div class="field full"><label>Project donor <span class="req">*</span></label><div class="chips" style="gap:8px">${DONORS.map(x=>`<label style="cursor:pointer"><input type="radio" name="donor" value="${x}" ${d.donor===x?'checked':''} ${dis} style="position:absolute;opacity:0" class="dchip"><span class="chip" style="height:34px;padding:0 14px;${d.donor===x?'background:var(--primary);color:#fff;border-color:var(--primary)':''}">${x}</span></label>`).join('')}</div></div>
+   </div></div>
+   ${edit?`<div class="fs" data-s="photos" id="photos"><div class="fs-rail"><h3><span class="dotk"></span>Photos</h3><p>The first photo is the cover. Drag to reorder.</p></div><div>
+     <div class="gal" style="padding:0">${Array.from({length:d.photos},(_,i)=>`<div class="ph" style="background:linear-gradient(135deg,${color(d.id+i)},${color(d.id+i+3)})"><span class="gr">${ic('grip')}</span>${i===0?'<span class="tg">Cover</span>':''}${can('images')?`<button type="button" class="rm" aria-label="Remove photo" data-rmph>${ic('trash','i16')}</button>`:''}</div>`).join('')}
+     ${can('images')?`<div class="drop" role="button" tabindex="0">${ic('up')}<div>Drop photos<br><span class="faint" style="font-weight:400">or click to browse</span></div></div>`:''}</div></div></div>`:''}
+   <div class="sticky-bar"><span class="dirty" id="dirty">${ic('warn','i16')}Unsaved changes</span>
+     <span class="muted" style="margin-inline-end:auto" id="fprog"></span>
+     <a class="btn btn-o" href="#/admin/projects${edit?'/'+p.id:''}">Cancel</a>
+     ${ro?`<button class="btn btn-p" type="button" id="save" data-photo-only>${ic('check')}Save photos</button>`:`<button class="btn btn-p" type="submit" id="save">${ic('check')}${edit?'Save changes':'Create project'}</button>`}</div>
+  </form>`;
+}
+
+/* ============ Roles & permissions ============ */
+function Roles(){
+  if(!can('users'))return Forbidden('manage users and roles','users');
+  return Head('Roles & permissions',{sub:'What each role can do. Pages only show the actions a person is allowed to use; blocked actions explain who can do them.',actions:`<button class="btn btn-p">${ic('plus')}Invite user</button>`})+
+  `<section class="panel"><div class="panel-h"><h2>Permission matrix</h2><span class="pill p-act">Proposed from legacy checks · confirm</span></div><div class="tbl-wrap"><table class="mx"><thead><tr><th>Can…</th>${Object.keys(ROLES).map(r=>`<th class="${r===role?'me':''}">${r}</th>`).join('')}</tr></thead><tbody>
+  ${Object.entries(CAPS).map(([k,l])=>`<tr><td>${l}</td>${Object.entries(ROLES).map(([r,v])=>`<td class="${r===role?'me':''} ${v.caps.includes(k)?'y':'n'}">${v.caps.includes(k)?ic('check'):'—'}</td>`).join('')}</tr>`).join('')}</tbody></table></div></section>
+  <section class="panel"><div class="panel-h"><h2>Accounts by role<span class="badge">${DB.users}</span></h2><span class="muted" style="font-size:12px">${DB.activeUsers} active · from users_roles (a person can hold more than one)</span></div><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Role</th><th>Accounts</th><th>Scope</th></tr></thead><tbody>
+   ${Object.entries(ROLES).map(([r,v])=>`<tr style="cursor:default"><td><span class="pill p-grey">${r}</span></td><td class="tnum">${DB.roleUsers[r]}</td><td>${v.scope}</td></tr>`).join('')}</tbody></table></div></section>
+  <section class="panel"><div class="panel-h"><h2>Page access</h2><span class="muted" style="font-size:12px">16 permissions in the database, given per person on top of the role (about 2.6 each)</span></div><div class="chips" style="padding:16px">${['Home','Micro Projects','School To School','Children University','DISC','Study Zone','Initiatives','Newsletter','Our Team','Users','Log','Cover Photos','LEAP','Public Content','Roots','Micro Public Page'].map(x=>`<span class="chip">${x}</span>`).join('')}</div></section>
+  <div class="note info">${ic('help')}<div><b>Decision needed.</b> In the legacy dashboard a Publisher saw only “Home” and the bell, though Publishers can publish. Here a Publisher also sees the content lists so they can review what they publish. Place-scoped editors see only the cities in users_places (about 1.4 each).</div></div>`;
+}
+
+/* ============ behaviours ============ */
+function toast(msg,undo){$('#toastT').textContent=msg;const t=$('#toast');t.classList.add('on');$('#undo').style.display=undo?'':'none';window._undo=undo;clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove('on'),6000)}
+$('#undo').onclick=()=>{window._undo&&window._undo();$('#toast').classList.remove('on')};
+function setSt(id,s){const p=P.find(x=>x.id==id),old=p.st;p.st=s;route();toast(`#${id} is now ${stLabel[s][0].toLowerCase()}`,()=>{p.st=old;route()})}
+function toggleHide(id){const p=P.find(x=>x.id==id);p.hidden=p.hidden?0:1;route();toast(p.hidden?`#${id} hidden from the public site`:`#${id} visible again`,()=>{p.hidden=p.hidden?0:1;route()})}
+function markEn(id){const p=P.find(x=>x.id==id);p.en=1;route();toast(`#${id} marked as English checked`,()=>{p.en=0;route()})}
+function doPublish(ids){
+  const ps=ids.map(i=>P.find(p=>p.id==i)).filter(p=>p&&p.st==='pending');
+  const bad=ps.filter(p=>missing(p).filter(x=>x!=='English check').length);
+  if(bad.length){toast(`#${bad[0].id} is missing ${missing(bad[0]).join(', ')}`);return}
+  ids.forEach(i=>{const r=document.querySelector(`.q[data-id="${i}"]`);r&&r.classList.add('gone')});
+  setTimeout(()=>{ps.forEach(p=>p.st='online');F.sel.clear();route();toast(ps.length===1?`Published “${ps[0].name}”`:`Published ${ps.length} projects`,()=>{ps.forEach(p=>p.st='pending');route()})},320);
+}
+let delId=null;
+function askDelete(id){delId=id;const p=P.find(x=>x.id==id);$('#cT').textContent=`Delete project #${id}?`;$('#cB').textContent=`“${p.name}” and its photos will be removed. This can’t be undone.`;$('#confirm').classList.add('open')}
+$('#cNo').onclick=()=>$('#confirm').classList.remove('open');
+$('#cYes').onclick=()=>{$('#confirm').classList.remove('open');const i=P.findIndex(p=>p.id==delId),[g]=P.splice(i,1);if(CUR.includes('/'+delId))go('/admin/projects');else route();toast(`Deleted #${delId}`,()=>{P.splice(i,0,g);route()})};
+
+document.addEventListener('click',e=>{
+  const t=e.target;
+  const pub=t.closest('[data-pub]');if(pub){e.stopPropagation();doPublish([+pub.dataset.pub]);return}
+  const en=t.closest('[data-en]');if(en){markEn(+en.dataset.en);return}
+  const g=t.closest('[data-go]');if(g){go(g.dataset.go)}
+  const mn=t.closest('[data-menu]');if(mn){e.stopPropagation();const pop=mn.nextElementSibling,o=!pop.classList.contains('open');closePops();pop.classList.toggle('open',o);return}
+  if(t.closest('.pop')&&!t.closest('.mi')){return}
+  if(!t.closest('.pop')||t.closest('.mi'))closePops();
+  if(t.closest('[data-stop]')||t.closest('.cb')||t.closest('button')||t.closest('.pop'))return;
+  const row=t.closest('[data-open]');if(row)go('/admin/projects/'+row.dataset.open);
+});
+function closePops(){document.querySelectorAll('.pop.open').forEach(p=>p.classList.remove('open'))}
+function pop(btn,pp){$(btn).onclick=e=>{e.stopPropagation();const o=!$(pp).classList.contains('open');closePops();$(pp).classList.toggle('open',o)}}
+pop('#bellBtn','#bellPop');pop('#userBtn','#userPop');
+
+/* header controls */
+const app=$('#app');
+$('#edge').onclick=()=>{app.classList.toggle('collapsed');$('#edge').setAttribute('aria-label',app.classList.contains('collapsed')?'Expand sidebar':'Collapse sidebar')};
+$('#menuBtn').onclick=e=>{e.stopPropagation();app.classList.add('drawer')};
+document.addEventListener('click',e=>{if(app.classList.contains('drawer')&&!e.target.closest('.side'))app.classList.remove('drawer')});
+$('#menu').addEventListener('click',()=>app.classList.remove('drawer'));
+$('#themeBtn').onclick=()=>{const d=document.documentElement.classList.toggle('dark');document.body.classList.toggle('dark',d);document.querySelector('#themeIc use').setAttribute('href',d?'#sun':'#moon')};
+document.documentElement.classList.remove('dark');
+const _toggle=document.documentElement.classList;
+$('#loc').onclick=e=>{const b=e.target.closest('button');if(!b)return;document.documentElement.dir=b.dataset.l;document.querySelectorAll('#loc button').forEach(x=>x.setAttribute('aria-pressed',x===b))};
+$('#readAll').onclick=()=>{paintBell(true);$('#bellDot')&&$('#bellDot').remove()};
+function paintBell(read){$('#bellList').innerHTML=[['Project 3044 made online','8 Sep 2026'],['Project 3060 made online','8 Sep 2026'],['Photo deleted on project 3060','8 Sep 2026'],['Project 3889 made online','Jul 2026']].map((n,i)=>`<div style="display:flex;gap:10px;padding:12px 14px;border-top:1px solid var(--line);${i<3&&!read?'background:var(--crit-s)':''}"><div><div style="font-weight:600;color:var(--s-dark)">${n[0]}</div><small class="faint">${n[1]}</small></div></div>`).join('')}
+paintBell();
+
+/* dark class must sit on <html> so tokens apply everywhere */
+new MutationObserver(()=>{}).observe(document.documentElement,{attributes:true});
+
+/* command palette */
+let ci=0;
+const CMD=()=>[...NAV.flatMap(([,it])=>it.filter(i=>!i[3]||can(i[3])).map(i=>[i[0],i[1],'Go to',i[2]])),...(can('create')?[['New project','plus','Create','/admin/projects/create']]:[]),...P.map(p=>[p.name,'folder','Project #'+p.id,'/admin/projects/'+p.id])];
+function cmdR(){const q=$('#cmdIn').value.toLowerCase(),r=CMD().filter(c=>c[0].toLowerCase().includes(q)).slice(0,8);ci=Math.min(ci,Math.max(r.length-1,0));window._r=r;$('#cmdList').innerHTML=r.length?r.map((c,i)=>`<li aria-selected="${i===ci}" data-i="${i}">${ic(c[1])}${esc(c[0])}<small>${c[2]}</small></li>`).join(''):'<li class="faint">No results</li>'}
+function cmd(o){$('#scrim').classList.toggle('open',o);if(o){$('#cmdIn').value='';ci=0;cmdR();setTimeout(()=>$('#cmdIn').focus(),0)}}
+$('#openCmd').onclick=()=>cmd(true);$('#scrim').onclick=e=>{if(e.target.id==='scrim')cmd(false);const l=e.target.closest('li[data-i]');if(l){go(window._r[l.dataset.i][3]);cmd(false)}};
+$('#cmdIn').oninput=()=>{ci=0;cmdR()};
+document.addEventListener('keydown',e=>{
+  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();cmd(true)}
+  if(e.key==='Escape'){closePops();$('#confirm').classList.remove('open')}
+  if(!$('#scrim').classList.contains('open'))return;
+  if(e.key==='Escape')cmd(false);
+  if(e.key==='ArrowDown'){ci++;cmdR();e.preventDefault()}if(e.key==='ArrowUp'){ci=Math.max(0,ci-1);cmdR();e.preventDefault()}
+  if(e.key==='Enter'&&window._r[ci]){go(window._r[ci][3]);cmd(false)}
+});
+
+/* per-view wiring */
+function after(h){
+  document.querySelectorAll('.trk i').forEach(i=>setTimeout(()=>i.style.width=i.dataset.w+'%',80));
+  if(h==='/admin/projects'){paintList();wireList()}
+  if(/\/edit$|\/create$/.test(h))wireForm();
+  if(CUR.includes('photos')){const el=document.getElementById('photos');el&&setTimeout(()=>el.scrollIntoView({behavior:'smooth',block:'center'}),100)}
+}
+function wireList(){
+  const v=$('#view');
+  v.oninput=e=>{if(e.target.id==='fq'){F.q=e.target.value;F.page=1;paintList()}};
+  v.onchange=e=>{const t=e.target;
+    if(t.id==='fc')F.city=t.value;else if(t.id==='ft')F.type=t.value;else if(t.id==='fd')F.donor=t.value;
+    else if(t.dataset.sel){t.checked?F.sel.add(+t.dataset.sel):F.sel.delete(+t.dataset.sel)}
+    else if(t.id==='all'){document.querySelectorAll('[data-sel]').forEach(c=>{t.checked?F.sel.add(+c.dataset.sel):F.sel.delete(+c.dataset.sel)})}
+    else return;F.page=1;const y=window.scrollY;paintList();window.scrollTo(0,y)};
+  v.onclick=e=>{const t=e.target;
+    const tb=t.closest('[data-t]');if(tb){F.tab=tb.dataset.t;F.page=1;paintList();return}
+    const vv=t.closest('[data-v]');if(vv){F.view=vv.dataset.v;document.querySelectorAll('.vt button').forEach(b=>b.setAttribute('aria-pressed',b===vv));paintList();return}
+    const rm=t.closest('[data-rm]');if(rm){F[rm.dataset.rm]='';route();return}
+    if(t.closest('#clr')||t.closest('#clr2')){Object.assign(F,{q:'',city:'',type:'',donor:'',tab:'all'});route();return}
+    const pg=t.closest('[data-pg]');if(pg){F.page=+pg.dataset.pg;paintList();return}
+    if(t.closest('#bClear')){F.sel.clear();paintList();return}
+    if(t.closest('#bPub')){doPublish([...F.sel]);return}
+    if(t.closest('#bHide')){[...F.sel].forEach(i=>P.find(p=>p.id==i).hidden=1);const n=F.sel.size;F.sel.clear();paintList();toast(n+' projects hidden');return}
+    if(t.closest('#bEn')){[...F.sel].forEach(i=>P.find(p=>p.id==i).en=1);const n=F.sel.size;F.sel.clear();paintList();toast(n+' marked English checked');return}
+  };
+}
+function wireForm(){
+  const f=$('#frm');if(!f)return;
+  const dirty=()=>$('#dirty').classList.add('on');
+  const prog=()=>{const req=['num','name','ben','dob','fam','story'];const n=req.filter(k=>f.elements[k]&&f.elements[k].value.trim()).length+(f.querySelector('[name=city]:checked')?1:0);$('#fprog').textContent=`${n} of ${req.length+1} required fields filled`;
+    const sec={basics:['num','name'],ben:['ben','dob','fam'],story:['story'],fund:[]};
+    document.querySelectorAll('.fs[data-s]').forEach(s=>{const k=sec[s.dataset.s];if(k)s.classList.toggle('done',k.length&&k.every(x=>f.elements[x].value.trim()))})};
+  f.addEventListener('input',()=>{dirty();prog();const cc=$('#cc');cc&&(cc.textContent=f.elements.story.value.length)});
+  f.addEventListener('change',e=>{dirty();if(e.target.name==='type'){$('#subs').innerHTML=`<div class="seg">${TYPES[e.target.value].map((s,i)=>`<label><input type="radio" name="sub" value="${s}" ${i?'':'checked'}><span>${s}</span></label>`).join('')}</div>`}
+    if(e.target.classList.contains('dchip')){f.querySelectorAll('.dchip+.chip').forEach(c=>c.style.cssText='height:34px;padding:0 14px');e.target.nextElementSibling.style.cssText='height:34px;padding:0 14px;background:var(--primary);color:#fff;border-color:var(--primary)'}});
+  const cc=$('#cc');cc&&(cc.textContent=f.elements.story.value.length);prog();
+  f.addEventListener('click',e=>{const r=e.target.closest('[data-rmph]');if(r){r.closest('.ph').remove();dirty()}if(e.target.closest('[data-photo-only]')){toast('Photos saved');$('#dirty').classList.remove('on')}});
+  f.onsubmit=e=>{e.preventDefault();let bad=0;
+    [['num'],['name'],['ben'],['dob'],['fam'],['story']].forEach(([k])=>{const w=f.elements[k].closest('.field');const empty=!f.elements[k].value.trim();w.classList.toggle('bad',empty);bad+=empty});
+    if(bad){const first=f.querySelector('.field.bad');first.scrollIntoView({behavior:'smooth',block:'center'});first.querySelector('input,textarea').focus();toast(`${bad} required ${bad>1?'fields need':'field needs'} attention`);return}
+    $('#dirty').classList.remove('on');toast(f.querySelector('[name=num]').value&&CUR.includes('create')?'Project created as Pending publish':'Changes saved');setTimeout(()=>go('/admin/projects'),600)};
+}
+route();
+</script>
+</body>
+</html>
