@@ -1867,9 +1867,9 @@
             "action": "PublicController@studyzone",
             "name": "public.studyzone2",
             "order": 17,
-            "status": "pending",
-            "notes": null,
-            "ported_from": null,
+            "status": "ported",
+            "notes": "Gender rings are labelled by the actual gender (legacy called the larger share Male whichever it was). Search takes bound values; legacy spliced them into its SQL. The statistics band comes from the optional Study Zone attendance database and is left out without it (legacy fataled). Centres without hours of their own fall back to their record's (legacy kept the previous centre's text). The activities are the shared list (filter bar, tiles or rows, Load More) in place of legacy's five town tabs, by request.",
+            "ported_from": "6d45ef9",
             "live_status": "200",
             "examples": [
                 {
