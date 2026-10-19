@@ -60,6 +60,7 @@
                 <button type="button" class="ibtn mbtn" x-on:click.stop="drawer = true" aria-label="Open the menu"><x-admin.icon name="menu" /></button>
                 <button type="button" class="search" x-on:click="$dispatch('admin-palette')" aria-label="Search"><x-admin.icon name="search" /><span style="flex: 1; text-align: start">Search projects, pages…</span><kbd>Ctrl K</kbd></button>
                 <div class="sp"></div>
+                <livewire:admin.notifications />
                 <div class="pillgrp">
                     <button type="button" class="ibtn" x-on:click="toggleTheme()" aria-label="Switch between light and dark">
                         <x-admin.icon name="sun" x-show="dark" x-cloak /><x-admin.icon name="moon" x-show="! dark" />
