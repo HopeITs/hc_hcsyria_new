@@ -3,8 +3,8 @@
 namespace App\Actions;
 
 use App\Models\Project;
+use App\Support\Admin\ProjectPhotoFiles;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\File;
 use RuntimeException;
 
 /*
@@ -64,26 +64,16 @@ class DeleteProject
             DB::table('projects')->where('id', $projectId)->delete();
         });
 
+        // Both files of each photo, found under MEDIA_ROOT (a stored path is "/images/...", not a disk path).
         $deleted = 0;
         $missing = 0;
 
         foreach ($paths as $path) {
-            foreach ([$path, $this->thumbnailFor($path)] as $file) {
-                if (File::exists($file)) {
-                    File::delete($file);
-                    $deleted++;
-                } else {
-                    $missing++;
-                }
-            }
+            $removed = ProjectPhotoFiles::delete($path);
+            $deleted += $removed;
+            $missing += 2 - $removed;
         }
 
         return ['deleted_files' => $deleted, 'missing_files' => $missing];
-    }
-
-    /** Thumbnails are stored beside the original as "<name>b.jpg". */
-    private function thumbnailFor(string $path): string
-    {
-        return substr($path, 0, -4).'b.jpg';
     }
 }

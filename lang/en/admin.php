@@ -26,6 +26,15 @@ return [
         'saved' => 'Project #:number saved.',
         'created' => 'Project #:number created. It waits to be published.',
         'deleted' => 'Project #:number deleted.',
+        // Photos (ManageProjectPhotos).
+        'photos' => [
+            'added' => ':count photo added to project #:number.|:count photos added to project #:number.',
+            'added_offline' => ':count photo added to project #:number. It went back to the pending list because its photos changed.|:count photos added to project #:number. It went back to the pending list because its photos changed.',
+            'removed' => 'Photo removed from project #:number.',
+            'removed_offline' => 'Photo removed from project #:number. It went back to the pending list because its photos changed.',
+            'rejected' => 'Not saved: :reason',
+            'unavailable' => 'Photos cannot be processed on this server: the GD image extension is not enabled.',
+        ],
         'invalid' => 'Some fields need attention. They are marked below.',
         'forbidden' => 'Your role cannot do that.',
         'gone' => 'That project no longer exists.',
@@ -77,6 +86,9 @@ return [
         'delete_body' => 'The project and its photos are removed for good. This cannot be undone.',
         'delete_action' => 'Delete',
         'cancel' => 'Cancel',
+        'photo_title' => 'Remove this photo?',
+        'photo_body' => 'Both sizes of the photo are deleted from the server. This cannot be undone.',
+        'photo_action' => 'Remove',
     ],
 
     'tabs' => [
