@@ -8,7 +8,7 @@ namespace App\Livewire\Concerns;
  * words a message itself.
  *
  *   $this->alert('saved', ['number' => 3071]);
- *   $this->alert('refusals.not_ready', [...], 'error');   // a key outside 'alerts' starts with its group
+ *   $this->alert('refusals.not_ready', [...], 'error');   // the refusals are the one group outside 'alerts'
  *   $this->flashAlert('deleted', [...]);                  // shown on the next page, after a redirect
  *
  * `undo` is a call on this same component, [method, ...args]; the toast shows an
@@ -38,13 +38,14 @@ trait SendsAlerts
      */
     private function alertPayload(string $key, array $params, string $type, ?array $undo): array
     {
-        $line = str_contains($key, '.') && ! str_starts_with($key, 'state.') && ! str_starts_with($key, 'state_many.')
-            ? 'admin.'.$key
-            : 'admin.alerts.'.$key;
+        $line = str_starts_with($key, 'refusals.') ? 'admin.'.$key : 'admin.alerts.'.$key;
+
+        // A message with a count may have a singular and a plural form ("1 photo|2 photos").
+        $message = isset($params['count']) ? trans_choice($line, (int) $params['count'], $params) : __($line, $params);
 
         return [
             'type' => $type,
-            'message' => __($line, $params),
+            'message' => $message,
             'undo' => $undo === null ? null : ['component' => $this->getId(), 'call' => $undo],
         ];
     }

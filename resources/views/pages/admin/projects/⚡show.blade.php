@@ -8,6 +8,7 @@ use App\Support\Admin\ProjectReadiness;
 use App\Support\SafeHtml;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Locked;
+use Livewire\Attributes\On;
 use Livewire\Component;
 
 /*
@@ -28,6 +29,10 @@ new #[Layout('layouts::admin', ['title' => 'Micro project'])] class extends Comp
         $this->authorize('view', $project);
         $this->projectId = $project->getKey();
     }
+
+    /** The photos panel changed them: this page's checklist reads them again on its next render. */
+    #[On('photos-changed')]
+    public function photosChanged(): void {}
 
     /** The project is gone: back to the list, with the alert waiting there. */
     protected function afterDeleted(Project $project): void
@@ -52,7 +57,6 @@ new #[Layout('layouts::admin', ['title' => 'Micro project'])] class extends Comp
             'status' => ProjectStatus::of($project->published, $project->done, $project->hidden),
             'checks' => ProjectReadiness::checks($project),
             'blocking' => ProjectReadiness::BLOCKING,
-            'photos' => AdminProjectQuery::photos($this->projectId),
             'history' => AdminProjectQuery::history($this->projectId),
         ];
     }
@@ -106,20 +110,7 @@ new #[Layout('layouts::admin', ['title' => 'Micro project'])] class extends Comp
                     @endif
                 </x-admin.panel>
 
-                <x-admin.panel title="Photos" :count="$photos->count()">
-                    @if ($photos->isEmpty())
-                        <x-admin.empty-state icon="img" title="No photos yet">A project needs at least one before it can go online.</x-admin.empty-state>
-                    @else
-                        <div class="gal">
-                            @foreach ($photos as $photo)
-                                <div class="ph" style="background: var(--head)">
-                                    <img src="{{ $photo->path }}" alt="Photo {{ $loop->iteration }} of project #{{ $project->number }}" loading="lazy">
-                                    @if ($loop->first)<span class="tg">Cover</span>@endif
-                                </div>
-                            @endforeach
-                        </div>
-                    @endif
-                </x-admin.panel>
+                <livewire:admin.project-photos :project-id="$project->id" :key="'photos-'.$project->id" />
             </div>
 
             <aside class="stack" aria-label="Status">

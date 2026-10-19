@@ -3,6 +3,8 @@
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
 
+require_once __DIR__.'/Support/admin.php';
+
 /*
  * Feature tests read the real hcsyria_db: page parity depends on real content,
  * and the schema is shared with the live legacy site, so a copy would drift.
