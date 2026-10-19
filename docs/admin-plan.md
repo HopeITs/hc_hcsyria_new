@@ -216,6 +216,13 @@ shows what nobody has marked as seen, not the viewer's own changes, refreshes ev
 seconds and "Mark all as seen" is shared by every Admin, as in legacy. It is for the
 Admin only (legacy showed it to the same people).
 
+**Dashboard queues** — under the micro projects' queue, one panel each for
+initiatives, successes and newsletter items, on the same tab by role (waiting to be
+published for those who publish, the English check for those who check it, the latest
+items for everyone else), only for sections the account may open. Rows and the panel
+link to the item and to the list on that tab; the action buttons stay on the lists,
+because they belong to the page that manages each kind.
+
 **Roots of Hope** — `ContentKind::Roots` (address `/admin/roots`, log category 11):
 a title and the flipbook link (both required, within the columns' real limits of 50
 and 100; legacy checked 150), a cover and an optional PDF. The cover is re-encoded
@@ -287,8 +294,6 @@ npm run build                                # tests read the Vite manifest
    whether national numbers are shown at all.
 2. **Our Team**.
 3. **Cover photos** and **Page content**.
-6. **Dashboard**: widgets for initiatives, successes and news in the work queue
-   (today it follows micro projects).
 7. **Newsletter**: sending (legacy `sendEmail`, `sendEmailAll`) — not built on
    purpose, it sends mail to real people.
 8. **Not planned**: the French translation screens.
