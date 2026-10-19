@@ -45,7 +45,7 @@ final class ContentActions
 
         $transitions = array_values(array_filter(
             ContentTransition::cases(),
-            fn (ContentTransition $transition): bool => $allowed[$transition->value] && $transition->appliesTo($project),
+            fn (ContentTransition $transition): bool => $kind->supports($transition) && $allowed[$transition->value] && $transition->appliesTo($project),
         ));
 
         $blockers = $kind->rowBlockers($project);

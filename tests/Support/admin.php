@@ -7,6 +7,8 @@ use App\Models\Log;
 use App\Models\Project;
 use App\Models\ProjectContent;
 use App\Models\Role;
+use App\Models\Success;
+use App\Models\SuccessContent;
 use App\Models\User;
 use App\Models\UserPlace;
 use App\Models\UserRole;
@@ -130,4 +132,35 @@ function adminInitiative(array $attributes = [], array $content = []): Initiativ
 function initiativeLogs(Initiative $initiative)
 {
     return Log::query()->where(['project_id' => $initiative->id, 'category' => 1]);
+}
+
+/** A success story (DISC, "Students Of The Month") with its text and a picture path, offline and English checked. */
+function adminSuccess(array $attributes = [], array $content = []): Success
+{
+    $success = Success::unguarded(fn () => Success::query()->create([
+        'image_path' => '/images/successes/youth/zqs.jpg',
+        'inner_image_path' => '0',
+        'inner_big_image_path' => '0',
+        'video' => '0',
+        'who_category_id' => 3,
+        'what_category_id' => 5,
+        'sub_what_category_id' => 17,
+        'place_id' => 1,
+        'sz_center_id' => null,
+        'project_id' => null,
+        'english_check' => 1,
+        'french_translation' => '0',
+        'online' => '0',
+        ...$attributes,
+    ]));
+
+    SuccessContent::query()->create(['success_id' => $success->id, 'title' => 'zqs success '.$success->id, 'text' => '<p>The story of a student.</p>', ...$content]);
+
+    return $success;
+}
+
+/** The activity-log rows of a success story (logs category 2). */
+function successLogs(Success $success)
+{
+    return Log::query()->where(['project_id' => $success->id, 'category' => 2]);
 }

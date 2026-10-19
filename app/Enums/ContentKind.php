@@ -3,15 +3,18 @@
 namespace App\Enums;
 
 use App\Actions\Admin\DeleteInitiative;
+use App\Actions\Admin\DeleteSuccess;
 use App\Actions\DeleteProject;
 use App\Models\Initiative;
 use App\Models\Project;
+use App\Models\Success;
 use App\Support\Admin\PhotoFolders;
 use App\Support\Admin\ProjectReadiness;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use LogicException;
 
 /*
  * The kinds of content the staff dashboard manages the same way: what each is
@@ -24,10 +27,15 @@ enum ContentKind: string
 {
     case Project = 'project';
     case Initiative = 'initiative';
+    case Success = 'success';
 
     public static function of(Model $item): self
     {
-        return $item instanceof Initiative ? self::Initiative : self::Project;
+        return match (true) {
+            $item instanceof Initiative => self::Initiative,
+            $item instanceof Success => self::Success,
+            default => self::Project,
+        };
     }
 
     /** @return class-string<Model> */
@@ -36,6 +44,7 @@ enum ContentKind: string
         return match ($this) {
             self::Project => Project::class,
             self::Initiative => Initiative::class,
+            self::Success => Success::class,
         };
     }
 
@@ -62,6 +71,7 @@ enum ContentKind: string
         return match ($this) {
             self::Project => 0,
             self::Initiative => 1,
+            self::Success => 2,
         };
     }
 
@@ -75,6 +85,7 @@ enum ContentKind: string
         return match ($this) {
             self::Project => ['table' => 'images', 'owner' => 'project_id', 'path' => 'MPI_Path'],
             self::Initiative => ['table' => 'initiatives_images', 'owner' => 'initiative_id', 'path' => 'path'],
+            self::Success => throw new LogicException('A success story has one picture, not a gallery.'),
         };
     }
 
@@ -108,6 +119,7 @@ enum ContentKind: string
         return match ($this) {
             self::Project => ['small' => [630, 420], 'big' => [1620, 1080]],
             self::Initiative => ['small' => [720, 480], 'big' => [2000, 1333]],
+            self::Success => throw new LogicException('A success story has one picture, not a gallery.'),
         };
     }
 
@@ -123,6 +135,7 @@ enum ContentKind: string
         return match ($this) {
             self::Project => DeleteProject::class,
             self::Initiative => DeleteInitiative::class,
+            self::Success => DeleteSuccess::class,
         };
     }
 
@@ -132,6 +145,7 @@ enum ContentKind: string
         return match ($this) {
             self::Project => 'Project Deleted',
             self::Initiative => 'Initiative deleted',
+            self::Success => 'Success deleted',
         };
     }
 
@@ -159,6 +173,12 @@ enum ContentKind: string
                 ContentTransition::Unhide => ['hidden' => false],
                 ContentTransition::CheckEnglish => ['english_check' => 1],
             },
+            self::Success => match ($transition) {
+                ContentTransition::Publish => ['online' => '1'],
+                ContentTransition::Unpublish => ['online' => '0'],
+                ContentTransition::CheckEnglish => ['english_check' => 1],
+                ContentTransition::Hide, ContentTransition::Unhide => [],
+            },
         });
     }
 
@@ -180,6 +200,12 @@ enum ContentKind: string
                 ContentTransition::Unhide => 'Initiative Status: Pending to publish',
                 ContentTransition::CheckEnglish => 'Initiative English Checked',
             },
+            self::Success => match ($transition) {
+                ContentTransition::Publish => 'Made online',
+                ContentTransition::Unpublish => 'Made offline',
+                ContentTransition::CheckEnglish => 'English Checked',
+                ContentTransition::Hide, ContentTransition::Unhide => '',
+            },
         };
     }
 
@@ -198,7 +224,7 @@ enum ContentKind: string
             ]);
         }
 
-        return $item instanceof Initiative && (int) $item->english_check !== 1 ? ['english'] : [];
+        return ($item instanceof Initiative || $item instanceof Success) && (int) $item->english_check !== 1 ? ['english'] : [];
     }
 
     /**
@@ -211,7 +237,13 @@ enum ContentKind: string
     {
         return match ($this) {
             self::Project => ProjectReadiness::blockers($row),
-            self::Initiative => (int) $row->english_check === 1 ? [] : ['english'],
+            self::Initiative, self::Success => (int) $row->english_check === 1 ? [] : ['english'],
         };
+    }
+
+    /** Does this kind have the move? A success story has no hidden state. */
+    public function supports(ContentTransition $transition): bool
+    {
+        return $this !== self::Success || ! in_array($transition, [ContentTransition::Hide, ContentTransition::Unhide], true);
     }
 }
