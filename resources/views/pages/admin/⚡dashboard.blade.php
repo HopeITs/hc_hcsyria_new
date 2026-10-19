@@ -37,9 +37,7 @@ new #[Layout('layouts::admin', ['title' => 'Dashboard'])] class extends Componen
             'queueRows' => AdminProjectIndexQuery::make()->limitedTo($places)->tab($queue['tab'])->paginate(self::QUEUE_SIZE)->items(),
             'queueTotal' => $counts[$queue['tab']],
             'counts' => $counts,
-            'facts' => $dashboard->facts(),
             'cities' => $dashboard->onlineByCity(),
-            'activity' => $dashboard->recentActivity(),
             'may' => [
                 'publish' => $may(AdminCapability::Publish) || $may(AdminCapability::CheckEnglish),
                 'english' => $may(AdminCapability::CheckEnglish) || $may(AdminCapability::Edit),
@@ -61,81 +59,41 @@ new #[Layout('layouts::admin', ['title' => 'Dashboard'])] class extends Componen
         </x-slot:actions>
     </x-admin.page-header>
 
-    <section class="tiles" aria-label="At a glance">
-        @if ($may['publish'])
-            <x-admin.stat-tile label="Pending publish" :value="number_format($counts['pending'])" tone="crit" icon="up" :href="route('admin.projects.index', ['tab' => 'pending'])"
-                :hint="$facts['oldest_pending'] ? 'Oldest funded '.\Illuminate\Support\Carbon::parse($facts['oldest_pending'])->format('j M Y') : null" />
-        @endif
-        <x-admin.stat-tile label="Online" :value="number_format($counts['online'])" icon="folder" :href="route('admin.projects.index', ['tab' => 'online'])"
-            :hint="$facts['last_published'] ? 'Last published '.\Illuminate\Support\Carbon::parse($facts['last_published'])->format('j M Y') : null" />
-        @if ($may['english'])
-            <x-admin.stat-tile label="English not checked" :value="number_format($counts['english'])" tone="warn" icon="globe" :href="route('admin.projects.index', ['tab' => 'english'])" />
-        @endif
-        @if ($may['photos'])
-            <x-admin.stat-tile label="Without photos" :value="number_format($counts['nophoto'])" tone="warn" icon="img" :href="route('admin.projects.index', ['tab' => 'nophoto'])" />
-        @endif
-        @if ($may['edit'])
-            <x-admin.stat-tile label="Online without a map pin" :value="number_format($facts['without_location'])" tone="warn" icon="pin" />
-        @endif
-    </section>
-
-    <div class="cols">
-        <div class="stack">
-            <x-admin.panel :title="$queue['title']" :count="number_format($queueTotal)">
-                <x-slot:toolbar>
-                    <a href="{{ route('admin.projects.index', ['tab' => $queue['tab']]) }}" wire:navigate class="btn btn-g s">Open the list</a>
-                </x-slot:toolbar>
-
-                @forelse ($queueRows as $project)
-                    <div class="q" wire:key="queue-{{ $project->id }}">
-                        <a href="{{ route('admin.projects.show', $project->id) }}" wire:navigate>
-                            <div class="nm">{{ $project->name }}</div>
-                            <div class="mt">
-                                <span class="tnum">#{{ $project->number }}</span>
-                                <span>{{ $project->city }}</span>
-                                @if ($project->funded)<span>funded {{ \Illuminate\Support\Carbon::parse($project->funded)->diffForHumans() }}</span>@endif
-                                @if ($queue['action'] === 'pending' && ($missing = \App\Support\Admin\ProjectReadiness::blockers($project)))
-                                    <span style="color: var(--warn)"><x-admin.icon name="warn" class="i16" /> Needs: {{ \App\Support\Admin\ProjectReadiness::describe($missing) }}</span>
-                                @endif
-                            </div>
-                        </a>
-                        <x-admin.content-actions :item="$project" />
-                    </div>
-                @empty
-                    <x-admin.empty-state icon="check" title="All caught up">Nothing is waiting here.</x-admin.empty-state>
-                @endforelse
-            </x-admin.panel>
-
-            <x-admin.panel title="Online micro projects by city" :count="number_format($counts['online'])">
-                <div class="cities">
-                    @foreach ($cities as $city)
-                        @php $share = $counts['online'] > 0 ? $city->total / $counts['online'] * 100 : 0; @endphp
-                        <div class="city">
-                            <div class="n tnum">{{ number_format($city->total) }}</div>
-                            <div class="trk"><i style="width: {{ round($share) }}%"></i></div>
-                            <small class="muted"><b style="color: var(--ink)">{{ $city->city }}</b> · {{ number_format($share, 1) }}%</small>
-                        </div>
-                    @endforeach
+    <x-admin.panel title="Online micro projects by city" :count="number_format($counts['online'])">
+        <div class="cities">
+            @foreach ($cities as $city)
+                @php $share = $counts['online'] > 0 ? $city->total / $counts['online'] * 100 : 0; @endphp
+                <div class="city">
+                    <div class="n tnum">{{ number_format($city->total) }}</div>
+                    <div class="trk"><i style="width: {{ round($share) }}%"></i></div>
+                    <small class="muted"><b style="color: var(--ink)">{{ $city->city }}</b> · {{ number_format($share, 1) }}%</small>
                 </div>
-            </x-admin.panel>
+            @endforeach
         </div>
+    </x-admin.panel>
 
-        <aside class="stack" aria-label="Activity">
-            <x-admin.panel title="Recent activity">
-                <ul class="feed">
-                    @forelse ($activity as $entry)
-                        <li>
-                            <span class="av">{{ \Illuminate\Support\Str::of((string) $entry->by)->explode(' ')->map(fn ($word) => mb_substr($word, 0, 1))->take(2)->implode('') ?: '?' }}</span>
-                            <div>
-                                <p>{{ $entry->operation }}@if ($entry->number) · project <b>#{{ $entry->number }}</b>@endif</p>
-                                <small>{{ $entry->by }} · {{ \Illuminate\Support\Carbon::parse($entry->at)->diffForHumans() }}</small>
-                            </div>
-                        </li>
-                    @empty
-                        <li><p class="muted">No activity yet.</p></li>
-                    @endforelse
-                </ul>
-            </x-admin.panel>
-        </aside>
-    </div>
+    <x-admin.panel :title="$queue['title']" :count="number_format($queueTotal)">
+        <x-slot:toolbar>
+            <a href="{{ route('admin.projects.index', ['tab' => $queue['tab']]) }}" wire:navigate class="btn btn-g s">Open the list</a>
+        </x-slot:toolbar>
+
+        @forelse ($queueRows as $project)
+            <div class="q" wire:key="queue-{{ $project->id }}">
+                <a href="{{ route('admin.projects.show', $project->id) }}" wire:navigate>
+                    <div class="nm">{{ $project->name }}</div>
+                    <div class="mt">
+                        <span class="tnum">#{{ $project->number }}</span>
+                        <span>{{ $project->city }}</span>
+                        @if ($project->funded)<span>funded {{ \Illuminate\Support\Carbon::parse($project->funded)->diffForHumans() }}</span>@endif
+                        @if ($queue['action'] === 'pending' && ($missing = \App\Support\Admin\ProjectReadiness::blockers($project)))
+                            <span style="color: var(--warn)"><x-admin.icon name="warn" class="i16" /> Needs: {{ \App\Support\Admin\ProjectReadiness::describe($missing) }}</span>
+                        @endif
+                    </div>
+                </a>
+                <x-admin.content-actions :item="$project" />
+            </div>
+        @empty
+            <x-admin.empty-state icon="check" title="All caught up">Nothing is waiting here.</x-admin.empty-state>
+        @endforelse
+    </x-admin.panel>
 </div>
