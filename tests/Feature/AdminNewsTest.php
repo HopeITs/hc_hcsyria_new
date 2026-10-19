@@ -95,9 +95,9 @@ it('lists items, finds by title, filters by kind, place and tag, and counts the 
 it('draws only the buttons the role may use', function () {
     $news = adminNews();
 
-    Livewire::actingAs(staff('Viewer'))->test('pages::admin.news.index')->set('search', "zqn news {$news->id}")->assertDontSee('Publish')->assertDontSee('Edit');
-    Livewire::actingAs(staff('Publisher'))->test('pages::admin.news.index')->set('search', "zqn news {$news->id}")->assertSee('Publish')->assertDontSee('Edit');
-    Livewire::actingAs(staff('English Editor'))->test('pages::admin.news.index')->set('search', "zqn news {$news->id}")->assertSee('Edit')->assertDontSee('Publish');
+    Livewire::actingAs(staff('Viewer'))->test('pages::admin.news.index')->set('search', "zqn news {$news->id}")->assertDontSee('Publish')->assertDontSee('Edit</a>', false);
+    Livewire::actingAs(staff('Publisher'))->test('pages::admin.news.index')->set('search', "zqn news {$news->id}")->assertSee('Publish')->assertDontSee('Edit</a>', false);
+    Livewire::actingAs(staff('English Editor'))->test('pages::admin.news.index')->set('search', "zqn news {$news->id}")->assertSee('Edit</a>', false)->assertDontSee('Publish');
 });
 
 // -------------------------------------------------------------------- state moves

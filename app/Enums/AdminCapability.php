@@ -14,6 +14,8 @@ namespace App\Enums;
  *  - Publish: Admin or Publisher, and only once the English text is checked.
  *  - English check: Admin or English Checker (legacy home page).
  *  - Photos: Admin or Photos Editor; Publisher too, as on the legacy home page.
+ *  - Subscribers (their addresses are personal data): Admin and Publisher, who send the
+ *    newsletter, may see the list; only the Admin removes an address.
  *  - View: every role. Legacy gave Publisher and English Checker only a Home
  *    page, so they could not open the project they were asked to review; they
  *    can here (a deliberate change, recorded in docs/upgrade-plan.md).
@@ -29,6 +31,8 @@ enum AdminCapability: string
     case Hide = 'hide';
     case CheckEnglish = 'check-english';
     case ManagePhotos = 'manage-photos';
+    case ViewSubscribers = 'view-subscribers';
+    case DeleteSubscribers = 'delete-subscribers';
 
     /** @return list<string> role names, as stored in the `roles` table */
     public function roles(): array
@@ -40,6 +44,8 @@ enum AdminCapability: string
             self::Publish, self::Hide => ['Admin', 'Publisher'],
             self::CheckEnglish => ['Admin', 'English Checker'],
             self::ManagePhotos => ['Admin', 'Photos Editor', 'Publisher'],
+            self::ViewSubscribers => ['Admin', 'Publisher'],
+            self::DeleteSubscribers => ['Admin'],
         };
     }
 
@@ -55,6 +61,8 @@ enum AdminCapability: string
             self::Hide => 'Hide',
             self::CheckEnglish => 'Mark English as checked',
             self::ManagePhotos => 'Manage photos',
+            self::ViewSubscribers => 'See newsletter subscribers',
+            self::DeleteSubscribers => 'Remove subscribers',
         };
     }
 }
