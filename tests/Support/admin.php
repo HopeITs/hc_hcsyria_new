@@ -9,6 +9,7 @@ use App\Models\NewsContent;
 use App\Models\Project;
 use App\Models\ProjectContent;
 use App\Models\Role;
+use App\Models\RootsOfHope;
 use App\Models\Success;
 use App\Models\SuccessContent;
 use App\Models\User;
@@ -214,4 +215,19 @@ function initiativeForm(array $overrides = []): array
         'form.donors' => [(string) DB::table('donors')->orderBy('id')->value('id')],
         ...$overrides,
     ];
+}
+
+/** A pending magazine edition with a cover, ready to publish. */
+function adminMagazine(array $attributes = []): RootsOfHope
+{
+    $edition = RootsOfHope::query()->create(['title' => 'zqm', 'image_path' => '/images/rootsofhope/zqm.jpg', 'file_path' => '0', 'url' => 'https://example.test/flip', 'online' => 0, ...$attributes]);
+    $edition->update(['title' => 'zqm edition '.$edition->id]);
+
+    return $edition;
+}
+
+/** The activity-log rows of a magazine edition (logs category 11). */
+function magazineLogs(RootsOfHope $edition)
+{
+    return Log::query()->where(['project_id' => $edition->id, 'category' => 11]);
 }

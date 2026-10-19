@@ -43,7 +43,7 @@ section:
 | Programme initiatives: Study Zone, DISC, School to School, Children University, LEAP (their initiative screens, images, testimonies) | 27 + 25 + 15 + 15 + 15 | **Done**, inside Initiatives: one list and one form for every programme | `admin-programme-initiatives` |
 | Study Zone students and entries (registration, visits, statistics) | 11 + 3 | **To do** — personal data, needs decisions first (section 8) | — |
 | DISC, Study Zone and Children University statistics pages | in the programme routes | To do | — |
-| Roots of Hope (editions of the magazine) | 8 | To do | — |
+| Roots of Hope (editions of the magazine) | 8 | **Done** | `admin-roots-of-hope` |
 | Our Team | 7 | To do | — |
 | Cover photos | 6 | To do | — |
 | Page content (`content`) | 10 | To do | — |
@@ -194,6 +194,15 @@ Study Zone initiative to the kind "events" (a bug); the kind is kept. The kinds 
 a DISC **success story** (Job Opportunity, Students Of The Month) are no longer
 mixed with the DISC programmes' own kinds.
 
+**Roots of Hope** — `ContentKind::Roots` (address `/admin/roots`, log category 11):
+a title and the flipbook link (both required, within the columns' real limits of 50
+and 100; legacy checked 150), a cover and an optional PDF. The cover is re-encoded
+as a JPEG that fits 900 x 1200 (legacy kept 4961 x 7016 originals); the PDF goes
+under a safe name cut short enough for the 100-character path column. An edition is
+only online or offline (no hide, no English check), and cannot go online without a
+cover. Replaced and deleted files are removed from disk (legacy left them). An edit
+is logged field by field and keeps an online edition online, as legacy's update did.
+
 **Successes** — one form for all categories (legacy had three near copies); the
 picture is cut to a 500 px square; a micro-project story links to a project by
 search.
@@ -254,7 +263,7 @@ npm run build                                # tests read the Vite manifest
    programmes. This is the largest remaining module and holds personal data
    (national numbers, e-mail, visits); decide first who may see and edit it, and
    whether national numbers are shown at all.
-2. **Roots of Hope** (magazine editions) and **Our Team**.
+2. **Our Team**.
 3. **Cover photos** and **Page content**.
 4. **Users, roles, permissions, places** (the Admin-only page; the roles matrix in
    section 3 becomes editable).

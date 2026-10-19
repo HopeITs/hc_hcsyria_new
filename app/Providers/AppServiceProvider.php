@@ -6,11 +6,13 @@ use App\Enums\AdminCapability;
 use App\Models\Initiative;
 use App\Models\News;
 use App\Models\Project;
+use App\Models\RootsOfHope;
 use App\Models\Success;
 use App\Models\User;
 use App\Policies\InitiativePolicy;
 use App\Policies\NewsPolicy;
 use App\Policies\ProjectPolicy;
+use App\Policies\RootsPolicy;
 use App\Policies\SuccessPolicy;
 use App\Queries\AdminAccessQuery;
 use App\Queries\MemberAccessQuery;
@@ -90,6 +92,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Initiative::class, InitiativePolicy::class);
         Gate::policy(Success::class, SuccessPolicy::class);
         Gate::policy(News::class, NewsPolicy::class);
+        Gate::policy(RootsOfHope::class, RootsPolicy::class);
 
         // The pages that are not one item (tags, editions, subscribers) ask for a capability by name: 'admin.edit', 'admin.view-subscribers'...
         foreach (AdminCapability::cases() as $capability) {
