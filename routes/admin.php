@@ -11,7 +11,9 @@ use Illuminate\Support\Facades\Route;
  * docs/port-ledger.json (admin routes are not parity-bound: see the upgrade plan).
  */
 Route::prefix('admin')->name('admin.')->middleware(['web', 'auth', 'admin.access'])->group(function (): void {
-    Route::livewire('/', 'pages::admin.dashboard')->name('dashboard');
+    // Legacy's dashboard address was /admin/home; /admin leads there.
+    Route::redirect('/', '/admin/home');
+    Route::livewire('/home', 'pages::admin.dashboard')->name('dashboard');
 
     Route::livewire('/projects', 'pages::admin.projects.index')->name('projects.index');
     Route::livewire('/projects/create', 'pages::admin.projects.form')->name('projects.create');

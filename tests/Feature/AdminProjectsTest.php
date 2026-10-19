@@ -101,6 +101,7 @@ function alertOf(string $type): Closure
 
 it('sends a signed-out visitor to the sign-in page', function () {
     $this->get('/admin')->assertRedirect('/login');
+    $this->get('/admin/home')->assertRedirect('/login');
     $this->get('/admin/projects')->assertRedirect('/login');
 });
 
@@ -120,13 +121,14 @@ it('refuses an account that is switched off, whatever its role', function () {
 it('lets every role open the dashboard and the list', function (string $role) {
     $user = staff($role);
 
-    $this->actingAs($user)->get('/admin')->assertOk()->assertSee('Dashboard');
+    $this->actingAs($user)->get('/admin')->assertRedirect('/admin/home');
+    $this->actingAs($user)->get('/admin/home')->assertOk()->assertSee('Dashboard');
     $this->actingAs($user)->get('/admin/projects')->assertOk()->assertSee('Micro projects');
 })->with(['Admin', 'Publisher', 'English Editor', 'English Checker', 'Photos Editor', 'Viewer']);
 
 it('keeps the sidebar to what the account can open', function () {
-    $this->actingAs(staff('Viewer'))->get('/admin')->assertSee('Micro projects')->assertDontSee('New project');
-    $this->actingAs(staff('English Editor'))->get('/admin')->assertSee('New project');
+    $this->actingAs(staff('Viewer'))->get('/admin/home')->assertSee('Micro projects')->assertDontSee('New project');
+    $this->actingAs(staff('English Editor'))->get('/admin/home')->assertSee('New project');
 });
 
 it('gives each role only its own pages: create and edit are the English Editor and Admin\'s', function (string $role, bool $mayWrite) {
@@ -145,7 +147,7 @@ it('gives each role only its own pages: create and edit are the English Editor a
 
 it('sends staff to the dashboard after signing in, and everyone else to the home page', function () {
     $staff = staff('Viewer');
-    $this->post('/login', ['email' => $staff->email, 'password' => 'correct horse battery'])->assertRedirect(route('admin.dashboard'));
+    $this->post('/login', ['email' => $staff->email, 'password' => 'correct horse battery'])->assertRedirect('/admin/home');
 
     auth()->logout();
     $plain = User::query()->create(['name' => 'Plain', 'email' => 'plain-'.uniqid().'@example.test', 'password' => 'correct horse battery', 'active' => true]);
