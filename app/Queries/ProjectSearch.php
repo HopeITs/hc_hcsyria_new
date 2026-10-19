@@ -33,6 +33,8 @@ class ProjectSearch
 
     private bool $onlyWithVideo = false;
 
+    private bool $matchingDonorAndCity = false;
+
     public static function make(): self
     {
         return new self;
@@ -42,6 +44,14 @@ class ProjectSearch
     {
         $term = trim((string) $term);
         $this->term = $term === '' ? null : $term;
+
+        return $this;
+    }
+
+    /** Also match a search term against the name of the project's donor and of its city (the site-wide search does; the list's own box does not). */
+    public function matchingDonorAndCity(bool $also = true): self
+    {
+        $this->matchingDonorAndCity = $also;
 
         return $this;
     }
@@ -91,7 +101,10 @@ class ProjectSearch
                     ->orWhereHas('content', fn (Builder $c) => $c
                         ->where('MPE_Name', 'like', $like)
                         ->orWhere('MPE_ExpSkill', 'like', $like)
-                        ->orWhere('MPE_Suffering', 'like', $like));
+                        ->orWhere('MPE_Suffering', 'like', $like))
+                    ->when($this->matchingDonorAndCity, fn (Builder $any) => $any
+                        ->orWhereHas('mPEDonor', fn (Builder $donor) => $donor->where('name', 'like', $like))
+                        ->orWhereHas('mPECity', fn (Builder $city) => $city->where('name', 'like', $like)));
             });
         }
 

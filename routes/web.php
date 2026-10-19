@@ -31,6 +31,8 @@ Route::livewire('/projects/childrenuni', 'pages::children-university')->name('pu
 
 Route::livewire('/projects/leap', 'pages::leap')->name('public.leap');
 
+Route::livewire('/search', 'pages::search')->name('search');
+
 Route::livewire('/christianyouth', 'pages::christian-youth')->name('public.youth');
 
 Route::livewire('/rootsofhope', 'pages::roots-of-hope')->name('roots');

@@ -1,4 +1,4 @@
-@props(['activity', 'type'])
+@props(['activity', 'type', 'highlight' => null])
 
 {{--
     One activity of a programme as a tile (resources/css/ui/activity-tile.css):
@@ -30,7 +30,7 @@
 
     <div class="activity-tile__body">
         <div class="activity-tile__head">
-            <h3 class="activity-tile__title">{{ $content?->title }}</h3>
+            <h3 class="activity-tile__title">{{ \App\Support\Highlight::text($content?->title, $highlight) }}</h3>
             @if ($activity->video !== '0')
                 <a href="{{ $activity->video }}" data-lightbox="video-tile-{{ $activity->id }}" aria-label="Video">
                     <img class="activity-tile__video" src="/images/ico/video-ini-icon.svg" alt="">
@@ -40,13 +40,13 @@
 
         @if ($date || $organization)
             <div class="activity-tile__meta">
-                @if ($date)<span><strong>Date:</strong> {{ $date }}</span>@endif
-                @if ($organization)<span><strong>{{ __('initiatives.by') }}{{ $organization }}</strong></span>@endif
+                @if ($date)<span><strong>Date:</strong> {{ \App\Support\Highlight::text($date, $highlight) }}</span>@endif
+                @if ($organization)<span><strong>{{ __('initiatives.by') }}{{ \App\Support\Highlight::text($organization, $highlight) }}</strong></span>@endif
             </div>
         @endif
 
         @if ($excerpt)
-            <p class="activity-tile__excerpt">{{ $excerpt }}</p>
+            <p class="activity-tile__excerpt">{{ \App\Support\Highlight::text($excerpt, $highlight) }}</p>
         @endif
 
         <a class="activity-tile__more" href="{{ $href }}">{{ __('main.readMore') }}</a>

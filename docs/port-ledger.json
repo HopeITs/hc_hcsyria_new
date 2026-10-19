@@ -2441,9 +2441,9 @@
             "action": "PublicController@search",
             "name": "search",
             "order": 334,
-            "status": "pending",
-            "notes": "Navbar search. 302 back without a query. Micro-project results only for users allowed view-micro-projects (micro login).",
-            "ported_from": null,
+            "status": "ported",
+            "notes": "Upgraded on request, not legacy parity: the Projects and Initiatives tabs and pager are the filter bar of the other lists (city, donor, video, search, Apply, tiles or rows) over two groups with their own Load More, in the address (?search=&city=&donor=&video=&view=). 302 back without a term, as legacy. Projects are searched, counted and listed only for users allowed view-micro-projects. The red mark over matched words is kept, built by app/Support/Highlight.php (legacy built it from an unescaped regular expression and printed it as HTML). Differences: offline activities and Family to Family stories no longer match (legacy's ungrouped orWhere let offline ones in through their funder or town; 3 of 186 for homs); the centre name is not matched; projects must be finished and published like the micro-projects list (legacy: published only).",
+            "ported_from": "6d45ef9",
             "live_status": "302",
             "examples": [
                 {

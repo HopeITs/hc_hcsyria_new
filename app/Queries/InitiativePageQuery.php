@@ -84,10 +84,12 @@ final class InitiativePageQuery
     }
 
     /**
+     * The activities that have a page of their own: online, and not one of the Family to Family stories.
+     *
      * @param  Builder<Initiative>  $query
      * @return Builder<Initiative>
      */
-    private static function visible(Builder $query): Builder
+    public static function visible(Builder $query): Builder
     {
         return $query
             ->where('online', '1')

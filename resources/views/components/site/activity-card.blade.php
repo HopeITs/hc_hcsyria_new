@@ -1,4 +1,4 @@
-@props(['activity', 'type', 'flip' => false, 'summary' => false, 'mirrored' => false])
+@props(['activity', 'type', 'flip' => false, 'summary' => false, 'mirrored' => false, 'highlight' => null])
 
 {{--
     One activity of a programme in a list (legacy initiative card): its photos
@@ -55,7 +55,7 @@
             <div class="relative w-full px-3 sm:w-1/2">
                 <div @class(['activity-card__text', 'activity-card__text--flipped' => $flip && ! $summary, 'sm:pr-[0.6vw] sm:pl-0' => $flip && $summary, 'max-sm:pr-[0.6vw] max-sm:pl-0' => $mirrored])>
                     <div class="-mx-3 mt-[1vw] flex flex-wrap items-center">
-                        <div class="w-5/6 px-3"><div class="activity-card__title">{{ $content?->title }}</div></div>
+                        <div class="w-5/6 px-3"><div class="activity-card__title">{{ \App\Support\Highlight::text($content?->title, $highlight) }}</div></div>
                         <div class="w-1/6 px-3 text-right">
                             @if ($activity->video !== '0')
                                 <a href="{{ $activity->video }}" data-lightbox="video-{{ $activity->id }}">
@@ -68,16 +68,16 @@
 
                     <div class="activity-card__content">
                         @if ($showDate)
-                            <div>@unless ($summary)<strong>Date: </strong>{{ $date }}@else<strong>{{ $date }}</strong>@endunless</div>
+                            <div>@unless ($summary)<strong>Date: </strong>{{ \App\Support\Highlight::text($date, $highlight) }}@else<strong>{{ \App\Support\Highlight::text($date, $highlight) }}</strong>@endunless</div>
                         @endif
                         @if ($showOrganization)
-                            <strong> {{ __('initiatives.by') }}{{ $organization }}</strong>
+                            <strong> {{ __('initiatives.by') }}{{ \App\Support\Highlight::text($organization, $highlight) }}</strong>
                         @endif
                         @if ($showDate || $showOrganization)
                             <div><br></div>
                         @endif
                         @if ($excerpt)
-                            <div>{!! $excerpt !!}</div>
+                            <div>{{ \App\Support\Highlight::html($excerpt, $highlight) }}</div>
                         @elseif ($summary)
                             <div>{{ $content?->description }}</div>
                         @endif
