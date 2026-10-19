@@ -91,8 +91,20 @@ enum ContentKind: string
         return match ($this) {
             self::Project => ['table' => 'images', 'owner' => 'project_id', 'path' => 'MPI_Path'],
             self::Initiative => ['table' => 'initiatives_images', 'owner' => 'initiative_id', 'path' => 'path'],
-            self::Success, self::News => throw new LogicException('This kind has no gallery of the shared kind.'),
+            self::News => ['table' => 'news_images', 'owner' => 'news_id', 'path' => 'path'],
+            self::Success => throw new LogicException('A success story has one picture, not a gallery.'),
         };
+    }
+
+    /**
+     * Which rows of the photo table are the gallery: a news item keeps its thumbnail and its Important and
+     * Pinned pictures there too (sizetype 0, 1, 2); the gallery is sizetype 3.
+     *
+     * @return array<string, int>
+     */
+    public function photoConstraints(): array
+    {
+        return $this === self::News ? ['sizetype' => 3] : [];
     }
 
     /**
@@ -102,7 +114,11 @@ enum ContentKind: string
      */
     public function photoExtras(Model $item): array
     {
-        return $this === self::Project ? ['MicroProject_ID' => $this->number($item)] : [];
+        return match ($this) {
+            self::Project => ['MicroProject_ID' => $this->number($item)],
+            self::News => $this->photoConstraints(),
+            default => [],
+        };
     }
 
     /** The folder under MEDIA_ROOT its photos go in. */
@@ -111,6 +127,7 @@ enum ContentKind: string
         return match (true) {
             $item instanceof Project => PhotoFolders::project((string) DB::table('places')->where('id', $item->MPE_City)->value('name'), (int) $item->MicroProject_ID),
             $item instanceof Initiative => PhotoFolders::initiative((string) DB::table('what_categories')->where('id', $item->what_category_id)->value('name'), (int) $item->getKey()),
+            $item instanceof News => PhotoFolders::news((int) $item->getKey()),
             default => '/images/other',
         };
     }
@@ -125,7 +142,8 @@ enum ContentKind: string
         return match ($this) {
             self::Project => ['small' => [630, 420], 'big' => [1620, 1080]],
             self::Initiative => ['small' => [720, 480], 'big' => [2000, 1333]],
-            self::Success, self::News => throw new LogicException('This kind has no gallery of the shared kind.'),
+            self::News => ['small' => [920, 614], 'big' => [2080, 1387]],
+            self::Success => throw new LogicException('A success story has one picture, not a gallery.'),
         };
     }
 

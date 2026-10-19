@@ -16,8 +16,8 @@ use Livewire\Component;
 /*
  * /admin/news/{id}: one newsletter item, for staff: its text, tags and details,
  * whether its English is checked, and what was done to it. Replaces legacy's news
- * view. The buttons are the shared ones. Its pictures are listed by count here;
- * changing them arrives with the images update.
+ * view. The buttons are the shared ones. Its cover pictures, status
+ * and gallery are panels of their own.
  */
 new #[Layout('layouts::admin', ['title' => 'Newsletter item'])] class extends Component
 {
@@ -93,7 +93,6 @@ new #[Layout('layouts::admin', ['title' => 'Newsletter item'])] class extends Co
                             'Rank' => $news->rank,
                             'Video' => $news->video !== '0' ? $news->video : '—',
                             'Attachment' => $news->file !== '0' ? basename($news->file) : '—',
-                            'Pictures' => $news->photos,
                             'Views' => number_format((int) $news->total_views),
                         ] as $label => $value)
                             <div class="fact"><dt>{{ $label }}</dt><dd>{{ $value }}</dd></div>
@@ -109,6 +108,10 @@ new #[Layout('layouts::admin', ['title' => 'Newsletter item'])] class extends Co
                 @endif
 
                 <x-admin.panel title="Content"><div class="story">{!! SafeHtml::text($news->content) !!}</div></x-admin.panel>
+
+                <livewire:admin.news-pictures :news-id="$news->id" :key="'pictures-'.$news->id" />
+
+                <livewire:admin.content-photos kind="news" :item-id="$news->id" :key="'photos-'.$news->id" />
             </div>
 
             <aside class="stack" aria-label="Status">

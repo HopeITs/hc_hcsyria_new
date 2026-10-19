@@ -19,6 +19,7 @@ final class AdminPhotoQuery
 
         return DB::table($photos['table'])
             ->where($photos['owner'], $itemId)
+            ->where($kind->photoConstraints())
             ->orderBy('image_order')
             ->orderBy('id')
             ->get(['id', $photos['path'].' as path']);

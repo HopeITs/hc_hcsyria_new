@@ -7,6 +7,7 @@ use App\Enums\ContentTransition;
 use App\Models\User;
 use App\Support\Admin\PhotoFiles;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Throwable;
@@ -43,7 +44,7 @@ class ManageContentPhotos
         $stored = [];
 
         try {
-            $order = (int) DB::table($photos['table'])->where($photos['owner'], $item->getKey())->max('image_order');
+            $order = (int) $this->rows($kind, $item)->max('image_order');
 
             DB::transaction(function () use ($item, $kind, $photos, $sizes, $directory, $files, &$stored, &$order): void {
                 foreach ($files as $file) {
@@ -74,7 +75,7 @@ class ManageContentPhotos
     {
         $kind = ContentKind::of($item);
         $photos = $kind->photoTable();
-        $row = DB::table($photos['table'])->where($photos['owner'], $item->getKey())->where('id', $imageId)->first();
+        $row = $this->rows($kind, $item)->where('id', $imageId)->first();
 
         if ($row === null) {
             return false;
@@ -136,9 +137,7 @@ class ManageContentPhotos
     /** @return array<int, int> */
     private function orderedIds(Model $item): array
     {
-        $photos = ContentKind::of($item)->photoTable();
-
-        return DB::table($photos['table'])->where($photos['owner'], $item->getKey())->orderBy('image_order')->orderBy('id')->pluck('id')->map(fn ($id): int => (int) $id)->values()->all();
+        return $this->rows(ContentKind::of($item), $item)->orderBy('image_order')->orderBy('id')->pluck('id')->map(fn ($id): int => (int) $id)->values()->all();
     }
 
     /** @param array<int, int> $ids in the order they should show */
@@ -147,5 +146,13 @@ class ManageContentPhotos
         foreach ($ids as $position => $id) {
             DB::table($kind->photoTable()['table'])->where('id', $id)->update(['image_order' => $position + 1]);
         }
+    }
+
+    /** The item's gallery rows: its owner's rows of the photo table, and only the ones that are gallery. */
+    private function rows(ContentKind $kind, Model $item): Builder
+    {
+        $photos = $kind->photoTable();
+
+        return DB::table($photos['table'])->where($photos['owner'], $item->getKey())->where($kind->photoConstraints());
     }
 }

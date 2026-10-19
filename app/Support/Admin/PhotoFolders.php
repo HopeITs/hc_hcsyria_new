@@ -37,6 +37,12 @@ final class PhotoFolders
         return '/images/successes/'.($name === '' ? 'other' : $name);
     }
 
+    /** A newsletter item keeps all its pictures in a folder of its number, as legacy did. */
+    public static function news(int $id): string
+    {
+        return '/images/news/'.$id;
+    }
+
     public static function initiative(string $category, int $id): string
     {
         // The category's own name, as the existing folders are named, without anything that could leave the folder.
