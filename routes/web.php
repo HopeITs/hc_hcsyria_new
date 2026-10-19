@@ -11,9 +11,6 @@ use Illuminate\Support\Facades\Route;
 // Legacy homepage_lb(): on the hcsyria host, / is a 302 to /home.
 Route::redirect('/', '/home', 302);
 
-// Legacy /about answered 500 (its view was never committed); nothing links to it.
-Route::permanentRedirect('/about', '/who-we-are');
-
 Route::livewire('/home', 'pages::home')
     ->name('home');
 
