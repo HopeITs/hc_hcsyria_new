@@ -65,9 +65,9 @@
             "action": "PublicController@about",
             "name": "public.about",
             "order": 59,
-            "status": "ported",
-            "notes": "500 on live (its view was never committed). Ported as a 301 to /who-we-are.",
-            "ported_from": "6d45ef9",
+            "status": "excluded",
+            "notes": "500 on live (its view was never committed) and nothing links to it. Not ported; no redirect.",
+            "ported_from": null,
             "live_status": "500",
             "examples": [
                 {
