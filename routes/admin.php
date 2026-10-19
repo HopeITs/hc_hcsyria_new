@@ -43,6 +43,7 @@ Route::prefix('admin')->name('admin.')->middleware(['web', 'auth', 'admin.access
     Route::livewire('/roots/{edition}/edit', 'pages::admin.roots.form')->whereNumber('edition')->name('roots.edit');
     Route::livewire('/roots/{edition}', 'pages::admin.roots.show')->whereNumber('edition')->name('roots.show');
 
+    Route::livewire('/log', 'pages::admin.log')->name('log');
     Route::livewire('/users', 'pages::admin.users.index')->name('users.index');
     Route::livewire('/users/create', 'pages::admin.users.form')->name('users.create');
     Route::livewire('/users/{user}/edit', 'pages::admin.users.form')->whereNumber('user')->name('users.edit');

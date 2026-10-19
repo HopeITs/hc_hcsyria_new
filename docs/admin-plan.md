@@ -48,7 +48,7 @@ section:
 | Cover photos | 6 | To do | — |
 | Page content (`content`) | 10 | To do | — |
 | Users, roles, places | 5 + 3 | **Done** (page permissions and Study Zone centres not carried over, see below) | `admin-users-roles-places` |
-| Activity log and notifications (the bell) | 2 | To do | — |
+| Activity log and notifications (the bell) | 2 | **Done** | `admin-activity-log` |
 | French translation screens | ~30 | **Not planned** (the French site is out of scope) | — |
 
 Every branch is merged into `main`; `main` is pushed (2026-10-19).
@@ -207,6 +207,15 @@ never with the password. **Not carried over:** the page `permissions` and Study 
 reads them; the rows are left untouched on edit and delete (needs sign-off if the
 Study Zone students module wants per-centre access).
 
+**Activity log** (`/admin/log`, Admin only) — tabs group legacy's categories (the
+newsletter's tags, editions and subscribers are with the news; Users, Cover photos
+and Page content have their own), with a search over the wording, the item number and
+the person. Entries before 2022 stay hidden, as in legacy; Study Zone's 447,000 visit
+entries (category 8) belong to the students module and are not shown. **The bell**
+shows what nobody has marked as seen, not the viewer's own changes, refreshes every 30
+seconds and "Mark all as seen" is shared by every Admin, as in legacy. It is for the
+Admin only (legacy showed it to the same people).
+
 **Roots of Hope** — `ContentKind::Roots` (address `/admin/roots`, log category 11):
 a title and the flipbook link (both required, within the columns' real limits of 50
 and 100; legacy checked 150), a cover and an optional PDF. The cover is re-encoded
@@ -278,8 +287,6 @@ npm run build                                # tests read the Vite manifest
    whether national numbers are shown at all.
 2. **Our Team**.
 3. **Cover photos** and **Page content**.
-5. **Activity log page and the notification bell** (the bell polls the log every
-   30 seconds in legacy and marks rows seen).
 6. **Dashboard**: widgets for initiatives, successes and news in the work queue
    (today it follows micro projects).
 7. **Newsletter**: sending (legacy `sendEmail`, `sendEmailAll`) — not built on
