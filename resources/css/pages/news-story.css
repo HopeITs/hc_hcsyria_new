@@ -1,0 +1,325 @@
+/*
+ * A news story's page, /our-news/{id}-{city}-{date}. Legacy our-news.css
+ * (the rules prefixed news-article-) and the Bootstrap rules the page leaned
+ * on, measured on the running page at 375, 768, 1440 and 1920px. The bar
+ * above it, the sign-up below it and the red are the news list's
+ * (pages/news.css).
+ */
+@layer components {
+    .news-story {
+        max-width: 850px;
+        padding: 0 15px;
+        margin: 3rem auto 0;
+    }
+
+    .news-header--story {
+        margin-top: 1.5rem;
+    }
+
+    /* The grey sheet the story is printed on */
+    .news-story__paper {
+        padding: 1rem 1.5rem;
+        margin-bottom: 3rem;
+        background-color: #f4f4f4;
+    }
+
+    .news-story__head {
+        position: relative;
+        margin-bottom: 1.5rem;
+    }
+
+    .news-story__title-row {
+        display: flex;
+        gap: 1rem;
+        align-items: flex-end;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+    }
+
+    .news-story__title {
+        margin: 0;
+        font-size: 2rem;
+        font-weight: 700;
+        line-height: 1.2;
+        color: #555;
+    }
+
+    .news-story__actions {
+        display: flex;
+        flex-shrink: 0;
+        gap: 0.5rem;
+        align-items: center;
+    }
+
+    /* The red square buttons: video, file, share */
+    .news-story__action {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 25px;
+        height: 25px;
+        color: #fff;
+        text-decoration: none;
+        cursor: pointer;
+        background-color: var(--news-red);
+        border-radius: 6px;
+        box-shadow: 0 0.125rem 0.25rem rgb(0 0 0 / 0.075);
+        transition: 0.2s;
+    }
+
+    .news-story__icon {
+        color: #fff;
+    }
+
+    .news-story__icon--play {
+        margin-left: 2px;
+        font-size: 0.75rem;
+    }
+
+    .news-story__icon--file {
+        font-size: 0.85rem;
+    }
+
+    .news-story__icon--share {
+        font-size: 0.8rem;
+    }
+
+    .news-story__rule {
+        opacity: 1;
+    }
+
+    .news-story__rule--thin {
+        margin: 8px 0 10px;
+        border: none;
+        border-top: 1px solid #ccc;
+    }
+
+    .news-story__rule--thick {
+        margin: 0 0 20px;
+        border: none;
+        border-top: 2px solid #999;
+    }
+
+    /* Place and date on the left, how many have read it on the right */
+    .news-story__meta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #666;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .news-story__views {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+        color: #6c757d;
+    }
+
+    .news-story__count {
+        font-size: 1.1rem;
+        font-weight: 700;
+        line-height: 1;
+    }
+
+    .news-story__icon--views {
+        font-size: 1.1rem;
+        line-height: 1;
+        color: inherit;
+    }
+
+    .news-story__media {
+        margin-bottom: 1.5rem;
+    }
+
+    /* A video: a 16:9 box, rounded */
+    .news-story__video {
+        position: relative;
+        height: 0;
+        max-width: 100%;
+        padding-bottom: 56.25%;
+        overflow: hidden;
+        background: #000;
+        border-radius: 8px;
+
+        & > iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+    }
+
+    .news-story__photo {
+        display: block;
+        width: 100%;
+        height: auto;
+        object-fit: contain;
+    }
+
+    /* The story's words: what the admin's editor makes, in Bootstrap's spacing */
+    .news-story__text {
+        margin-bottom: 1.5rem;
+        font-size: 1.1rem;
+        line-height: 1.8;
+        color: #555;
+        /* One column, which as in legacy keeps the last paragraph's margin inside the box. */
+        column-count: 1;
+
+        &,
+        & * {
+            max-width: 100%;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+            white-space: normal;
+        }
+
+        & p {
+            margin-bottom: 1rem;
+        }
+
+        & ul,
+        & ol {
+            padding-left: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        & ul {
+            list-style: disc;
+        }
+
+        & ol {
+            list-style: decimal;
+        }
+    }
+
+    /* The share button and its menu of ways to share */
+    .news-share {
+        position: relative;
+        z-index: 1000;
+        display: inline-flex;
+        align-items: center;
+    }
+
+    .news-share__menu {
+        position: absolute;
+        top: -10px;
+        left: calc(100% + 15px);
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        min-width: 150px;
+        padding: 6px 4px;
+        visibility: hidden;
+        background: rgb(255 255 255 / 0.98);
+        border: 1px solid #eaeaea;
+        border-radius: 10px;
+        box-shadow: 0 8px 24px rgb(0 0 0 / 0.08);
+        opacity: 0;
+        transform: translateX(-10px) scale(0.95);
+        transform-origin: left top;
+        transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+        &.is-open {
+            visibility: visible;
+            opacity: 1;
+            transform: translateX(0) scale(1);
+        }
+
+        /* The little arrow pointing at the button */
+        &::before {
+            position: absolute;
+            top: 18px;
+            left: -5px;
+            width: 10px;
+            height: 10px;
+            content: '';
+            background: rgb(255 255 255 / 0.98);
+            border-bottom: 1px solid #eaeaea;
+            border-left: 1px solid #eaeaea;
+            transform: rotate(45deg);
+        }
+
+        /* Narrow windows: under the button, aligned to its right edge */
+        @media (width <= 992px) {
+            top: calc(100% + 15px);
+            right: -10px;
+            left: auto;
+            transform: translateY(-10px) scale(0.95);
+            transform-origin: top right;
+
+            &.is-open {
+                transform: translateY(0) scale(1);
+            }
+
+            &::before {
+                top: -5px;
+                right: 18px;
+                left: auto;
+                border-top: 1px solid #eaeaea;
+                border-bottom: none;
+                border-left: 1px solid #eaeaea;
+            }
+        }
+    }
+
+    .news-share__item {
+        position: relative;
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        padding: 8px 12px;
+        overflow: hidden;
+        font: inherit;
+        text-align: left;
+        text-decoration: none;
+        cursor: pointer;
+        background: none;
+        border-radius: 6px;
+        opacity: 0;
+        transform: translateX(10px);
+        transition: all 0.25s ease;
+
+        &:hover {
+            background: #f8f9fa;
+        }
+
+        .news-share__menu.is-open & {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .news-share__menu.is-open &:nth-child(1) { transition-delay: 0.05s; }
+        .news-share__menu.is-open &:nth-child(2) { transition-delay: 0.1s; }
+        .news-share__menu.is-open &:nth-child(3) { transition-delay: 0.15s; }
+        .news-share__menu.is-open &:nth-child(4) { transition-delay: 0.2s; }
+    }
+
+    .news-share__icon {
+        flex-shrink: 0;
+        width: 20px;
+        height: 20px;
+        object-fit: contain;
+        transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+        .news-share__item:hover & {
+            transform: scale(1.15) rotate(8deg);
+        }
+    }
+
+    .news-share__text {
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: #414042;
+        transition: color 0.3s ease;
+
+        &.is-copied {
+            color: #888;
+        }
+    }
+}

@@ -1,12 +1,27 @@
 {
     "_comment": "Differences from the legacy site that were approved on purpose. scripts/parity-check.mjs ignores a text, link or font diff line that matches an entry exactly. A selector listed under hide is blanked on both pages before they are compared (parts that are random on every visit: the related posts tiles). A page listed under pixels may differ by that percentage of pixels. Every entry needs a reason; anything not listed here fails the check.",
     "hide": {
-        "^/projects/[^/]+/[0-9]+-[^/]+$": [".related-posts", ".initiative__related"]
+        "^/projects/[^/]+/[0-9]+-[^/]+$": [
+            ".related-posts",
+            ".initiative__related"
+        ],
+        "^/our-news$": [
+            ".hero-timestamp",
+            ".news-hero__time"
+        ],
+        "^/our-news/[0-9]+-[^/]+$": [
+            ".news-article-meta-text .text-secondary",
+            ".news-story__views"
+        ]
     },
     "pixels": {
         "/projects/rehabilitation": {
             "max": 25,
             "reason": "Legacy shuffles each rehabilitation project's photos on every visit, so the slide showing differs from one load to the next. The set of photos in every card is identical (checked by comparing each card's image list); the order here is fixed. Everything outside the photos matches."
+        },
+        "/our-news/59-aleppo-20240321": {
+            "max": 20,
+            "reason": "This story's video field holds the two characters backslash-n instead of an address, and legacy drew a play button for it that opens nothing. It is not drawn here, so on a phone the title has the room of the missing button and the page below it moves up a line; the text below is identical."
         }
     },
     "text": {
@@ -30,7 +45,19 @@
         "+ iframe https://www.youtube-nocookie.com/embed/7s0jhebp-3A": "As above.",
         "+ img /images/home/school-statistics.svg": "School to School's statistics scene: legacy drew it as 5.7 MB of inline SVG; it is an image now (the five hover areas are an overlay).",
         "- iframe https://www.youtube.com/embed/gF8AzxiWRos": "Programme videos are framed from youtube-nocookie.com (the privacy host the content security policy allows) instead of youtube.com; same video.",
-        "+ iframe https://www.youtube-nocookie.com/embed/gF8AzxiWRos": "As above."
+        "+ iframe https://www.youtube-nocookie.com/embed/gF8AzxiWRos": "As above.",
+        "- iframe https://www.youtube.com/embed/cb-3kN3je4Y?si=YkodD0m12ntlnKv2": "Programme videos are framed from youtube-nocookie.com (the privacy host the content security policy allows) instead of youtube.com; same video.",
+        "+ iframe https://www.youtube-nocookie.com/embed/cb-3kN3je4Y": "As above.",
+        "- iframe https://www.youtube.com/embed/sXj1o5cS6Uk": "Programme videos are framed from youtube-nocookie.com (the privacy host the content security policy allows) instead of youtube.com; same video.",
+        "+ iframe https://www.youtube-nocookie.com/embed/sXj1o5cS6Uk": "As above.",
+        "- iframe https://www.youtube.com/embed/MpN2T2QnsGE": "Programme videos are framed from youtube-nocookie.com (the privacy host the content security policy allows) instead of youtube.com; same video.",
+        "+ iframe https://www.youtube-nocookie.com/embed/MpN2T2QnsGE": "As above.",
+        "- iframe https://www.youtube.com/embed/946Kvf94K4E": "Programme videos are framed from youtube-nocookie.com (the privacy host the content security policy allows) instead of youtube.com; same video.",
+        "+ iframe https://www.youtube-nocookie.com/embed/946Kvf94K4E": "As above.",
+        "- iframe https://www.youtube.com/embed/uAz35LlEgGk": "Programme videos are framed from youtube-nocookie.com (the privacy host the content security policy allows) instead of youtube.com; same video.",
+        "+ iframe https://www.youtube-nocookie.com/embed/uAz35LlEgGk": "As above.",
+        "- iframe https://www.youtube.com/embed/HPmyiwD3qIM": "Programme videos are framed from youtube-nocookie.com (the privacy host the content security policy allows) instead of youtube.com; same video.",
+        "+ iframe https://www.youtube-nocookie.com/embed/HPmyiwD3qIM": "As above."
     },
     "fonts": {
         "- FontAwesome normal normal": "FontAwesome 4.7 icon font replaced by inline SVG of the glyphs used (components/ui/icon.blade.php).",

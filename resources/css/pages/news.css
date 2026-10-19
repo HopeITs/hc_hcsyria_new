@@ -1,0 +1,667 @@
+/*
+ * /our-news. Legacy our-news.css (the rules for the page itself, not the
+ * article page's), measured on the running page at 375, 768, 1440 and
+ * 1920px. Sizes are in rem and px as on the legacy page. The page's red is
+ * #b5121b, not the brand red of the rest of the site.
+ */
+@layer components {
+    :root {
+        --news-red: #b5121b;
+    }
+
+    .news-page {
+        max-width: 1140px;
+        padding: 0 15px;
+        margin: 8rem auto 0;
+
+        @media (width >= 1920px) {
+            max-width: 1400px;
+        }
+
+        @media (width >= 2000px) {
+            max-width: min(84vw, 1760px);
+        }
+
+        @media (width >= 2560px) {
+            max-width: min(84vw, 1960px);
+        }
+    }
+
+    /* OUR NEWS, white on a red bar */
+    .news-header {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem 0;
+        margin-bottom: 1rem;
+        color: #fff;
+        background-color: var(--news-red);
+    }
+
+    .news-header__title {
+        margin: 0;
+        font-size: calc(1.5rem + 1vw);
+        font-weight: 800;
+        line-height: 1.2;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+
+        @media (width >= 1920px) {
+            font-size: clamp(2rem, 1.5rem + 1vw, 2.5rem);
+        }
+    }
+
+    /* The cover photo, with its caption and the time over it, and the headlines under it */
+    .news-hero {
+        margin-bottom: 1rem;
+    }
+
+    .news-hero__photo {
+        position: relative;
+        z-index: 1;
+        overflow: hidden;
+        cursor: pointer;
+        background-color: #000;
+        aspect-ratio: 16 / 9;
+
+        @media (width >= 768px) {
+            aspect-ratio: 3 / 1;
+        }
+
+        @media (width >= 1024px) {
+            aspect-ratio: 4.5 / 1;
+        }
+    }
+
+    .news-hero__image {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+
+        .news-hero__photo:hover & {
+            transform: scale(1.02);
+        }
+    }
+
+    .news-hero__caption {
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 2;
+        padding: 12px 16px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #fff;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        pointer-events: none;
+    }
+
+    .news-hero__time {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        z-index: 2;
+        padding: 6px 16px;
+        font-size: 0.75rem;
+        font-weight: 800;
+        color: #414042;
+        pointer-events: none;
+        background: rgb(255 255 255 / 0.9);
+        border-top-left-radius: 4px;
+    }
+
+    .news-ticker {
+        position: relative;
+        width: 100%;
+        padding: 12px 0;
+        background: #fdfdfd;
+        border: 1px solid #dee2e6;
+        border-top: none;
+
+        /* On tablets and wider the two ends are blurred, until the bar is pointed at. */
+        @media (width >= 768px) {
+            &::before,
+            &::after {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                z-index: 5;
+                width: 10%;
+                content: '';
+                pointer-events: none;
+                backdrop-filter: blur(3px);
+                transition: opacity 0.3s ease;
+            }
+
+            &::before {
+                left: 0;
+                mask-image: linear-gradient(to right, #000, transparent);
+            }
+
+            &::after {
+                right: 0;
+                mask-image: linear-gradient(to left, #000, transparent);
+            }
+
+            &:hover::before,
+            &:hover::after {
+                opacity: 0;
+            }
+        }
+    }
+
+    .news-ticker__track {
+        overflow: hidden;
+        mask-image: linear-gradient(to right, transparent 0%, #000 8%, #000 92%, transparent 100%);
+    }
+
+    .news-ticker__items {
+        display: flex;
+        gap: 12px;
+        width: max-content;
+        white-space: nowrap;
+        animation: news-ticker 30s linear infinite;
+
+        .news-ticker:hover & {
+            animation-play-state: paused;
+        }
+    }
+
+    @keyframes news-ticker {
+        from {
+            transform: translateX(0);
+        }
+
+        to {
+            transform: translateX(-50%);
+        }
+    }
+
+    .news-ticker__item {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: #444;
+        text-decoration: none;
+        transition: color 0.2s;
+
+        &:hover {
+            color: var(--news-red);
+        }
+    }
+
+    .news-ticker__logo {
+        display: block;
+        flex-shrink: 0;
+        width: auto;
+        height: 12px;
+    }
+
+    /* The lead story beside the magazine */
+    .news-top {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 16px;
+        margin-bottom: 1rem;
+
+        @media (width >= 768px) {
+            grid-template-columns: 3fr 2fr;
+        }
+
+        @media (width >= 992px) {
+            grid-template-columns: repeat(5, 1fr);
+        }
+    }
+
+    .news-top__lead {
+        @media (width >= 992px) {
+            grid-column: span 3;
+        }
+    }
+
+    .news-top__magazine {
+        @media (width >= 992px) {
+            grid-column: span 2;
+        }
+    }
+
+    .news-magazine {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        overflow: hidden;
+        background-color: #f8f9fa;
+    }
+
+    .news-magazine__image {
+        display: block;
+        width: 100%;
+        height: 102%;
+        object-fit: cover;
+        object-position: center;
+        transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+
+        .news-magazine:hover & {
+            transform: scale(1.02);
+        }
+    }
+
+    /* The list: rows of tiles, a pinned story after every two */
+    .news-list {
+        min-height: 300px;
+    }
+
+    .news-row {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 12px;
+        margin-bottom: 12px;
+
+        @media (width >= 480px) {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        @media (width >= 768px) {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        @media (width >= 992px) {
+            grid-template-columns: repeat(5, 1fr);
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+    }
+
+    /* A story as a photo with its words over the foot of it */
+    .news-card {
+        position: relative;
+        display: block;
+        width: 100%;
+        margin: 0 auto;
+        overflow: hidden;
+        color: #fff;
+        text-decoration: none;
+        background-color: #000;
+        aspect-ratio: 1 / 1;
+
+        & > img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.9;
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s ease;
+        }
+
+        &:hover > img {
+            opacity: 1;
+            transform: scale(1.02);
+        }
+    }
+
+    .news-card--lead {
+        height: 100%;
+        aspect-ratio: 4 / 3;
+
+        @media (width >= 768px) {
+            aspect-ratio: 3 / 2;
+        }
+    }
+
+    .news-overlay {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        padding: 20px 20px 18px;
+        pointer-events: none;
+        background: linear-gradient(to top, rgb(0 0 0 / 0.85) 0%, rgb(0 0 0 / 0.42) 60%, transparent 100%);
+
+        .news-row & {
+            @media (width >= 992px) {
+                padding: 18px 16px 16px;
+            }
+        }
+
+        .news-card--lead & {
+            padding-bottom: clamp(28px, 2.2vw, 42px);
+        }
+    }
+
+    .news-meta {
+        display: block;
+        overflow: hidden;
+        font-size: 0.6rem;
+        font-weight: 400;
+        color: #fff;
+        text-transform: uppercase;
+        text-overflow: ellipsis;
+        letter-spacing: 0.4px;
+        white-space: nowrap;
+
+        .news-row & {
+            @media (width >= 992px) {
+                font-size: 0.56rem;
+            }
+        }
+    }
+
+    .news-title {
+        padding-right: 15px;
+        margin: 0;
+        font-size: 0.98rem;
+        font-weight: 700;
+        line-height: 1.2;
+        color: #fff;
+
+        .news-row & {
+            @media (width >= 992px) {
+                font-size: 0.88rem;
+                line-height: 1.18;
+            }
+
+            @media (width >= 1600px) {
+                font-size: 0.95rem;
+            }
+        }
+    }
+
+    /* A tile's title keeps to two lines, and room for two */
+    .news-title--clamp {
+        display: -webkit-box;
+        min-height: 2.4em;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+    }
+
+    .news-title--large {
+        margin-bottom: 6px;
+        font-size: 1.3rem;
+
+        @media (width >= 768px) {
+            font-size: 1.65rem;
+        }
+
+        @media (width >= 1600px) {
+            font-size: 1.75rem;
+        }
+    }
+
+    .news-content {
+        display: -webkit-box;
+        margin: 10px 0 0;
+        overflow: hidden;
+        font-size: 0.9rem;
+        color: #fff;
+        text-overflow: ellipsis;
+        -webkit-box-orient: vertical;
+    }
+
+    .news-content--lead {
+        min-height: 2.4em;
+        line-height: 1.2;
+        -webkit-line-clamp: 2;
+
+        @media (width >= 1600px) {
+            font-size: 0.95rem;
+        }
+    }
+
+    .news-chevron {
+        position: absolute;
+        right: 15px;
+        bottom: 17px;
+        width: 14px;
+        height: 14px;
+        color: #fff;
+        transition: transform 0.3s ease;
+    }
+
+    /* The length of a video, over the corner of its photo */
+    .news-badge {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        z-index: 10;
+        display: flex;
+        gap: 6px;
+        align-items: center;
+        padding: 3px 8px 3px 6px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: #fff;
+        letter-spacing: 0.5px;
+        pointer-events: none;
+        background-color: rgb(89 89 88 / 0.5);
+        border-radius: 6px;
+
+        & svg {
+            width: 12px;
+            height: 12px;
+        }
+    }
+
+    /* A pinned story: photo and a red box with the story's beginning */
+    .news-pinned {
+        display: grid;
+        grid-template-columns: 1fr;
+        min-height: 250px;
+        margin-bottom: 16px;
+        overflow: hidden;
+        color: inherit;
+        text-decoration: none;
+        background: #fff;
+        border: 1px solid #dee2e6;
+
+        @media (width >= 768px) {
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        @media (width >= 992px) {
+            grid-template-columns: repeat(5, 1fr);
+            gap: 16px;
+        }
+    }
+
+    .news-pinned__photo {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background-color: #000;
+        aspect-ratio: 16 / 9;
+
+        @media (width >= 768px) {
+            grid-column: span 1;
+            aspect-ratio: auto;
+        }
+
+        @media (width >= 992px) {
+            grid-column: span 2;
+        }
+
+        & > img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.9;
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s ease;
+        }
+
+        .news-pinned:hover & > img {
+            opacity: 1;
+            transform: scale(1.02);
+        }
+    }
+
+    .news-pinned__box {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        padding: 25px;
+        color: #fff;
+        background-color: var(--news-red);
+
+        @media (width >= 768px) {
+            grid-column: span 2;
+            padding: 2rem;
+            margin-left: -12px;
+        }
+
+        @media (width >= 992px) {
+            grid-column: span 3;
+            padding-left: 36px;
+            margin-left: -16px;
+        }
+
+        & .news-title {
+            padding-right: 20px;
+            margin-bottom: 14px;
+            font-size: 1.28rem;
+
+            @media (width >= 768px) {
+                font-size: 1.5rem;
+            }
+        }
+
+        & .news-chevron {
+            right: 20px;
+            bottom: 20px;
+        }
+    }
+
+    .news-pinned__box .news-content--pinned {
+        min-height: 6.6em;
+        font-size: 0.92rem;
+        line-height: 1.32;
+        -webkit-line-clamp: 4;
+
+        @media (width >= 768px) {
+            font-size: 0.95rem;
+            -webkit-line-clamp: 5;
+        }
+    }
+
+    .news-pinned__pin {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        width: 16px;
+        height: 16px;
+        opacity: 0.9;
+    }
+
+    /* Load More: outlined in red, filled when pointed at */
+    .news-more {
+        margin: 3rem 0;
+        text-align: center;
+    }
+
+    .news-more__button {
+        display: inline-block;
+        padding: 10px 36px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--news-red);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        cursor: pointer;
+        background-color: transparent;
+        border: 1.5px solid var(--news-red);
+        border-radius: 50px;
+        transition: all 0.25s ease;
+
+        &:hover {
+            color: #fff;
+            background-color: var(--news-red);
+            box-shadow: 0 4px 12px rgb(181 18 27 / 0.15);
+            transform: translateY(-1px);
+        }
+
+        &:active {
+            transform: translateY(0);
+        }
+    }
+
+    /* No story to show (legacy printed it for a filter that found none) */
+    .news-empty {
+        padding: 3rem 0;
+        color: #6c757d;
+        text-align: center;
+    }
+
+    .news-empty__icon {
+        width: 48px;
+        height: 48px;
+        margin-bottom: 1rem;
+        color: #dee2e6;
+    }
+
+    .news-empty__title {
+        margin-bottom: 0.5rem;
+        font-size: 1.75rem;
+        font-weight: 700;
+        line-height: 1.2;
+        color: #212529;
+    }
+
+    /* Under the list: the section title, then the sign-up box (ui/subscribe.css) */
+    .news-signup-title {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 0 12px;
+    }
+
+    .news-signup {
+        display: flex;
+        justify-content: center;
+        padding: 0 12px;
+        margin: 3rem 0;
+    }
+
+    .news-signup__column {
+        flex: 0 0 auto;
+        width: 100%;
+        max-width: 1140px;
+        padding: 0 12px;
+
+        @media (width >= 1920px) {
+            max-width: 1400px;
+        }
+
+        @media (width >= 2000px) {
+            max-width: min(84vw, 1760px);
+        }
+
+        @media (width >= 2560px) {
+            max-width: min(84vw, 1960px);
+        }
+    }
+
+    /* A story's page: Bootstrap's col-12 col-md-10 col-lg-8 */
+    .news-signup__column--narrow {
+        max-width: none;
+
+        @media (width >= 768px) {
+            width: 83.333333%;
+        }
+
+        @media (width >= 992px) {
+            width: 66.666667%;
+        }
+    }
+}
