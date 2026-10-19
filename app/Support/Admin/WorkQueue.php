@@ -18,7 +18,7 @@ final class WorkQueue
     public static function for(User $user): array
     {
         return match (true) {
-            AdminAccessQuery::can($user, AdminCapability::PublishProjects) => ['tab' => 'pending', 'title' => 'Waiting to be published', 'action' => 'pending'],
+            AdminAccessQuery::can($user, AdminCapability::Publish) => ['tab' => 'pending', 'title' => 'Waiting to be published', 'action' => 'pending'],
             AdminAccessQuery::can($user, AdminCapability::CheckEnglish) => ['tab' => 'english', 'title' => 'Waiting for the English check', 'action' => 'english'],
             AdminAccessQuery::can($user, AdminCapability::ManagePhotos) => ['tab' => 'nophoto', 'title' => 'Projects without photos', 'action' => 'nophoto'],
             default => ['tab' => 'all', 'title' => 'Latest projects', 'action' => 'all'],

@@ -2,7 +2,7 @@
 
 use App\Enums\AdminCapability;
 use App\Enums\ProjectStatus;
-use App\Livewire\Concerns\ManagesProjects;
+use App\Livewire\Concerns\ManagesContent;
 use App\Models\Project;
 use App\Queries\AdminAccessQuery;
 use App\Queries\AdminProjectIndexQuery;
@@ -23,7 +23,7 @@ use Livewire\WithPagination;
  */
 new #[Layout('layouts::admin', ['title' => 'Micro projects'])] class extends Component
 {
-    use ManagesProjects;
+    use ManagesContent;
     use WithPagination;
 
     private const PER_PAGE = 15;
@@ -87,11 +87,11 @@ new #[Layout('layouts::admin', ['title' => 'Micro projects'])] class extends Com
             'categories' => ProjectLookups::categories(),
             'donors' => ProjectLookups::donors(),
             'bulk' => [
-                'publish' => $may(AdminCapability::PublishProjects),
-                'hide' => $may(AdminCapability::HideProjects),
+                'publish' => $may(AdminCapability::Publish),
+                'hide' => $may(AdminCapability::Hide),
                 'check-english' => $may(AdminCapability::CheckEnglish),
             ],
-            'create' => $may(AdminCapability::CreateProjects),
+            'create' => $may(AdminCapability::Create),
             'filtered' => $this->search !== '' || $this->city !== '' || $this->category !== '' || $this->donor !== '',
         ];
     }
@@ -186,7 +186,7 @@ new #[Layout('layouts::admin', ['title' => 'Micro projects'])] class extends Com
                                     </div>
                                 </td>
                                 <td><x-admin.status-pill :status="ProjectStatus::of($project->published, $project->done, $project->hidden)" /></td>
-                                <td class="acell"><x-admin.project-actions :project="$project" /></td>
+                                <td class="acell"><x-admin.content-actions :item="$project" /></td>
                             </tr>
                         @endforeach
                     </tbody>

@@ -38,6 +38,9 @@ trait SendsAlerts
      */
     private function alertPayload(string $key, array $params, string $type, ?array $undo): array
     {
+        // Every message can name what the page manages: ":Noun #:number", ":nouns".
+        $params += ['noun' => $this->alertNoun(), 'nouns' => str($this->alertNoun())->plural()->toString()];
+
         $line = str_starts_with($key, 'refusals.') ? 'admin.'.$key : 'admin.alerts.'.$key;
 
         // A message with a count may have a singular and a plural form ("1 photo|2 photos").
@@ -48,5 +51,11 @@ trait SendsAlerts
             'message' => $message,
             'undo' => $undo === null ? null : ['component' => $this->getId(), 'call' => $undo],
         ];
+    }
+
+    /** "project", "initiative": what the page manages, if it says (ManagesContent::contentKind). */
+    protected function alertNoun(): string
+    {
+        return method_exists($this, 'contentKind') ? $this->contentKind()->noun() : 'project';
     }
 }

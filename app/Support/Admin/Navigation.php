@@ -46,7 +46,7 @@ final class Navigation
     /** Projects waiting to be published, for those who publish or check them; nobody else sees the number. */
     private static function pendingProjects(User $user): ?int
     {
-        if (! AdminAccessQuery::can($user, AdminCapability::PublishProjects) && ! AdminAccessQuery::can($user, AdminCapability::CheckEnglish)) {
+        if (! AdminAccessQuery::can($user, AdminCapability::Publish) && ! AdminAccessQuery::can($user, AdminCapability::CheckEnglish)) {
             return null;
         }
 

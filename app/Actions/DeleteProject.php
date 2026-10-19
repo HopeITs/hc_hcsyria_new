@@ -2,6 +2,7 @@
 
 namespace App\Actions;
 
+use App\Exceptions\AdminActionRefused;
 use App\Models\Project;
 use App\Support\Admin\ProjectPhotoFiles;
 use Illuminate\Support\Facades\DB;
@@ -41,10 +42,7 @@ class DeleteProject
         }
 
         if (DB::table('successes')->where('project_id', $projectId)->exists()) {
-            throw new RuntimeException(
-                "Project $projectId has success stories attached and cannot be deleted. "
-                .'Remove or reassign them first.'
-            );
+            throw new AdminActionRefused('has_successes');
         }
 
         // Collected before the delete: the foreign keys cascade, so afterwards

@@ -1,8 +1,9 @@
 <?php
 
 use App\Enums\ProjectStatus;
-use App\Livewire\Concerns\ManagesProjects;
+use App\Livewire\Concerns\ManagesContent;
 use App\Models\Project;
+use Illuminate\Database\Eloquent\Model;
 use App\Queries\AdminProjectQuery;
 use App\Support\Admin\ProjectReadiness;
 use App\Support\SafeHtml;
@@ -19,7 +20,7 @@ use Livewire\Component;
  */
 new #[Layout('layouts::admin', ['title' => 'Micro project'])] class extends Component
 {
-    use ManagesProjects;
+    use ManagesContent;
 
     #[Locked]
     public int $projectId;
@@ -35,9 +36,9 @@ new #[Layout('layouts::admin', ['title' => 'Micro project'])] class extends Comp
     public function photosChanged(): void {}
 
     /** The project is gone: back to the list, with the alert waiting there. */
-    protected function afterDeleted(Project $project): void
+    protected function afterDeleted(Model $item): void
     {
-        $this->flashAlert('deleted', ['number' => $project->MicroProject_ID]);
+        $this->flashAlert('deleted', ['number' => $this->contentKind()->number($item)]);
         $this->redirectRoute('admin.projects.index', navigate: true);
     }
 
@@ -71,7 +72,7 @@ new #[Layout('layouts::admin', ['title' => 'Micro project'])] class extends Comp
                 @if ($status === ProjectStatus::Online)
                     <a href="/projects/micro-projects?projectDetailsModal={{ $project->id }}" target="_blank" rel="noopener" class="btn btn-o"><x-admin.icon name="ext" />View on the site</a>
                 @endif
-                <x-admin.project-actions :project="$project" size="" />
+                <x-admin.content-actions :item="$project" size="" />
             </x-slot:actions>
         </x-admin.page-header>
 
