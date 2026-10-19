@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\Project;
+use App\Policies\ProjectPolicy;
 use App\Queries\MemberAccessQuery;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Console\Events\CommandStarting;
@@ -73,6 +75,9 @@ class AppServiceProvider extends ServiceProvider
     private function defineGates(): void
     {
         Gate::define('view-micro-projects', MemberAccessQuery::mayViewMicroProjects(...));
+
+        // The staff dashboard's rules for a micro-project (roles and cities).
+        Gate::policy(Project::class, ProjectPolicy::class);
     }
 
     /*

@@ -2,10 +2,11 @@
 
 namespace App\Http\Responses;
 
+use App\Queries\AdminAccessQuery;
 use App\Support\SafeRedirect;
 use Laravel\Fortify\Contracts\LoginResponse as LoginResponseContract;
 
-/* After signing in: back to the page the form was on, else the site's home. */
+/* After signing in: back to the page the form was on, else the dashboard (staff) or the site's home. */
 class LoginResponse implements LoginResponseContract
 {
     public function toResponse($request)
@@ -14,6 +15,14 @@ class LoginResponse implements LoginResponseContract
 
         return $request->wantsJson()
             ? response()->json(['two_factor' => false])
-            : redirect()->to($target ?? config('fortify.home'));
+            : redirect()->to($target ?? $this->landing($request));
+    }
+
+    /** Staff land on the dashboard; everyone else on the site's home. */
+    private function landing($request): string
+    {
+        $user = $request->user();
+
+        return $user !== null && AdminAccessQuery::mayEnter($user) ? route('admin.dashboard') : config('fortify.home');
     }
 }
