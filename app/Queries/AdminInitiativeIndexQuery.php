@@ -27,6 +27,8 @@ final class AdminInitiativeIndexQuery
 
     private ?int $donor = null;
 
+    private ?int $place = null;
+
     private string $tab = 'all';
 
     public static function make(): self
@@ -44,6 +46,13 @@ final class AdminInitiativeIndexQuery
     public function inCategory(int|string|null $id): self
     {
         $this->category = $id === null || $id === '' ? null : (int) $id;
+
+        return $this;
+    }
+
+    public function inPlace(int|string|null $id): self
+    {
+        $this->place = $id === null || $id === '' ? null : (int) $id;
 
         return $this;
     }
@@ -101,6 +110,8 @@ final class AdminInitiativeIndexQuery
                 'what_categories.name as category',
                 'who_categories.name as serves',
                 'sub_what_categories.name as kind',
+                'places.name as place',
+                'studyzonecenters.name as centre',
                 DB::raw('(SELECT GROUP_CONCAT(donors.name ORDER BY donors.name SEPARATOR ", ") FROM initiatives_donors JOIN donors ON donors.id = initiatives_donors.donor_id WHERE initiatives_donors.initiative_id = initiatives.id) as donors'),
                 DB::raw('(SELECT COUNT(*) FROM initiatives_images WHERE initiatives_images.initiative_id = initiatives.id) as photos'),
             ])
@@ -115,10 +126,16 @@ final class AdminInitiativeIndexQuery
             ->leftJoin('what_categories', 'what_categories.id', '=', 'initiatives.what_category_id')
             ->leftJoin('who_categories', 'who_categories.id', '=', 'initiatives.who_category_id')
             ->leftJoin('sub_what_categories', 'sub_what_categories.id', '=', 'initiatives.sub_what_category_id')
+            ->leftJoin('places', 'places.id', '=', 'initiatives.place_id')
+            ->leftJoin('studyzonecenters', 'studyzonecenters.id', '=', 'initiatives.sz_center_id')
             ->whereIn('initiatives.what_category_id', ContentLookups::INITIATIVE_CATEGORIES);
 
         if ($this->category !== null) {
             $query->where('initiatives.what_category_id', $this->category);
+        }
+
+        if ($this->place !== null) {
+            $query->where('initiatives.place_id', $this->place);
         }
 
         if ($this->donor !== null) {

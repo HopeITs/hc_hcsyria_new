@@ -35,6 +35,13 @@ class SaveInitiative
         'content' => ['content', 'Content edited', false],
     ];
 
+    /** data key => [initiatives column, log wording, table that names it]. */
+    private const CHOICES = [
+        'sub_what_category_id' => ['sub_what_category_id', 'Kind changed', 'sub_what_categories'],
+        'place_id' => ['place_id', 'Place changed', 'places'],
+        'sz_center_id' => ['sz_center_id', 'Study Zone centre changed', 'studyzonecenters'],
+    ];
+
     public function __construct(private readonly WriteActivityLog $log) {}
 
     /** @param array<string, mixed> $data */
@@ -60,7 +67,8 @@ class SaveInitiative
             'what_category_id' => $data['what_category_id'],
             'who_category_id' => $data['who_category_id'],
             'sub_what_category_id' => $data['sub_what_category_id'],
-            'place_id' => 0,
+            'place_id' => $data['place_id'],
+            'sz_center_id' => $data['sz_center_id'],
         ])->save();
 
         $content = new InitiativeContent(['initiative_id' => $initiative->getKey()]);
@@ -89,8 +97,13 @@ class SaveInitiative
             $this->log->item($by, ContentKind::Initiative, $id, 'Serve category changed', $this->whoName($initiative->getOriginal('who_category_id')), $this->whoName($initiative->who_category_id));
         }
 
-        if ($initiative->what_category_id === 8) {
-            $initiative->sub_what_category_id = $data['sub_what_category_id'];
+        // Where the category has them, the kind, the place and the centre can change; the category cannot.
+        foreach (self::CHOICES as $key => [$column, $operation, $table]) {
+            $initiative->{$column} = $data[$key];
+
+            if ($initiative->isDirty($column)) {
+                $this->log->item($by, ContentKind::Initiative, $id, $operation, $this->name($table, $initiative->getOriginal($column)), $this->name($table, $initiative->{$column}));
+            }
         }
 
         $initiative->save();
@@ -137,6 +150,12 @@ class SaveInitiative
 
     private function whoName(mixed $id): string
     {
-        return (string) DB::table('who_categories')->where('id', $id)->value('name');
+        return $this->name('who_categories', $id);
+    }
+
+    /** The name behind an id, or nothing when there is none (an empty choice). */
+    private function name(string $table, mixed $id): string
+    {
+        return (string) DB::table($table)->where('id', $id)->value('name');
     }
 }

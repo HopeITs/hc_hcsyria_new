@@ -15,21 +15,6 @@ use Livewire\Livewire;
  * rolled-back transaction and use initiatives they create themselves.
  */
 
-function initiativeForm(array $overrides = []): array
-{
-    return [
-        'form.what_category_id' => '1',
-        'form.who_category_id' => '3',
-        'form.title' => 'zqi new initiative',
-        'form.organization' => 'zqi organization',
-        'form.date_string' => 'Summer 2026',
-        'form.description' => 'A short description.',
-        'form.content' => '<p>A long enough text for an initiative.</p><script>x</script>',
-        'form.donors' => [(string) DB::table('donors')->orderBy('id')->value('id')],
-        ...$overrides,
-    ];
-}
-
 // ----------------------------------------------------------- who gets in, the list
 
 it('lets every role open the list and an initiative', function (string $role) {
@@ -56,10 +41,10 @@ it('shows the section in the sidebar and the Ctrl K list', function () {
     $this->actingAs(staff('English Editor'))->get('/admin/home')->assertSee('New initiative');
 });
 
-it('lists the managed categories, finds by title, and counts the tabs', function () {
+it('lists the managed categories (not Homework Room), finds by title, and counts the tabs', function () {
     $pending = adminInitiative();
     $online = adminInitiative(['online' => 1]);
-    $programme = adminInitiative(['what_category_id' => 7]);
+    $programme = adminInitiative(['what_category_id' => 6]);
 
     $page = Livewire::actingAs(staff('Viewer'))->test('pages::admin.initiatives.index')->set('search', 'zqi initiative');
 
@@ -190,7 +175,7 @@ it('asks for what is missing', function () {
 it('takes only the categories the section manages, and the donors that exist', function () {
     $page = Livewire::actingAs(staff('Admin'))->test('pages::admin.initiatives.form');
 
-    $page->fill(initiativeForm(['form.what_category_id' => '7']))->call('save')->assertHasErrors('form.what_category_id');
+    $page->fill(initiativeForm(['form.what_category_id' => '6']))->call('save')->assertHasErrors('form.what_category_id');
     $page->fill(initiativeForm(['form.donors' => ['99999']]))->call('save')->assertHasErrors('form.donors.0');
 });
 
