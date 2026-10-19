@@ -100,16 +100,20 @@ final class PhotoFiles
         return substr($path, 0, -4).'b.jpg';
     }
 
-    /** The file on disk for a stored path, or null if it is missing or would lead outside the images folder. */
+    /**
+     * The file on disk for a stored path, or null if it is missing or would lead outside
+     * the area it names: the pictures (/images) or the documents (/files) of MEDIA_ROOT.
+     */
     public static function absolute(string $path): ?string
     {
         $root = config('hcsyria.media_root');
+        $area = preg_match('#^/(images|files)/#', $path, $match) === 1 ? $match[1] : null;
 
-        if (blank($root) || ! str_starts_with($path, '/images/')) {
+        if (blank($root) || $area === null) {
             return null;
         }
 
-        $base = realpath($root.'/images');
+        $base = realpath($root.'/'.$area);
         $file = $base === false ? false : realpath($root.$path);
 
         return $file !== false && str_starts_with($file, $base.DIRECTORY_SEPARATOR) && is_file($file) ? $file : null;

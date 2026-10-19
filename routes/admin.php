@@ -29,4 +29,9 @@ Route::prefix('admin')->name('admin.')->middleware(['web', 'auth', 'admin.access
     Route::livewire('/successes/create', 'pages::admin.successes.form')->name('successes.create');
     Route::livewire('/successes/{success}/edit', 'pages::admin.successes.form')->whereNumber('success')->name('successes.edit');
     Route::livewire('/successes/{success}', 'pages::admin.successes.show')->whereNumber('success')->name('successes.show');
+
+    Route::livewire('/news', 'pages::admin.news.index')->name('news.index');
+    Route::livewire('/news/create', 'pages::admin.news.form')->name('news.create');
+    Route::livewire('/news/{news}/edit', 'pages::admin.news.form')->whereNumber('news')->name('news.edit');
+    Route::livewire('/news/{news}', 'pages::admin.news.show')->whereNumber('news')->name('news.show');
 });

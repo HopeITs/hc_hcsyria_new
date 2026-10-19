@@ -4,6 +4,8 @@ use App\Models\Image;
 use App\Models\Initiative;
 use App\Models\InitiativeContent;
 use App\Models\Log;
+use App\Models\News;
+use App\Models\NewsContent;
 use App\Models\Project;
 use App\Models\ProjectContent;
 use App\Models\Role;
@@ -163,4 +165,37 @@ function adminSuccess(array $attributes = [], array $content = []): Success
 function successLogs(Success $success)
 {
     return Log::query()->where(['project_id' => $success->id, 'category' => 2]);
+}
+
+/** A newsletter item (an article) with its text and one tag, offline and English checked. */
+function adminNews(array $attributes = [], array $content = []): News
+{
+    $news = News::unguarded(fn () => News::query()->create([
+        'rank' => 1,
+        'type' => 0,
+        'video' => '0',
+        'file' => '0',
+        'english_check' => 1,
+        'french_translation' => '0',
+        'online' => 0,
+        'hidden' => 0,
+        'place_id' => 3,
+        'edition_id' => null,
+        'date' => '2026-09-01',
+        'priority_status' => 0,
+        'view_count' => 0,
+        'total_views' => 0,
+        ...$attributes,
+    ]));
+
+    NewsContent::query()->create(['news_id' => $news->id, 'title' => 'zqn news '.$news->id, 'description' => 'A short description.', 'content' => '<p>The news.</p>', ...$content]);
+    DB::table('news_tags')->insert(['news_id' => $news->id, 'tag_id' => DB::table('tags')->orderBy('id')->value('id')]);
+
+    return $news;
+}
+
+/** The activity-log rows of a newsletter item (logs category 3). */
+function newsLogs(News $news)
+{
+    return Log::query()->where(['project_id' => $news->id, 'category' => 3]);
 }

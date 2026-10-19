@@ -4,11 +4,13 @@ namespace App\Support\Admin;
 
 use App\Enums\AdminCapability;
 use App\Models\Initiative;
+use App\Models\News;
 use App\Models\Project;
 use App\Models\Success;
 use App\Models\User;
 use App\Queries\AdminAccessQuery;
 use App\Queries\AdminInitiativeIndexQuery;
+use App\Queries\AdminNewsIndexQuery;
 use App\Queries\AdminProjectIndexQuery;
 use App\Queries\AdminSuccessIndexQuery;
 use Illuminate\Support\Facades\Gate;
@@ -38,6 +40,7 @@ final class Navigation
                     ['label' => 'Micro projects', 'icon' => 'folder', 'route' => 'admin.projects.index', 'active' => 'admin.projects.*', 'badge' => self::pending($user, fn (?array $places): int => AdminProjectIndexQuery::make()->limitedTo($places)->counts()['pending']), 'can' => Gate::forUser($user)->allows('viewAny', Project::class)],
                     ['label' => 'Initiatives', 'icon' => 'spark', 'route' => 'admin.initiatives.index', 'active' => 'admin.initiatives.*', 'badge' => self::pending($user, fn (): int => AdminInitiativeIndexQuery::make()->counts()['pending']), 'can' => Gate::forUser($user)->allows('viewAny', Initiative::class)],
                     ['label' => 'Successes', 'icon' => 'trophy', 'route' => 'admin.successes.index', 'active' => 'admin.successes.*', 'badge' => self::pending($user, fn (): int => AdminSuccessIndexQuery::make()->counts()['pending']), 'can' => Gate::forUser($user)->allows('viewAny', Success::class)],
+                    ['label' => 'Newsletter', 'icon' => 'news', 'route' => 'admin.news.index', 'active' => 'admin.news.*', 'badge' => self::pending($user, fn (): int => AdminNewsIndexQuery::make()->counts()['pending']), 'can' => Gate::forUser($user)->allows('viewAny', News::class)],
                 ],
             ],
         ];
@@ -74,7 +77,7 @@ final class Navigation
             }
         }
 
-        foreach ([[Project::class, 'New project', 'admin.projects.create'], [Initiative::class, 'New initiative', 'admin.initiatives.create'], [Success::class, 'New success', 'admin.successes.create']] as [$model, $label, $route]) {
+        foreach ([[Project::class, 'New project', 'admin.projects.create'], [Initiative::class, 'New initiative', 'admin.initiatives.create'], [Success::class, 'New success', 'admin.successes.create'], [News::class, 'New newsletter item', 'admin.news.create']] as [$model, $label, $route]) {
             if (Gate::forUser($user)->allows('create', $model)) {
                 $pages[] = ['label' => $label, 'hint' => 'Create', 'url' => route($route)];
             }
