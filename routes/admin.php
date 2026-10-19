@@ -24,4 +24,9 @@ Route::prefix('admin')->name('admin.')->middleware(['web', 'auth', 'admin.access
     Route::livewire('/initiatives/create', 'pages::admin.initiatives.form')->name('initiatives.create');
     Route::livewire('/initiatives/{initiative}/edit', 'pages::admin.initiatives.form')->whereNumber('initiative')->name('initiatives.edit');
     Route::livewire('/initiatives/{initiative}', 'pages::admin.initiatives.show')->whereNumber('initiative')->name('initiatives.show');
+
+    Route::livewire('/successes', 'pages::admin.successes.index')->name('successes.index');
+    Route::livewire('/successes/create', 'pages::admin.successes.form')->name('successes.create');
+    Route::livewire('/successes/{success}/edit', 'pages::admin.successes.form')->whereNumber('success')->name('successes.edit');
+    Route::livewire('/successes/{success}', 'pages::admin.successes.show')->whereNumber('success')->name('successes.show');
 });

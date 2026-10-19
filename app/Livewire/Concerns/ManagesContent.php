@@ -41,7 +41,7 @@ trait ManagesContent
 
         $transition = ContentTransition::tryFrom($name);
 
-        if ($transition === null || ! $this->mayDo($transition, $item)) {
+        if ($transition === null || ! $this->contentKind()->supports($transition) || ! $this->mayDo($transition, $item)) {
             $this->alert('forbidden', type: 'error');
 
             return;
@@ -80,7 +80,7 @@ trait ManagesContent
         $done = 0;
 
         foreach ($items as $item) {
-            if ($transition === null || ! $this->mayDo($transition, $item) || ! $transition->appliesTo($item)) {
+            if ($transition === null || ! $this->contentKind()->supports($transition) || ! $this->mayDo($transition, $item) || ! $transition->appliesTo($item)) {
                 continue;
             }
 

@@ -29,6 +29,14 @@ final class PhotoFolders
         return '/images/'.(self::PROJECT_FOLDERS[$city] ?? 'projects').'/'.$number;
     }
 
+    /** A success story's picture goes in the folder of the people it is about (men, women, youth...), as in legacy. */
+    public static function success(string $who): string
+    {
+        $name = trim((string) preg_replace('/[^\p{L}\p{N} _-]+/u', '', $who));
+
+        return '/images/successes/'.($name === '' ? 'other' : $name);
+    }
+
     public static function initiative(string $category, int $id): string
     {
         // The category's own name, as the existing folders are named, without anything that could leave the folder.

@@ -34,7 +34,7 @@ enum ContentTransition: string
     public function appliesTo(object $project): bool
     {
         $published = (int) ($project->published ?? $project->MPE_Published ?? $project->online);
-        $hidden = (bool) $project->hidden;
+        $hidden = (bool) ($project->hidden ?? false);
 
         return match ($this) {
             self::Publish => $published === 0 && ! $hidden,
