@@ -755,9 +755,9 @@
             "action": "Auth\\LoginController@showLoginForm",
             "name": "login",
             "order": 44,
-            "status": "later",
-            "notes": "Admin phase: Fortify login with 2FA.",
-            "ported_from": null,
+            "status": "ported",
+            "notes": "Built in the Tracking app's sign-in design, not the legacy HC screen (user decision, 2026-10-19): a grey backdrop, one 384px column, the HC Syria logo (/images/logos/hc.svg) above a white card, 'Sign In' with Tracking's wording, light only. A Blade view (`auth.login`, no layout: no header or footer), page CSS in pages/login.css, `passwordToggle` (Alpine) for the eye button, Somar Sans 400/500/600 copied from the Tracking app. The form posts to Fortify's POST /login (five tries a minute, deactivated accounts refused, safe return); signed-in accounts are sent on (guest middleware). Deliberate differences from legacy: the whole look and wording (legacy: red brand panel, 'Log in to continue'); no Font Awesome, Bootstrap/jQuery or Google Fonts; no inline script (CSP). Measured against the running Tracking login: same layout to within 1px; only the logo and the footer ('- PT' dropped) differ. No two-factor sign-in (user decision, 2026-10-19); No Turnstile on the login either (user decision, 2026-10-19).",
+            "ported_from": "6d45ef9",
             "live_status": "200",
             "examples": [
                 {

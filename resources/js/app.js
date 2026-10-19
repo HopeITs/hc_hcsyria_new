@@ -11,6 +11,7 @@ import familyMap from './family-map';
 import hideNavBetween from './hide-nav-between';
 import lightbox from './lightbox';
 import { clock, newsColumns, shareMenu } from './news-page';
+import passwordToggle from './password-toggle';
 import preloader from './preloader';
 import projectList from './project-list';
 import projectMap from './project-map';
@@ -36,6 +37,7 @@ document.addEventListener('alpine:init', () => {
     window.Alpine.data('newsColumns', newsColumns);
     window.Alpine.data('clock', clock);
     window.Alpine.data('shareMenu', shareMenu);
+    window.Alpine.data('passwordToggle', passwordToggle);
     window.Alpine.data('preloader', preloader);
     window.Alpine.data('radialBars', radialBars);
     window.Alpine.data('relatedCarousel', relatedCarousel);
