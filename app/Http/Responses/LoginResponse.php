@@ -4,6 +4,7 @@ namespace App\Http\Responses;
 
 use App\Queries\AdminAccessQuery;
 use App\Support\SafeRedirect;
+use Illuminate\Http\Request;
 use Laravel\Fortify\Contracts\LoginResponse as LoginResponseContract;
 
 /* After signing in: back to the page the form was on, else the dashboard (staff) or the site's home. */
@@ -19,7 +20,7 @@ class LoginResponse implements LoginResponseContract
     }
 
     /** Staff land on the dashboard; everyone else on the site's home. */
-    private function landing($request): string
+    private function landing(Request $request): string
     {
         $user = $request->user();
 

@@ -37,6 +37,8 @@ final class AdminAccessQuery
         return self::$roles[$user->getKey()] ??= Role::query()
             ->whereIn('id', UserRole::query()->where('user_id', $user->getKey())->select('role_id'))
             ->pluck('name')
+            ->map(fn ($name): string => (string) $name)
+            ->values()
             ->all();
     }
 
