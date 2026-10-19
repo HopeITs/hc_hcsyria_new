@@ -3,12 +3,14 @@
 namespace App\Enums;
 
 use App\Actions\Admin\DeleteInitiative;
+use App\Actions\Admin\DeleteMagazine;
 use App\Actions\Admin\DeleteNews;
 use App\Actions\Admin\DeleteSuccess;
 use App\Actions\DeleteProject;
 use App\Models\Initiative;
 use App\Models\News;
 use App\Models\Project;
+use App\Models\RootsOfHope;
 use App\Models\Success;
 use App\Support\Admin\PhotoFolders;
 use App\Support\Admin\ProjectReadiness;
@@ -31,6 +33,7 @@ enum ContentKind: string
     case Initiative = 'initiative';
     case Success = 'success';
     case News = 'news';
+    case Roots = 'roots';
 
     public static function of(Model $item): self
     {
@@ -38,6 +41,7 @@ enum ContentKind: string
             $item instanceof Initiative => self::Initiative,
             $item instanceof Success => self::Success,
             $item instanceof News => self::News,
+            $item instanceof RootsOfHope => self::Roots,
             default => self::Project,
         };
     }
@@ -50,24 +54,31 @@ enum ContentKind: string
             self::Initiative => Initiative::class,
             self::Success => Success::class,
             self::News => News::class,
+            self::Roots => RootsOfHope::class,
         };
     }
 
     /** The word used in sentences: "project #3071 is online". */
     public function noun(): string
     {
-        return $this->value;
+        return $this === self::Roots ? 'magazine' : $this->value;
     }
 
     public function nouns(): string
     {
-        return Str::plural($this->value);
+        return Str::plural($this->noun());
     }
 
     /** The route of one of its pages: index, show, create, edit. */
     public function route(string $page): string
     {
-        return 'admin.'.$this->nouns().'.'.$page;
+        // The address of the section: the plural of what it is called, except where the section is named after the thing (news, roots).
+        $section = match ($this) {
+            self::News, self::Roots => $this->value,
+            default => Str::plural($this->value),
+        };
+
+        return 'admin.'.$section.'.'.$page;
     }
 
     /** Legacy's category in the activity log (`logs.category`). */
@@ -78,6 +89,7 @@ enum ContentKind: string
             self::Initiative => 1,
             self::Success => 2,
             self::News => 3,
+            self::Roots => 11,
         };
     }
 
@@ -92,7 +104,7 @@ enum ContentKind: string
             self::Project => ['table' => 'images', 'owner' => 'project_id', 'path' => 'MPI_Path'],
             self::Initiative => ['table' => 'initiatives_images', 'owner' => 'initiative_id', 'path' => 'path'],
             self::News => ['table' => 'news_images', 'owner' => 'news_id', 'path' => 'path'],
-            self::Success => throw new LogicException('A success story has one picture, not a gallery.'),
+            self::Success, self::Roots => throw new LogicException('This kind has one picture, not a gallery.'),
         };
     }
 
@@ -143,7 +155,7 @@ enum ContentKind: string
             self::Project => ['small' => [630, 420], 'big' => [1620, 1080]],
             self::Initiative => ['small' => [720, 480], 'big' => [2000, 1333]],
             self::News => ['small' => [920, 614], 'big' => [2080, 1387]],
-            self::Success => throw new LogicException('A success story has one picture, not a gallery.'),
+            self::Success, self::Roots => throw new LogicException('This kind has one picture, not a gallery.'),
         };
     }
 
@@ -161,6 +173,7 @@ enum ContentKind: string
             self::Initiative => DeleteInitiative::class,
             self::Success => DeleteSuccess::class,
             self::News => DeleteNews::class,
+            self::Roots => DeleteMagazine::class,
         };
     }
 
@@ -172,6 +185,7 @@ enum ContentKind: string
             self::Initiative => 'Initiative deleted',
             self::Success => 'Success deleted',
             self::News => 'News deleted',
+            self::Roots => 'Magazine deleted',
         };
     }
 
@@ -212,6 +226,11 @@ enum ContentKind: string
                 ContentTransition::Unhide => ['hidden' => false],
                 ContentTransition::CheckEnglish => ['english_check' => 1],
             },
+            self::Roots => match ($transition) {
+                ContentTransition::Publish => ['online' => 1],
+                ContentTransition::Unpublish => ['online' => 0],
+                ContentTransition::Hide, ContentTransition::Unhide, ContentTransition::CheckEnglish => [],
+            },
         });
     }
 
@@ -246,6 +265,11 @@ enum ContentKind: string
                 ContentTransition::Unhide => 'News Status: Pending to publish',
                 ContentTransition::CheckEnglish => 'English Content Checked',
             },
+            self::Roots => match ($transition) {
+                ContentTransition::Publish => 'Magazine Status: Online',
+                ContentTransition::Unpublish => 'Magazine Status: Offline',
+                ContentTransition::Hide, ContentTransition::Unhide, ContentTransition::CheckEnglish => '',
+            },
         };
     }
 
@@ -264,26 +288,35 @@ enum ContentKind: string
             ]);
         }
 
+        if ($item instanceof RootsOfHope) {
+            return $item->image_path === '0' || $item->image_path === '' ? ['cover'] : [];
+        }
+
         return ($item instanceof Initiative || $item instanceof Success || $item instanceof News) && (int) $item->english_check !== 1 ? ['english'] : [];
     }
 
     /**
      * The same, for a list row (columns english_check, photos, donor_id).
      *
-     * @param  object{english_check: int|string, photos?: int|string, donor_id?: int|string|null}  $row
+     * @param  object{english_check?: int|string, photos?: int|string, donor_id?: int|string|null, image_path?: string}  $row
      * @return list<string>
      */
     public function rowBlockers(object $row): array
     {
         return match ($this) {
             self::Project => ProjectReadiness::blockers($row),
-            self::Initiative, self::Success, self::News => (int) $row->english_check === 1 ? [] : ['english'],
+            self::Initiative, self::Success, self::News => (int) ($row->english_check ?? 0) === 1 ? [] : ['english'],
+            self::Roots => ($row->image_path ?? '0') === '0' ? ['cover'] : [],
         };
     }
 
-    /** Does this kind have the move? A success story has no hidden state. */
+    /** Does this kind have the move? A success story has no hidden state; a magazine is only online or offline. */
     public function supports(ContentTransition $transition): bool
     {
-        return $this !== self::Success || ! in_array($transition, [ContentTransition::Hide, ContentTransition::Unhide], true);
+        return match ($this) {
+            self::Success => ! in_array($transition, [ContentTransition::Hide, ContentTransition::Unhide], true),
+            self::Roots => in_array($transition, [ContentTransition::Publish, ContentTransition::Unpublish], true),
+            default => true,
+        };
     }
 }

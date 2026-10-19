@@ -26,11 +26,12 @@ final class DocumentFiles
     }
 
     /**
-     * Store an uploaded PDF in $directory (like "/files/news"). Returns its path.
+     * Store an uploaded PDF in $directory (like "/files/news"). Returns its path. $stemLength cuts the
+     * original name shorter where the column that keeps the path is short.
      *
      * @throws RuntimeException
      */
-    public static function store(UploadedFile $file, string $directory): string
+    public static function store(UploadedFile $file, string $directory, int $stemLength = self::NAME_LENGTH): string
     {
         $root = rtrim((string) config('hcsyria.media_root'), '/\\');
 
@@ -38,7 +39,7 @@ final class DocumentFiles
             throw new RuntimeException('The document cannot be stored here: MEDIA_ROOT is missing.');
         }
 
-        $stem = Str::limit(trim((string) preg_replace('/[^\p{L}\p{N} ._-]+/u', '', pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME))), self::NAME_LENGTH, '');
+        $stem = Str::limit(trim((string) preg_replace('/[^\p{L}\p{N} ._-]+/u', '', pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME))), $stemLength, '');
         $name = now()->format('ymdHis').'-'.Str::lower(Str::random(6)).'-'.($stem === '' ? 'file' : $stem).'.pdf';
 
         File::ensureDirectoryExists($root.$directory);

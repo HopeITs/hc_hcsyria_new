@@ -89,6 +89,7 @@ return [
     // What a project still needs before it can go online (ProjectReadiness).
     'needs' => [
         'english' => 'the English text is not checked',
+        'cover' => 'it has no cover',
         'photos' => 'it has no photos',
         'donor' => 'it has no donor',
         'funded' => 'no fund date',
@@ -121,7 +122,7 @@ return [
 
     'confirm' => [
         'delete_title' => 'Delete :noun #:number?',
-        'delete_body' => 'The :noun and its photos are removed for good. This cannot be undone.',
+        'delete_body' => 'The :noun and its files are removed for good. This cannot be undone.',
         'delete_action' => 'Delete',
         'cancel' => 'Cancel',
         'photo_title' => 'Remove this photo?',
