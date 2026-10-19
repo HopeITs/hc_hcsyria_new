@@ -58,8 +58,21 @@ final class ContentLookups
         return (int) DB::table('projects')->max('MicroProject_ID') + 1;
     }
 
-    /** The initiative categories managed in the Initiatives section; the programmes (DISC, Study Zone, ...) have their own. */
-    public const INITIATIVE_CATEGORIES = [1, 3, 4, 8, 18];
+    /**
+     * The initiative categories the Initiatives section manages: social activities, rehabilitation, relief, DISC, Study
+     * Zone, Family to Family, School to School, Children University, earthquake response and LEAP. (Legacy had a section
+     * for each programme over the same table; here they are one list with a category filter.)
+     */
+    public const INITIATIVE_CATEGORIES = [1, 3, 4, 5, 7, 8, 9, 17, 18, 19];
+
+    /** The programmes whose initiatives happen in a place: DISC, Study Zone, Children University, LEAP. */
+    public const PLACE_CATEGORIES = [5, 7, 17, 19];
+
+    /** The kinds an initiative of a category must have (sub_what_categories): Family to Family partner or story, DISC programme, Study Zone events or study, School to School school or kind of support. */
+    public const INITIATIVE_KINDS = [8 => [1, 2], 5 => [8, 9, 10, 11], 7 => [12, 13], 9 => [3, 4, 5, 6, 7, 18, 19, 20, 21]];
+
+    /** What a DISC success story is about: Job Opportunity, Students Of The Month (the other DISC kinds are its programmes). */
+    public const DISC_SUCCESS_KINDS = [16, 17];
 
     /** Homework Room is not part of the dashboard: nothing of that category is listed, opened or changed here. */
     public const EXCLUDED_CATEGORIES = [6];
@@ -73,6 +86,12 @@ final class ContentLookups
     public const DISC = 5;
 
     public const STUDY_ZONE = 7;
+
+    public const SCHOOL_TO_SCHOOL = 9;
+
+    public const CHILDREN_UNIVERSITY = 17;
+
+    public const LEAP = 19;
 
     public const MICRO_PROJECTS = 10;
 
@@ -103,10 +122,14 @@ final class ContentLookups
         return DB::table('donors')->orderBy('name')->get(['id', 'name']);
     }
 
-    /** Family to Family: "Partners" or "Stories". @return Collection<int, object{id: int, name: string}> */
-    public static function familyKinds(): Collection
+    /**
+     * The kinds an initiative of this category chooses from; none for a category that has no kinds.
+     *
+     * @return Collection<int, object{id: int, name: string}>
+     */
+    public static function kindsOf(int $category): Collection
     {
-        return DB::table('sub_what_categories')->where('what_category_id', self::FAMILY_TO_FAMILY)->orderBy('id')->get(['id', 'name']);
+        return DB::table('sub_what_categories')->whereIn('id', self::INITIATIVE_KINDS[$category] ?? [])->orderBy('id')->get(['id', 'name']);
     }
 
     /** @return Collection<int, object{id: int, name: string}> */
@@ -118,7 +141,7 @@ final class ContentLookups
     /** What a DISC story is about: "Job Opportunity", "Students Of The Month". @return Collection<int, object{id: int, name: string}> */
     public static function discKinds(): Collection
     {
-        return DB::table('sub_what_categories')->where('what_category_id', self::DISC)->orderBy('id')->get(['id', 'name']);
+        return DB::table('sub_what_categories')->whereIn('id', self::DISC_SUCCESS_KINDS)->orderBy('id')->get(['id', 'name']);
     }
 
     /** @return Collection<int, object{id: int, name: string}> */

@@ -199,3 +199,19 @@ function newsLogs(News $news)
 {
     return Log::query()->where(['project_id' => $news->id, 'category' => 3]);
 }
+
+/** A valid create form for an initiative (social activities), keyed by the form's property names. */
+function initiativeForm(array $overrides = []): array
+{
+    return [
+        'form.what_category_id' => '1',
+        'form.who_category_id' => '3',
+        'form.title' => 'zqi new initiative',
+        'form.organization' => 'zqi organization',
+        'form.date_string' => 'Summer 2026',
+        'form.description' => 'A short description.',
+        'form.content' => '<p>A long enough text for an initiative.</p><script>x</script>',
+        'form.donors' => [(string) DB::table('donors')->orderBy('id')->value('id')],
+        ...$overrides,
+    ];
+}

@@ -38,6 +38,9 @@ new #[Layout('layouts::admin', ['title' => 'Initiatives'])] class extends Compon
     #[Url(history: true, except: '')]
     public string $donor = '';
 
+    #[Url(history: true, except: '')]
+    public string $place = '';
+
     #[Url(history: true, except: 'all')]
     public string $tab = 'all';
 
@@ -55,20 +58,20 @@ new #[Layout('layouts::admin', ['title' => 'Initiatives'])] class extends Compon
 
     public function updated(string $property): void
     {
-        if (in_array($property, ['search', 'category', 'donor', 'tab'], true)) {
+        if (in_array($property, ['search', 'category', 'donor', 'place', 'tab'], true)) {
             $this->resetPage();
         }
     }
 
     public function clearFilters(): void
     {
-        $this->reset('search', 'category', 'donor');
+        $this->reset('search', 'category', 'donor', 'place');
         $this->resetPage();
     }
 
     private function query(): AdminInitiativeIndexQuery
     {
-        return AdminInitiativeIndexQuery::make()->search($this->search)->inCategory($this->category)->forDonor($this->donor)->tab($this->tab);
+        return AdminInitiativeIndexQuery::make()->search($this->search)->inCategory($this->category)->forDonor($this->donor)->inPlace($this->place)->tab($this->tab);
     }
 
     public function with(): array
@@ -81,20 +84,21 @@ new #[Layout('layouts::admin', ['title' => 'Initiatives'])] class extends Compon
             'counts' => $this->query()->counts(),
             'categories' => ContentLookups::initiativeCategories(),
             'donors' => ContentLookups::allDonors(),
+            'places' => ContentLookups::places(),
             'moves' => array_keys(array_filter([
                 'publish' => $may(AdminCapability::Publish),
                 'hide' => $may(AdminCapability::Hide),
                 'check-english' => $may(AdminCapability::CheckEnglish),
             ])),
             'create' => $may(AdminCapability::Create),
-            'filtered' => $this->search !== '' || $this->category !== '' || $this->donor !== '',
+            'filtered' => $this->search !== '' || $this->category !== '' || $this->donor !== '' || $this->place !== '',
         ];
     }
 };
 ?>
 
 <div class="stack">
-    <x-admin.page-header title="Initiatives" :count="number_format($counts['all'])" subtitle="Social activities, rehabilitation, relief, Family to Family and earthquake response.">
+    <x-admin.page-header title="Initiatives" :count="number_format($counts['all'])" subtitle="Activities of every programme: DISC, Study Zone, School to School, Children University, LEAP, Family to Family and the rest.">
         <x-slot:actions>
             @if ($create)
                 <a href="{{ route('admin.initiatives.create') }}" wire:navigate class="btn btn-p"><x-admin.icon name="plus" />New initiative</a>
@@ -107,6 +111,7 @@ new #[Layout('layouts::admin', ['title' => 'Initiatives'])] class extends Compon
 
         <x-admin.filter-bar placeholder="Title, organization or number" :$filtered>
             <x-admin.select-field label="Category" name="category" :options="$categories" all="All categories" />
+            <x-admin.select-field label="Place" name="place" :options="$places" all="All places" />
             <x-admin.select-field label="Donor" name="donor" :options="$donors" all="All donors" />
         </x-admin.filter-bar>
 
@@ -142,7 +147,7 @@ new #[Layout('layouts::admin', ['title' => 'Initiatives'])] class extends Compon
                                     <div class="nm">{{ $initiative->name }}</div>
                                     @if ($initiative->organization !== '0')<div class="muted" style="font-size: 12px">{{ $initiative->organization }}</div>@endif
                                 </td>
-                                <td class="hide-s">{{ $initiative->category }}@if ($initiative->kind)<div class="faint" style="font-size: 12px">{{ $initiative->kind }}</div>@endif</td>
+                                <td class="hide-s">{{ $initiative->category }}@if ($initiative->kind || $initiative->centre || ($initiative->place && $initiative->place !== 'All'))<div class="faint" style="font-size: 12px">{{ collect([$initiative->kind, $initiative->centre ?? ($initiative->place !== 'All' ? $initiative->place : null)])->filter()->implode(' · ') }}</div>@endif</td>
                                 <td class="hide-s hide-m">{{ $initiative->serves }}</td>
                                 <td class="hide-s hide-m" style="max-width: 16rem">{{ $initiative->donors ?? '—' }}</td>
                                 <td class="hide-s hide-m"><span @class(['info', 'y' => $initiative->photos]) title="{{ $initiative->photos }} photos"><x-admin.icon name="img" class="i16" /> {{ $initiative->photos }}</span></td>

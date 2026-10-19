@@ -20,6 +20,8 @@ final class AdminInitiativeQuery
             ->leftJoin('what_categories', 'what_categories.id', '=', 'initiatives.what_category_id')
             ->leftJoin('who_categories', 'who_categories.id', '=', 'initiatives.who_category_id')
             ->leftJoin('sub_what_categories', 'sub_what_categories.id', '=', 'initiatives.sub_what_category_id')
+            ->leftJoin('places', 'places.id', '=', 'initiatives.place_id')
+            ->leftJoin('studyzonecenters', 'studyzonecenters.id', '=', 'initiatives.sz_center_id')
             ->where('initiatives.id', $id)
             ->select([
                 'initiatives.id',
@@ -33,6 +35,8 @@ final class AdminInitiativeQuery
                 'initiatives.what_category_id as category_id',
                 'initiatives.who_category_id as serves_id',
                 'initiatives.sub_what_category_id as kind_id',
+                'initiatives.place_id',
+                'initiatives.sz_center_id as centre_id',
                 'initiatives_english.title as name',
                 'initiatives_english.organization',
                 'initiatives_english.date_string',
@@ -41,6 +45,8 @@ final class AdminInitiativeQuery
                 'what_categories.name as category',
                 'who_categories.name as serves',
                 'sub_what_categories.name as kind',
+                'places.name as place',
+                'studyzonecenters.name as centre',
                 DB::raw('(SELECT COUNT(*) FROM initiatives_images WHERE initiatives_images.initiative_id = initiatives.id) as photos'),
                 DB::raw('(SELECT COUNT(*) FROM testimonies WHERE testimonies.initiative_id = initiatives.id) as testimonies'),
             ])

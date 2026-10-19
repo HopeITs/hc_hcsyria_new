@@ -4,7 +4,7 @@ The staff dashboard under `/admin`, rebuilt on the TALL stack. This is the admin
 companion of `docs/upgrade-plan.md` (which covers the public pages): what is
 decided, what is built, how it is built, and what is left.
 
-Status as of **2026-10-19**, `main` at `e9f6854`. 544 Pest tests, Larastan level 7
+Status as of **2026-10-19**. 564 Pest tests (3 skipped without the GD extension), Larastan level 7
 clean, Pint clean.
 
 ---
@@ -40,11 +40,9 @@ section:
 | Newsletter: items (list, show, create, edit, state moves, delete, PDF) | 29 | **Done** | `admin-newsletter` |
 | Newsletter: thumbnail, Important and Pinned pictures, status, gallery | in the above | **Done** | `admin-newsletter-pictures` |
 | Newsletter: tags, editions, subscribers | in the above | **Done** | `admin-newsletter-tags-subscribers-editions` |
-| Study Zone (initiatives, centres, students, successes) | 27 + 11 | **Next** | — |
-| DISC | 25 | To do | — |
-| School to School | 15 | To do | — |
-| LEAP | 15 | To do | — |
-| Children University | 15 | To do | — |
+| Programme initiatives: Study Zone, DISC, School to School, Children University, LEAP (their initiative screens, images, testimonies) | 27 + 25 + 15 + 15 + 15 | **Done**, inside Initiatives: one list and one form for every programme | `admin-programme-initiatives` |
+| Study Zone students and entries (registration, visits, statistics) | 11 + 3 | **To do** — personal data, needs decisions first (section 8) | — |
+| DISC, Study Zone and Children University statistics pages | in the programme routes | To do | — |
 | Roots of Hope (editions of the magazine) | 8 | To do | — |
 | Our Team | 7 | To do | — |
 | Cover photos | 6 | To do | — |
@@ -184,6 +182,18 @@ made explicit.
 **Initiatives** — category fixed once created (as legacy); Homework Room's
 initiatives are excluded; testimonies exist only for DISC and Study Zone.
 
+**Programme initiatives** — legacy had a section for each programme (Study Zone,
+DISC, School to School, Children University, LEAP) over the same `initiatives`
+table, with near-identical controllers. They are one list and one form here; the
+form asks what the category needs, as the separate forms did: a kind (Family to
+Family partner or story, a DISC programme, Study Zone events or study, a School to
+School school), a place (DISC, Study Zone, Children University, LEAP) and a centre
+(Study Zone). Changing the category empties what the old one asked for, and the
+server never trusts the browser's copy of the category. Legacy forced every edited
+Study Zone initiative to the kind "events" (a bug); the kind is kept. The kinds of
+a DISC **success story** (Job Opportunity, Students Of The Month) are no longer
+mixed with the DISC programmes' own kinds.
+
 **Successes** — one form for all categories (legacy had three near copies); the
 picture is cut to a 500 px square; a micro-project story links to a project by
 search.
@@ -240,9 +250,10 @@ npm run build                                # tests read the Vite manifest
 
 ## 7. What is left, in order
 
-1. **Study Zone** (largest: initiatives, centres, students, statistics, successes
-   already done) then **DISC**, **School to School**, **Children University**,
-   **LEAP**. Most reuse `ContentKind::Initiative`; each needs its own fields.
+1. **Study Zone students and entries**, and the statistics pages of the
+   programmes. This is the largest remaining module and holds personal data
+   (national numbers, e-mail, visits); decide first who may see and edit it, and
+   whether national numbers are shown at all.
 2. **Roots of Hope** (magazine editions) and **Our Team**.
 3. **Cover photos** and **Page content**.
 4. **Users, roles, permissions, places** (the Admin-only page; the roles matrix in
@@ -271,6 +282,8 @@ npm run build                                # tests read the Vite manifest
   legacy; say if it should stay).
 
 **Open**
+- Study Zone students: who may see them, whether national numbers are shown or only
+  checked for duplicates, and whether the visit log is kept as it is.
 - Which role should edit tags, editions and testimonies: today the English Editor
   and the Admin (create and rename), the Admin (delete), the Publisher and the
   Admin (put an edition online).

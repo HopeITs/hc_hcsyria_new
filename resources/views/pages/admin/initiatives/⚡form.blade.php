@@ -48,10 +48,23 @@ new #[Layout('layouts::admin', ['title' => 'Initiative'])] class extends Compone
         $this->form->fillFrom(AdminInitiativeQuery::find($this->initiativeId), AdminInitiativeQuery::donors($this->initiativeId));
     }
 
+    /** Choosing another category empties what the old one asked for (a kind, a place, a centre). */
+    public function updatedFormWhatCategoryId(): void
+    {
+        $this->form->sub_what_category_id = '';
+        $this->form->place_id = '';
+        $this->form->sz_center_id = '';
+    }
+
     public function save(): void
     {
         $initiative = $this->initiativeId === null ? null : Initiative::query()->findOrFail($this->initiativeId);
         $initiative === null ? $this->authorize('create', Initiative::class) : $this->authorize('update', $initiative);
+
+        // The category cannot change, and what the form asks follows it: never trust the browser's copy of it.
+        if ($initiative !== null) {
+            $this->form->what_category_id = (string) $initiative->what_category_id;
+        }
 
         try {
             $data = $this->form->payload();
@@ -77,9 +90,13 @@ new #[Layout('layouts::admin', ['title' => 'Initiative'])] class extends Compone
                 + ($editing ? ['#'.$this->initiativeId => route('admin.initiatives.show', $this->initiativeId), 'Edit' => null] : ['New' => null]),
             'categories' => ContentLookups::initiativeCategories()->pluck('name', 'id')->all(),
             'serves' => ContentLookups::whoCategories()->pluck('name', 'id')->all(),
-            'kinds' => ContentLookups::familyKinds()->pluck('name', 'id')->all(),
+            'kinds' => ContentLookups::kindsOf($this->form->category())->pluck('name', 'id')->all(),
+            'places' => ContentLookups::places()->pluck('name', 'id')->all(),
+            'centres' => ContentLookups::studyCenters()->pluck('name', 'id')->all(),
             'donors' => ContentLookups::allDonors()->pluck('name', 'id')->all(),
-            'family' => $this->form->isFamilyToFamily(),
+            'hasKinds' => $this->form->hasKinds(),
+            'hasPlace' => $this->form->hasPlace(),
+            'hasCentre' => $this->form->hasCentre(),
         ];
     }
 };
@@ -100,9 +117,19 @@ new #[Layout('layouts::admin', ['title' => 'Initiative'])] class extends Compone
                     <x-admin.segmented name="form.what_category_id" :options="$categories" live />
                 @endif
             </x-admin.field>
-            @if ($family)
-                <x-admin.field label="Family to Family kind" name="form.sub_what_category_id" required full>
+            @if ($hasKinds)
+                <x-admin.field label="Kind" name="form.sub_what_category_id" required full>
                     <x-admin.segmented name="form.sub_what_category_id" :options="$kinds" />
+                </x-admin.field>
+            @endif
+            @if ($hasPlace)
+                <x-admin.field label="Place" name="form.place_id" required full>
+                    <x-admin.segmented name="form.place_id" :options="$places" />
+                </x-admin.field>
+            @endif
+            @if ($hasCentre)
+                <x-admin.field label="Study Zone centre" name="form.sz_center_id" required full>
+                    <x-admin.segmented name="form.sz_center_id" :options="$centres" />
                 </x-admin.field>
             @endif
             <x-admin.field label="Serves" name="form.who_category_id" required full>
