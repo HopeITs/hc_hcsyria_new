@@ -264,8 +264,9 @@ new #[Layout('layouts::app', [
                             <x-ui.section-title class="pb-0 text-center">Projects ({{ $projectCount }})</x-ui.section-title>
 
                             @if ($projects->isNotEmpty())
-                                <div class="member-projects">
-                                    <div class="page-margin">
+                                {{-- The same inset as the activities below (resources/css/pages/search.css), tiles and rows alike. --}}
+                                <div class="member-projects search-projects">
+                                    <div>
                                         <div class="card-grid" x-show="$wire.view === 'tiles'" @if ($view !== 'tiles') style="display: none" @endif>
                                             @foreach ($projects as $project)
                                                 <x-site.project-tile :$project :highlight="$search" wire:key="project-tile-{{ $project->id }}"/>
