@@ -3,10 +3,17 @@
 use App\Enums\AdminCapability;
 use App\Livewire\Concerns\ManagesContent;
 use App\Queries\AdminAccessQuery;
+use App\Models\Initiative;
+use App\Models\News;
+use App\Models\Success;
 use App\Queries\AdminDashboardQuery;
+use App\Queries\AdminInitiativeIndexQuery;
+use App\Queries\AdminNewsIndexQuery;
 use App\Queries\AdminProjectIndexQuery;
+use App\Queries\AdminSuccessIndexQuery;
 use App\Support\Admin\WorkQueue;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 
@@ -23,6 +30,46 @@ new #[Layout('layouts::admin', ['title' => 'Dashboard'])] class extends Componen
 
     private const QUEUE_SIZE = 6;
 
+    private const SECTION_QUEUE_SIZE = 4;
+
+    /**
+     * The other sections' queues: what waits for this person in each, on the tab the micro
+     * projects' queue uses. Photos and "latest" mean nothing outside projects, so those
+     * accounts see the latest items. Only the sections the account may open.
+     *
+     * @param  array{tab: string, title: string, action: string}  $queue
+     * @return list<array{title: string, count: int, rows: list<object>, section: string, tab: string}>
+     */
+    private function sectionQueues(array $queue): array
+    {
+        $user = Auth::user();
+        $tab = in_array($queue['tab'], ['pending', 'english'], true) ? $queue['tab'] : 'all';
+        $when = ['pending' => 'waiting to be published', 'english' => 'waiting for the English check'];
+        $sections = [
+            ['Initiatives', Initiative::class, 'admin.initiatives', fn () => AdminInitiativeIndexQuery::make()],
+            ['Successes', Success::class, 'admin.successes', fn () => AdminSuccessIndexQuery::make()],
+            ['Newsletter items', News::class, 'admin.news', fn () => AdminNewsIndexQuery::make()],
+        ];
+
+        $queues = [];
+
+        foreach ($sections as [$name, $model, $route, $make]) {
+            if (! Gate::forUser($user)->allows('viewAny', $model)) {
+                continue;
+            }
+
+            $queues[] = [
+                'title' => $tab === 'all' ? 'Latest '.lcfirst($name) : $name.' '.$when[$tab],
+                'count' => $make()->counts()[$tab],
+                'rows' => $make()->tab($tab)->paginate(self::SECTION_QUEUE_SIZE)->items(),
+                'section' => $route,
+                'tab' => $tab,
+            ];
+        }
+
+        return $queues;
+    }
+
     public function with(): array
     {
         $user = Auth::user();
@@ -37,6 +84,7 @@ new #[Layout('layouts::admin', ['title' => 'Dashboard'])] class extends Componen
             'queueRows' => AdminProjectIndexQuery::make()->limitedTo($places)->tab($queue['tab'])->paginate(self::QUEUE_SIZE)->items(),
             'queueTotal' => $counts[$queue['tab']],
             'counts' => $counts,
+            'sectionQueues' => $this->sectionQueues($queue),
             'cities' => $dashboard->onlineByCity(),
             'may' => [
                 'publish' => $may(AdminCapability::Publish) || $may(AdminCapability::CheckEnglish),
@@ -96,4 +144,10 @@ new #[Layout('layouts::admin', ['title' => 'Dashboard'])] class extends Componen
             <x-admin.empty-state icon="check" title="All caught up">Nothing is waiting here.</x-admin.empty-state>
         @endforelse
     </x-admin.panel>
+
+    <div class="cols" style="grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr))">
+        @foreach ($sectionQueues as $section)
+            <x-admin.section-queue :title="$section['title']" :count="$section['count']" :rows="$section['rows']" :section="$section['section']" :tab="$section['tab']" />
+        @endforeach
+    </div>
 </div>
