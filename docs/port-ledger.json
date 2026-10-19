@@ -755,9 +755,9 @@
             "action": "Auth\\LoginController@showLoginForm",
             "name": "login",
             "order": 44,
-            "status": "later",
-            "notes": "Admin phase: Fortify login with 2FA.",
-            "ported_from": null,
+            "status": "ported",
+            "notes": "A Blade view (`auth.login`, no layout: the screen has no header or footer) with page CSS in pages/login.css and `passwordToggle` (Alpine) for the eye button. The form posts to Fortify's POST /login (already in place with the micro-projects sign-in: five tries a minute, deactivated accounts refused, safe return). Signed-in accounts are sent on (guest middleware). Not ported: Font Awesome (the four glyphs are drawn by x-ui.icon), the Bootstrap/jQuery bundle, Google Fonts (self-hosted Lato) and the inline togglePasswordVisibility() script (CSP). Legacy CSS rules the page never rendered (.mobile-logo, .auth-subtitle, .auth-footer) were left out. The 2FA step and Turnstile belong to the admin phase.",
+            "ported_from": "6d45ef9",
             "live_status": "200",
             "examples": [
                 {

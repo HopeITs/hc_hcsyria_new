@@ -43,6 +43,9 @@ Route::livewire('/our-news/{id}-{city}-{date}', 'pages::news-article')
     ->where('date', '[0-9]{8}')
     ->name('new.public.article');
 
+// The sign-in page. Fortify's POST /login (config/fortify.php: views off) takes the form; a signed-in account is sent on.
+Route::view('/login', 'auth.login')->middleware('guest')->name('login');
+
 Route::livewire('/projects/family-to-family', 'pages::family-to-family')->name('new.public.family2family');
 
 Route::livewire('/projects/micro-projects', 'pages::micro-projects')

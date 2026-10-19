@@ -111,3 +111,26 @@ it('signs out and returns to the page it was on', function () {
 
     $this->assertGuest();
 });
+
+it('shows the sign-in page to a visitor, in the legacy words', function () {
+    $this->get('/login')
+        ->assertOk()
+        ->assertSee('<title>Login | Hope Center</title>', false)
+        ->assertSeeInOrder(['HC Syria', 'Dashboard', 'Log in to continue', 'Email', 'Password', 'Remember Me', 'Login'])
+        ->assertSee('action="'.route('login').'"', false)
+        ->assertSee('name="email"', false)
+        ->assertSee('name="password"', false)
+        ->assertSee('Copyright © Christian Hope Center '.date('Y'), false);
+});
+
+it('sends a signed-in account away from the sign-in page', function () {
+    $this->actingAs(member())->get('/login')->assertRedirect();
+});
+
+it('shows a failed sign-in on the page itself, with the address kept', function () {
+    $user = member();
+
+    $this->from('/login')->post('/login', ['email' => $user->email, 'password' => 'not it'])->assertRedirect('/login');
+
+    $this->get('/login')->assertSee('value="'.$user->email.'"', false)->assertSee('invalid-feedback', false);
+});
