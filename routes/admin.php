@@ -19,4 +19,9 @@ Route::prefix('admin')->name('admin.')->middleware(['web', 'auth', 'admin.access
     Route::livewire('/projects/create', 'pages::admin.projects.form')->name('projects.create');
     Route::livewire('/projects/{project}/edit', 'pages::admin.projects.form')->whereNumber('project')->name('projects.edit');
     Route::livewire('/projects/{project}', 'pages::admin.projects.show')->whereNumber('project')->name('projects.show');
+
+    Route::livewire('/initiatives', 'pages::admin.initiatives.index')->name('initiatives.index');
+    Route::livewire('/initiatives/create', 'pages::admin.initiatives.form')->name('initiatives.create');
+    Route::livewire('/initiatives/{initiative}/edit', 'pages::admin.initiatives.form')->whereNumber('initiative')->name('initiatives.edit');
+    Route::livewire('/initiatives/{initiative}', 'pages::admin.initiatives.show')->whereNumber('initiative')->name('initiatives.show');
 });

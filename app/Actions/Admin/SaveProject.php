@@ -7,6 +7,7 @@ use App\Models\Place;
 use App\Models\Project;
 use App\Models\ProjectContent;
 use App\Models\User;
+use App\Support\Admin\LegacyValue;
 use Illuminate\Support\Facades\DB;
 
 /*
@@ -119,7 +120,7 @@ class SaveProject
         foreach (self::CONTENT as $key => [$column, $operation]) {
             $new = (string) ($data[$key] ?? '');
 
-            if ($this->textChanged($content->{$column}, $new)) {
+            if (LegacyValue::textChanged($content->{$column}, $new)) {
                 $this->log->project($by, $project->getKey(), $operation, $content->{$column}, $new);
                 $content->{$column} = $new;
             }
@@ -136,7 +137,7 @@ class SaveProject
     {
         foreach (self::COLUMNS as $key => [$column, $operation, $zeroWhenEmpty]) {
             $value = $data[$key] ?? null;
-            $value = $zeroWhenEmpty && ($value === null || $value === '') ? '0' : $value;
+            $value = $zeroWhenEmpty ? LegacyValue::store($value) : $value;
 
             $project->{$column} = $value;
 
@@ -180,13 +181,5 @@ class SaveProject
                 'city' => (string) Place::query()->whereKey($cityId)->value('name'),
             ]);
         }
-    }
-
-    /** Line endings and surrounding space do not count (the rich-text box re-writes them). */
-    private function textChanged(mixed $old, string $new): bool
-    {
-        $normalise = fn (mixed $text): string => trim(str_replace(["\r\n", "\r"], "\n", (string) $text));
-
-        return $normalise($old) !== $normalise($new);
     }
 }

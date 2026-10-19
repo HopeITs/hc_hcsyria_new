@@ -7,7 +7,7 @@ use App\Livewire\Forms\ProjectForm;
 use App\Models\Project;
 use App\Queries\AdminAccessQuery;
 use App\Queries\AdminProjectQuery;
-use App\Queries\ProjectLookups;
+use App\Queries\ContentLookups;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Layout;
@@ -34,8 +34,8 @@ new #[Layout('layouts::admin', ['title' => 'Micro project'])] class extends Comp
     {
         if ($project === null) {
             $this->authorize('create', Project::class);
-            $this->form->number = (string) ProjectLookups::nextNumber();
-            $this->form->kind_id = (string) ProjectLookups::types()->first()->id;
+            $this->form->number = (string) ContentLookups::nextNumber();
+            $this->form->kind_id = (string) ContentLookups::types()->first()->id;
 
             return;
         }
@@ -90,11 +90,11 @@ new #[Layout('layouts::admin', ['title' => 'Micro project'])] class extends Comp
             'editing' => $this->projectId !== null,
             'crumbs' => ['Dashboard' => route('admin.dashboard'), 'Micro projects' => route('admin.projects.index')]
                 + ($this->projectId === null ? ['New' => null] : ['#'.$this->form->number => route('admin.projects.show', $this->projectId), 'Edit' => null]),
-            'cities' => ProjectLookups::cities(AdminAccessQuery::placeIds(Auth::user()))->pluck('name', 'id')->all(),
-            'kinds' => ProjectLookups::types()->pluck('name', 'id')->all(),
-            'categories' => ProjectLookups::categories()->pluck('name', 'id')->all(),
-            'subCategories' => ProjectLookups::subCategories()->where('category_id', $categoryId)->pluck('name', 'id')->all(),
-            'donors' => ProjectLookups::donors(),
+            'cities' => ContentLookups::cities(AdminAccessQuery::placeIds(Auth::user()))->pluck('name', 'id')->all(),
+            'kinds' => ContentLookups::types()->pluck('name', 'id')->all(),
+            'categories' => ContentLookups::categories()->pluck('name', 'id')->all(),
+            'subCategories' => ContentLookups::subCategories()->where('category_id', $categoryId)->pluck('name', 'id')->all(),
+            'donors' => ContentLookups::donors(),
         ];
     }
 };

@@ -129,13 +129,7 @@ new #[Layout('layouts::admin', ['title' => 'Micro project'])] class extends Comp
                 </x-admin.panel>
 
                 <x-admin.panel title="History">
-                    <ol class="tl">
-                        @forelse ($history as $entry)
-                            <li @class(['now' => $loop->first])>{{ $entry->operation }}<small>{{ $entry->by ?? 'Unknown' }} · {{ \Illuminate\Support\Carbon::parse($entry->at)->format('j M Y, H:i') }}</small></li>
-                        @empty
-                            <li class="muted">Nothing recorded yet.</li>
-                        @endforelse
-                    </ol>
+                    <x-admin.history :entries="$history" />
                 </x-admin.panel>
             </aside>
         </div>

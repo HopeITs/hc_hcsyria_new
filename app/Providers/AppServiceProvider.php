@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Models\Initiative;
 use App\Models\Project;
+use App\Policies\InitiativePolicy;
 use App\Policies\ProjectPolicy;
 use App\Queries\MemberAccessQuery;
 use Illuminate\Cache\RateLimiting\Limit;
@@ -78,6 +80,7 @@ class AppServiceProvider extends ServiceProvider
 
         // The staff dashboard's rules for a micro-project (roles and cities).
         Gate::policy(Project::class, ProjectPolicy::class);
+        Gate::policy(Initiative::class, InitiativePolicy::class);
     }
 
     /*

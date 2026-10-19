@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Models\Project;
 use App\Models\User;
 use App\Queries\AdminAccessQuery;
 use Illuminate\Database\Eloquent\Model;
@@ -14,6 +15,6 @@ class ProjectPolicy extends ContentPolicy
 {
     protected function inScope(User $user, Model $item): bool
     {
-        return AdminAccessQuery::mayUsePlace($user, (int) $item->MPE_City);
+        return $item instanceof Project && AdminAccessQuery::mayUsePlace($user, (int) $item->MPE_City);
     }
 }

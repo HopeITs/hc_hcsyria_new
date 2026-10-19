@@ -3,7 +3,8 @@
 namespace App\Livewire\Forms;
 
 use App\Queries\AdminAccessQuery;
-use App\Queries\ProjectLookups;
+use App\Queries\ContentLookups;
+use App\Support\Admin\LegacyValue;
 use App\Support\SafeHtml;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
@@ -63,7 +64,7 @@ class ProjectForm extends Form
     /** Fill from AdminProjectQuery::find(); legacy's "0" means empty. */
     public function fillFrom(object $project): void
     {
-        $text = fn (mixed $value): string => in_array($value, [null, '0', 0], true) ? '' : (string) $value;
+        $text = LegacyValue::read(...);
 
         $this->number = (string) $project->number;
         $this->city_id = (string) $project->city_id;
@@ -91,13 +92,13 @@ class ProjectForm extends Form
     protected function rules(): array
     {
         $user = Auth::user();
-        $cities = ProjectLookups::cities(AdminAccessQuery::placeIds($user))->pluck('id')->all();
+        $cities = ContentLookups::cities(AdminAccessQuery::placeIds($user))->pluck('id')->all();
 
         return [
             'number' => ['required', 'integer', 'min:1', 'max:4294967295'],
             'city_id' => ['required', Rule::in($cities)],
-            'kind_id' => ['required', Rule::in(ProjectLookups::types()->pluck('id')->all())],
-            'sub_category_id' => ['required', Rule::in(ProjectLookups::subCategories()->pluck('id')->all())],
+            'kind_id' => ['required', Rule::in(ContentLookups::types()->pluck('id')->all())],
+            'sub_category_id' => ['required', Rule::in(ContentLookups::subCategories()->pluck('id')->all())],
             'name' => ['required', 'string', 'max:200'],
             'beneficiary' => ['required', 'string', 'max:200'],
             'birth_year' => ['required', 'integer', 'min:1900', 'max:'.now()->year],
@@ -107,7 +108,7 @@ class ProjectForm extends Form
             'partner' => ['nullable', 'string', 'max:200'],
             'partner2' => ['nullable', 'string', 'max:200'],
             'funded' => ['nullable', 'date', 'after_or_equal:2000-01-01', 'before_or_equal:today'],
-            'donor_id' => ['required', Rule::in(ProjectLookups::donors()->pluck('id')->all())],
+            'donor_id' => ['required', Rule::in(ContentLookups::donors()->pluck('id')->all())],
             'mobile' => ['nullable', 'string', 'max:50'],
             'video' => ['nullable', 'url:http,https', 'max:1000'],
             'latitude' => ['nullable', 'numeric', 'between:-90,90'],

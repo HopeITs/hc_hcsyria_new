@@ -20,6 +20,7 @@ use App\Queries\AdminAccessQuery;
 final class ContentActions
 {
     /**
+     * @param  object{english_check: int|string, photos?: int|string, donor_id?: int|string|null}  $project  a list row or the detail
      * @return array{
      *     transitions: list<ContentTransition>,
      *     blocked: array<string, string>,

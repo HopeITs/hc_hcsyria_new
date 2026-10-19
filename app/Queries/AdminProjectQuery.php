@@ -2,7 +2,7 @@
 
 namespace App\Queries;
 
-use App\Actions\Admin\WriteActivityLog;
+use App\Enums\ContentKind;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -71,12 +71,12 @@ final class AdminProjectQuery
             ->get(['id', 'MPI_Path as path', 'image_order as order']);
     }
 
-    /** The last things done to the project, newest first. @return Collection<int, object{operation: string, by: ?string, at: string}> */
-    public static function history(int $projectId, int $limit = 8): Collection
+    /** The last things done to a project (or an initiative, by $kind), newest first. @return Collection<int, object{operation: string, by: ?string, at: string}> */
+    public static function history(int $projectId, int $limit = 8, ContentKind $kind = ContentKind::Project): Collection
     {
         return DB::table('logs')
             ->leftJoin('users', 'users.id', '=', 'logs.user_id')
-            ->where('logs.category', WriteActivityLog::PROJECT)
+            ->where('logs.category', $kind->logCategory())
             ->where('logs.project_id', $projectId)
             ->orderByDesc('logs.id')
             ->limit($limit)

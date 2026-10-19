@@ -84,7 +84,7 @@ enum ContentKind: string
     /** What people call it by: a project's own number, an initiative's id. */
     public function number(Model $item): int
     {
-        return (int) ($this === self::Project ? $item->MicroProject_ID : $item->getKey());
+        return (int) ($item instanceof Project ? $item->MicroProject_ID : $item->getKey());
     }
 
     /** Change the state columns for a move (the caller saves). */
@@ -136,19 +136,21 @@ enum ContentKind: string
      */
     public function blockers(Model $item): array
     {
-        return match ($this) {
-            self::Project => ProjectReadiness::blockers((object) [
+        if ($item instanceof Project) {
+            return ProjectReadiness::blockers((object) [
                 'english_check' => $item->english_check,
                 'photos' => $item->images()->count(),
                 'donor_id' => $item->MPE_Donor,
-            ]),
-            self::Initiative => (int) $item->english_check === 1 ? [] : ['english'],
-        };
+            ]);
+        }
+
+        return $item instanceof Initiative && (int) $item->english_check !== 1 ? ['english'] : [];
     }
 
     /**
      * The same, for a list row (columns english_check, photos, donor_id).
      *
+     * @param  object{english_check: int|string, photos?: int|string, donor_id?: int|string|null}  $row
      * @return list<string>
      */
     public function rowBlockers(object $row): array
