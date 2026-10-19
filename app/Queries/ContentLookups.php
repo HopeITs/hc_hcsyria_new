@@ -6,11 +6,13 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 /*
- * The choices a micro-project form and its filters offer: the cities and donors
- * flagged is_micro, the project types, and the categories with their
- * sub-categories (the legacy "type" and "sub type" the form let you pick).
+ * The choices the staff forms and their filters offer. For micro-projects: the
+ * cities and donors flagged is_micro, the project types, and the categories with
+ * their sub-categories (the legacy "type" and "sub type" the form let you pick).
+ * For initiatives: the programme categories the dashboard manages itself, who an
+ * initiative serves, every donor, and the family-to-family kinds.
  */
-final class ProjectLookups
+final class ContentLookups
 {
     /**
      * Micro-project cities in the legacy order (Aleppo, Damascus, Homs, Latakia, Al Wadi, Idleb, Tartus).
@@ -54,5 +56,35 @@ final class ProjectLookups
     public static function nextNumber(): int
     {
         return (int) DB::table('projects')->max('MicroProject_ID') + 1;
+    }
+
+    /** The initiative categories managed in the Initiatives section; the programmes (DISC, Study Zone, ...) have their own. */
+    public const INITIATIVE_CATEGORIES = [1, 3, 4, 8, 18];
+
+    /** The Family to Family category, whose initiatives are either partners or stories. */
+    public const FAMILY_TO_FAMILY = 8;
+
+    /** @return Collection<int, object{id: int, name: string}> */
+    public static function initiativeCategories(): Collection
+    {
+        return DB::table('what_categories')->whereIn('id', self::INITIATIVE_CATEGORIES)->orderBy('id')->get(['id', 'name']);
+    }
+
+    /** "men", "women", "youth"... @return Collection<int, object{id: int, name: string}> */
+    public static function whoCategories(): Collection
+    {
+        return DB::table('who_categories')->orderBy('id')->get(['id', 'name']);
+    }
+
+    /** @return Collection<int, object{id: int, name: string}> */
+    public static function allDonors(): Collection
+    {
+        return DB::table('donors')->orderBy('name')->get(['id', 'name']);
+    }
+
+    /** Family to Family: "Partners" or "Stories". @return Collection<int, object{id: int, name: string}> */
+    public static function familyKinds(): Collection
+    {
+        return DB::table('sub_what_categories')->where('what_category_id', self::FAMILY_TO_FAMILY)->orderBy('id')->get(['id', 'name']);
     }
 }

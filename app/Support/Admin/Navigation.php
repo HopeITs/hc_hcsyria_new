@@ -3,9 +3,11 @@
 namespace App\Support\Admin;
 
 use App\Enums\AdminCapability;
+use App\Models\Initiative;
 use App\Models\Project;
 use App\Models\User;
 use App\Queries\AdminAccessQuery;
+use App\Queries\AdminInitiativeIndexQuery;
 use App\Queries\AdminProjectIndexQuery;
 use Illuminate\Support\Facades\Gate;
 
@@ -31,7 +33,8 @@ final class Navigation
             [
                 'heading' => 'Content',
                 'items' => [
-                    ['label' => 'Micro projects', 'icon' => 'folder', 'route' => 'admin.projects.index', 'active' => 'admin.projects.*', 'badge' => self::pendingProjects($user), 'can' => Gate::forUser($user)->allows('viewAny', Project::class)],
+                    ['label' => 'Micro projects', 'icon' => 'folder', 'route' => 'admin.projects.index', 'active' => 'admin.projects.*', 'badge' => self::pending($user, fn (?array $places): int => AdminProjectIndexQuery::make()->limitedTo($places)->counts()['pending']), 'can' => Gate::forUser($user)->allows('viewAny', Project::class)],
+                    ['label' => 'Initiatives', 'icon' => 'spark', 'route' => 'admin.initiatives.index', 'active' => 'admin.initiatives.*', 'badge' => self::pending($user, fn (): int => AdminInitiativeIndexQuery::make()->counts()['pending']), 'can' => Gate::forUser($user)->allows('viewAny', Initiative::class)],
                 ],
             ],
         ];
@@ -43,14 +46,18 @@ final class Navigation
         }, $groups), fn (array $group): bool => $group['items'] !== []));
     }
 
-    /** Projects waiting to be published, for those who publish or check them; nobody else sees the number. */
-    private static function pendingProjects(User $user): ?int
+    /**
+     * Items waiting to be published, for those who publish or check them; nobody else sees the number.
+     *
+     * @param  callable(list<int>|null): int  $count
+     */
+    private static function pending(User $user, callable $count): ?int
     {
-        if (! AdminAccessQuery::can($user, AdminCapability::PublishProjects) && ! AdminAccessQuery::can($user, AdminCapability::CheckEnglish)) {
+        if (! AdminAccessQuery::can($user, AdminCapability::Publish) && ! AdminAccessQuery::can($user, AdminCapability::CheckEnglish)) {
             return null;
         }
 
-        return AdminProjectIndexQuery::make()->limitedTo(AdminAccessQuery::placeIds($user))->counts()['pending'];
+        return $count(AdminAccessQuery::placeIds($user));
     }
 
     /** The pages for the Ctrl K window. @return list<array{label: string, hint: string, url: string}> */
@@ -64,8 +71,10 @@ final class Navigation
             }
         }
 
-        if (Gate::forUser($user)->allows('create', Project::class)) {
-            $pages[] = ['label' => 'New project', 'hint' => 'Create', 'url' => route('admin.projects.create')];
+        foreach ([[Project::class, 'New project', 'admin.projects.create'], [Initiative::class, 'New initiative', 'admin.initiatives.create']] as [$model, $label, $route]) {
+            if (Gate::forUser($user)->allows('create', $model)) {
+                $pages[] = ['label' => $label, 'hint' => 'Create', 'url' => route($route)];
+            }
         }
 
         return $pages;

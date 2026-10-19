@@ -10,22 +10,22 @@
  */
 return [
     'alerts' => [
-        // Moving a project between states (ChangeProjectState).
+        // Moving a project between states (ChangeContentState).
         'state' => [
-            'publish' => 'Project #:number is online.',
-            'unpublish' => 'Project #:number is offline and waits to be published.',
-            'hide' => 'Project #:number is hidden.',
-            'unhide' => 'Project #:number is back in the pending list.',
-            'check-english' => 'English of project #:number is marked as checked.',
+            'publish' => ':Noun #:number is online.',
+            'unpublish' => ':Noun #:number is offline and waits to be published.',
+            'hide' => ':Noun #:number is hidden.',
+            'unhide' => ':Noun #:number is back in the pending list.',
+            'check-english' => 'English of :noun #:number is marked as checked.',
         ],
         'state_many' => [
-            'done' => ':count projects updated.',
-            'partly' => ':done of :count projects updated; :skipped could not be (not allowed, or not ready).',
-            'none' => 'None of the :count projects could be updated.',
+            'done' => ':count :nouns updated.',
+            'partly' => ':done of :count :nouns updated; :skipped could not be (not allowed, or not ready).',
+            'none' => 'None of the :count :nouns could be updated.',
         ],
-        'saved' => 'Project #:number saved.',
-        'created' => 'Project #:number created. It waits to be published.',
-        'deleted' => 'Project #:number deleted.',
+        'saved' => ':Noun #:number saved.',
+        'created' => ':Noun #:number created. It waits to be published.',
+        'deleted' => ':Noun #:number deleted.',
         // Photos (ManageProjectPhotos).
         'photos' => [
             'added' => ':count photo added to project #:number.|:count photos added to project #:number.',
@@ -37,14 +37,14 @@ return [
         ],
         'invalid' => 'Some fields need attention. They are marked below.',
         'forbidden' => 'Your role cannot do that.',
-        'gone' => 'That project no longer exists.',
+        'gone' => 'That :noun no longer exists.',
         'undone' => 'Change undone.',
     ],
 
     // Why an action is refused (thrown by the actions, shown as an error alert).
     'refusals' => [
-        'not_ready' => 'Project #:number is not ready: :missing.',
-        'has_successes' => 'Project #:number has success stories attached. Remove or reassign them first.',
+        'not_ready' => ':Noun #:number is not ready: :missing.',
+        'has_successes' => ':Noun #:number has success stories attached. Remove or reassign them first.',
         'duplicate' => 'There is already a project #:number in :city.',
     ],
 
@@ -82,8 +82,8 @@ return [
     ],
 
     'confirm' => [
-        'delete_title' => 'Delete project #:number?',
-        'delete_body' => 'The project and its photos are removed for good. This cannot be undone.',
+        'delete_title' => 'Delete :noun #:number?',
+        'delete_body' => 'The :noun and its photos are removed for good. This cannot be undone.',
         'delete_action' => 'Delete',
         'cancel' => 'Cancel',
         'photo_title' => 'Remove this photo?',

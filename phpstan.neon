@@ -21,7 +21,7 @@ parameters:
             identifier: property.notFound
             paths:
                 - app/Support/Admin/*
-                - app/Enums/ProjectTransition.php
+                - app/Enums/ContentTransition.php
                 - app/Livewire/Forms/ProjectForm.php
         -
             identifier: trait.unused
@@ -31,18 +31,14 @@ parameters:
             identifier: missingType.iterableValue
             paths:
                 - app/Queries/Admin*
-                - app/Queries/ProjectLookups.php
+                - app/Queries/ContentLookups.php
                 - app/Support/Admin/*
                 - app/Livewire/Forms/ProjectForm.php
         -
             identifier: missingType.generics
             paths:
                 - app/Queries/Admin*
-                - app/Queries/ProjectLookups.php
-        -
-            identifier: arrayValues.list
-            paths:
-                - app/Support/Admin/Navigation.php
+                - app/Queries/ContentLookups.php
         -
             identifier: assign.propertyType
             paths:
@@ -51,4 +47,4 @@ parameters:
             identifier: return.type
             paths:
                 - app/Queries/Admin*
-                - app/Queries/ProjectLookups.php
+                - app/Queries/ContentLookups.php

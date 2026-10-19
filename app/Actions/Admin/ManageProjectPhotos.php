@@ -2,7 +2,7 @@
 
 namespace App\Actions\Admin;
 
-use App\Enums\ProjectTransition;
+use App\Enums\ContentTransition;
 use App\Models\Image;
 use App\Models\Place;
 use App\Models\Project;
@@ -27,7 +27,7 @@ class ManageProjectPhotos
 {
     public function __construct(
         private readonly WriteActivityLog $log,
-        private readonly ChangeProjectState $state,
+        private readonly ChangeContentState $state,
     ) {}
 
     /**
@@ -115,11 +115,11 @@ class ManageProjectPhotos
     {
         $project->refresh();
 
-        if (! ProjectTransition::Unpublish->appliesTo($project)) {
+        if (! ContentTransition::Unpublish->appliesTo($project)) {
             return false;
         }
 
-        $this->state->handle($project, ProjectTransition::Unpublish, $by);
+        $this->state->handle($project, ContentTransition::Unpublish, $by);
 
         return true;
     }

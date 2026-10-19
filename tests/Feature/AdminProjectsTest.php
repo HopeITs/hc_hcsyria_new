@@ -1,7 +1,7 @@
 <?php
 
+use App\Enums\ContentTransition;
 use App\Enums\ProjectStatus;
-use App\Enums\ProjectTransition;
 use App\Models\Image;
 use App\Models\Log;
 use App\Models\Project;
@@ -134,7 +134,7 @@ it('publishes a ready project, as legacy did, and writes the log row', function 
     $user = staff('Publisher');
 
     Livewire::actingAs($user)->test('pages::admin.projects.index')
-        ->call('moveProject', $project->id, 'publish')
+        ->call('moveItem', $project->id, 'publish')
         ->assertDispatched('admin-alert', alertOf('success'));
 
     $project->refresh();
@@ -148,7 +148,7 @@ it('refuses to publish a project that is not ready, and says what is missing', f
     $project = adminProject($attributes, $photos);
 
     Livewire::actingAs(staff('Admin'))->test('pages::admin.projects.index')
-        ->call('moveProject', $project->id, 'publish')
+        ->call('moveItem', $project->id, 'publish')
         ->assertDispatched('admin-alert', fn (string $event, array $params): bool => $params['type'] === 'error' && str_contains($params['message'], $missing));
 
     expect($project->refresh()->MPE_Published)->toBe('0');
@@ -162,7 +162,7 @@ it('refuses a move the role may not make, whatever the page showed', function (s
     $project = adminProject(['MPE_Published' => 1, 'english_check' => 0]);
 
     Livewire::actingAs(staff($role))->test('pages::admin.projects.index')
-        ->call('moveProject', $project->id, $move)
+        ->call('moveItem', $project->id, $move)
         ->assertDispatched('admin-alert', alertOf('error'));
 
     $fresh = $project->refresh();
@@ -175,7 +175,7 @@ it('does not let an account act outside its cities', function () {
     $project = adminProject(['MPE_City' => 1]);
 
     Livewire::actingAs(staff('Publisher', [3]))->test('pages::admin.projects.index')
-        ->call('moveProject', $project->id, 'publish')
+        ->call('moveItem', $project->id, 'publish')
         ->assertDispatched('admin-alert', alertOf('error'));
 
     expect($project->refresh()->MPE_Published)->toBe('0');
@@ -186,16 +186,16 @@ it('walks a project through every move, with the legacy columns and log text', f
     $admin = staff('Admin');
     $page = Livewire::actingAs($admin)->test('pages::admin.projects.index');
 
-    $page->call('moveProject', $project->id, 'unpublish');
+    $page->call('moveItem', $project->id, 'unpublish');
     expect($project->refresh()->MPE_Published)->toBe('0');
 
-    $page->call('moveProject', $project->id, 'hide');
+    $page->call('moveItem', $project->id, 'hide');
     expect($project->refresh())->hidden->toBeTrue()->MPE_Published->toBe('0');
 
-    $page->call('moveProject', $project->id, 'unhide');
+    $page->call('moveItem', $project->id, 'unhide');
     expect($project->refresh()->hidden)->toBeFalse();
 
-    $page->call('moveProject', $project->id, 'check-english');
+    $page->call('moveItem', $project->id, 'check-english');
     expect($project->refresh()->english_check)->toBe(1);
 
     expect(Log::query()->where(['project_id' => $project->id, 'category' => 0])->orderBy('id')->pluck('operation')->all())
@@ -206,9 +206,9 @@ it('offers an undo that is the opposite move, and makes it only for who may', fu
     $project = adminProject();
 
     Livewire::actingAs(staff('Publisher'))->test('pages::admin.projects.index')
-        ->call('moveProject', $project->id, 'publish')
-        ->assertDispatched('admin-alert', fn (string $event, array $params): bool => ($params['undo']['call'] ?? null) === ['moveProject', $project->id, 'unpublish'])
-        ->call('moveProject', $project->id, 'unpublish')
+        ->call('moveItem', $project->id, 'publish')
+        ->assertDispatched('admin-alert', fn (string $event, array $params): bool => ($params['undo']['call'] ?? null) === ['moveItem', $project->id, 'unpublish'])
+        ->call('moveItem', $project->id, 'unpublish')
         ->assertDispatched('admin-alert', alertOf('error'));
 
     expect($project->refresh()->MPE_Published)->toBe('1');
@@ -227,7 +227,7 @@ it('moves several projects at once and counts the ones it skipped', function () 
 
 it('says so when the project has gone', function () {
     Livewire::actingAs(staff('Admin'))->test('pages::admin.projects.index')
-        ->call('moveProject', 2147483000, 'publish')
+        ->call('moveItem', 2147483000, 'publish')
         ->assertDispatched('admin-alert', alertOf('error'));
 });
 
@@ -386,11 +386,11 @@ it('deletes a project for an Admin and logs it, and for nobody else', function (
     $admin = staff('Admin');
 
     Livewire::actingAs(staff('English Editor'))->test('pages::admin.projects.index')
-        ->call('deleteProject', $project->id)->assertDispatched('admin-alert', alertOf('error'));
+        ->call('deleteItem', $project->id)->assertDispatched('admin-alert', alertOf('error'));
     expect(Project::query()->whereKey($project->id)->exists())->toBeTrue();
 
     Livewire::actingAs($admin)->test('pages::admin.projects.index')
-        ->call('deleteProject', $project->id)->assertDispatched('admin-alert', alertOf('success'));
+        ->call('deleteItem', $project->id)->assertDispatched('admin-alert', alertOf('success'));
 
     expect(Project::query()->whereKey($project->id)->exists())->toBeFalse()
         ->and(Image::query()->where('project_id', $project->id)->exists())->toBeFalse()
@@ -403,7 +403,7 @@ it('will not delete a project that has success stories, and says why', function 
     DB::table('successes')->insert([...(array) DB::table('successes')->first(), 'id' => null, 'project_id' => $project->id]);
 
     Livewire::actingAs(staff('Admin'))->test('pages::admin.projects.index')
-        ->call('deleteProject', $project->id)
+        ->call('deleteItem', $project->id)
         ->assertDispatched('admin-alert', fn (string $event, array $params): bool => $params['type'] === 'error' && str_contains($params['message'], 'success stories'));
 
     expect(Project::query()->whereKey($project->id)->exists())->toBeTrue();
@@ -424,15 +424,15 @@ it('knows when a move applies', function () {
     $online = (object) ['published' => 1, 'hidden' => false, 'english_check' => 1];
     $hidden = (object) ['published' => 0, 'hidden' => true, 'english_check' => 1];
 
-    expect(ProjectTransition::Publish->appliesTo($pending))->toBeTrue()
-        ->and(ProjectTransition::Publish->appliesTo($online))->toBeFalse()
-        ->and(ProjectTransition::Publish->appliesTo($hidden))->toBeFalse()
-        ->and(ProjectTransition::Unpublish->appliesTo($online))->toBeTrue()
-        ->and(ProjectTransition::Unhide->appliesTo($hidden))->toBeTrue()
-        ->and(ProjectTransition::CheckEnglish->appliesTo($pending))->toBeTrue()
-        ->and(ProjectTransition::CheckEnglish->appliesTo($online))->toBeFalse()
-        ->and(ProjectTransition::Publish->inverse())->toBe(ProjectTransition::Unpublish)
-        ->and(ProjectTransition::CheckEnglish->inverse())->toBeNull();
+    expect(ContentTransition::Publish->appliesTo($pending))->toBeTrue()
+        ->and(ContentTransition::Publish->appliesTo($online))->toBeFalse()
+        ->and(ContentTransition::Publish->appliesTo($hidden))->toBeFalse()
+        ->and(ContentTransition::Unpublish->appliesTo($online))->toBeTrue()
+        ->and(ContentTransition::Unhide->appliesTo($hidden))->toBeTrue()
+        ->and(ContentTransition::CheckEnglish->appliesTo($pending))->toBeTrue()
+        ->and(ContentTransition::CheckEnglish->appliesTo($online))->toBeFalse()
+        ->and(ContentTransition::Publish->inverse())->toBe(ContentTransition::Unpublish)
+        ->and(ContentTransition::CheckEnglish->inverse())->toBeNull();
 });
 
 it('treats the text 0 as no map location', function () {

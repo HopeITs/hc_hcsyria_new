@@ -9,9 +9,9 @@ namespace App\Enums;
  * and how to take it back.
  *
  * $project is anything with the columns the queries select: published, hidden,
- * english_check (the Project model and the list's rows both have them).
+ * english_check (a list row), or a model of either kind (MPE_Published or online).
  */
-enum ProjectTransition: string
+enum ContentTransition: string
 {
     case Publish = 'publish';
     case Unpublish = 'unpublish';
@@ -33,7 +33,7 @@ enum ProjectTransition: string
     /** Is there anything to do to this project? */
     public function appliesTo(object $project): bool
     {
-        $published = (int) ($project->published ?? $project->MPE_Published);
+        $published = (int) ($project->published ?? $project->MPE_Published ?? $project->online);
         $hidden = (bool) $project->hidden;
 
         return match ($this) {
@@ -54,18 +54,6 @@ enum ProjectTransition: string
             self::Hide => self::Unhide,
             self::Unhide => self::Hide,
             self::CheckEnglish => null,
-        };
-    }
-
-    /** The text legacy wrote to the activity log for the same move. */
-    public function logOperation(): string
-    {
-        return match ($this) {
-            self::Publish => 'Made Online',
-            self::Unpublish => 'Made Offline',
-            self::Hide => 'Made Hidden',
-            self::Unhide => 'Made Pending to publish',
-            self::CheckEnglish => 'English Checked',
         };
     }
 

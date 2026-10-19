@@ -1,7 +1,7 @@
 <?php
 
 use App\Enums\AdminCapability;
-use App\Livewire\Concerns\ManagesProjects;
+use App\Livewire\Concerns\ManagesContent;
 use App\Queries\AdminAccessQuery;
 use App\Queries\AdminDashboardQuery;
 use App\Queries\AdminProjectIndexQuery;
@@ -13,13 +13,13 @@ use Livewire\Component;
 /*
  * /admin: what needs this person now, and how the micro-projects stand. The
  * queue and the figures follow the account's role and cities (WorkQueue,
- * AdminAccessQuery); the buttons are the shared ones (ManagesProjects).
+ * AdminAccessQuery); the buttons are the shared ones (ManagesContent).
  * Replaces the legacy admin home, which listed every pending project in three
  * city tables.
  */
 new #[Layout('layouts::admin', ['title' => 'Dashboard'])] class extends Component
 {
-    use ManagesProjects;
+    use ManagesContent;
 
     private const QUEUE_SIZE = 6;
 
@@ -41,11 +41,11 @@ new #[Layout('layouts::admin', ['title' => 'Dashboard'])] class extends Componen
             'cities' => $dashboard->onlineByCity(),
             'activity' => $dashboard->recentActivity(),
             'may' => [
-                'publish' => $may(AdminCapability::PublishProjects) || $may(AdminCapability::CheckEnglish),
-                'english' => $may(AdminCapability::CheckEnglish) || $may(AdminCapability::EditProjects),
+                'publish' => $may(AdminCapability::Publish) || $may(AdminCapability::CheckEnglish),
+                'english' => $may(AdminCapability::CheckEnglish) || $may(AdminCapability::Edit),
                 'photos' => $may(AdminCapability::ManagePhotos),
-                'edit' => $may(AdminCapability::EditProjects),
-                'create' => $may(AdminCapability::CreateProjects),
+                'edit' => $may(AdminCapability::Edit),
+                'create' => $may(AdminCapability::Create),
             ],
         ];
     }
@@ -99,7 +99,7 @@ new #[Layout('layouts::admin', ['title' => 'Dashboard'])] class extends Componen
                                 @endif
                             </div>
                         </a>
-                        <x-admin.project-actions :project="$project" />
+                        <x-admin.content-actions :item="$project" />
                     </div>
                 @empty
                     <x-admin.empty-state icon="check" title="All caught up">Nothing is waiting here.</x-admin.empty-state>

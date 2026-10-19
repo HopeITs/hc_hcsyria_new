@@ -55,7 +55,7 @@ final class AdminAccessQuery
     /** May this account open the admin at all? */
     public static function mayEnter(User $user): bool
     {
-        return self::can($user, AdminCapability::ViewProjects);
+        return self::can($user, AdminCapability::View);
     }
 
     /** @return list<AdminCapability> */

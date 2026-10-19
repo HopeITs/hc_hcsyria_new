@@ -2,11 +2,11 @@
 
 use App\Enums\AdminCapability;
 use App\Enums\ProjectStatus;
-use App\Livewire\Concerns\ManagesProjects;
+use App\Livewire\Concerns\ManagesContent;
 use App\Models\Project;
 use App\Queries\AdminAccessQuery;
 use App\Queries\AdminProjectIndexQuery;
-use App\Queries\ProjectLookups;
+use App\Queries\ContentLookups;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Url;
@@ -23,7 +23,7 @@ use Livewire\WithPagination;
  */
 new #[Layout('layouts::admin', ['title' => 'Micro projects'])] class extends Component
 {
-    use ManagesProjects;
+    use ManagesContent;
     use WithPagination;
 
     private const PER_PAGE = 15;
@@ -83,15 +83,15 @@ new #[Layout('layouts::admin', ['title' => 'Micro projects'])] class extends Com
         return [
             'rows' => $this->query()->paginate(self::PER_PAGE),
             'counts' => $this->query()->counts(),
-            'cities' => ProjectLookups::cities($places),
-            'categories' => ProjectLookups::categories(),
-            'donors' => ProjectLookups::donors(),
-            'bulk' => [
-                'publish' => $may(AdminCapability::PublishProjects),
-                'hide' => $may(AdminCapability::HideProjects),
+            'cities' => ContentLookups::cities($places),
+            'categories' => ContentLookups::categories(),
+            'donors' => ContentLookups::donors(),
+            'moves' => array_keys(array_filter([
+                'publish' => $may(AdminCapability::Publish),
+                'hide' => $may(AdminCapability::Hide),
                 'check-english' => $may(AdminCapability::CheckEnglish),
-            ],
-            'create' => $may(AdminCapability::CreateProjects),
+            ])),
+            'create' => $may(AdminCapability::Create),
             'filtered' => $this->search !== '' || $this->city !== '' || $this->category !== '' || $this->donor !== '',
         ];
     }
@@ -109,37 +109,13 @@ new #[Layout('layouts::admin', ['title' => 'Micro projects'])] class extends Com
     </x-admin.page-header>
 
     <x-admin.panel x-data="{ selected: [] }">
-        <div class="tabs" role="tablist" aria-label="State">
-            @foreach (AdminProjectIndexQuery::TABS as $key)
-                <button type="button" role="tab" class="tab" aria-selected="{{ $tab === $key ? 'true' : 'false' }}" wire:click="$set('tab', '{{ $key }}')" x-on:click="selected = []">
-                    {{ __('admin.tabs.'.$key) }}<span class="badge">{{ number_format($counts[$key]) }}</span>
-                </button>
-            @endforeach
-        </div>
+        <x-admin.tabs :tabs="AdminProjectIndexQuery::TABS" :counts="$counts" :current="$tab" />
 
-        <div style="padding: 14px 16px; border-bottom: 1px solid var(--line)">
-            <div class="bar">
-                <div class="field" style="flex: 2; min-width: 220px">
-                    <label for="f-search">Search</label>
-                    <div class="inwrap"><x-admin.icon name="search" class="i16" /><input id="f-search" type="search" class="inp" wire:model.live.debounce.300ms="search" placeholder="Name, beneficiary or number" maxlength="100"></div>
-                </div>
-                <div class="field">
-                    <label for="f-city">City</label>
-                    <select id="f-city" class="sel" wire:model.live="city"><option value="">All cities</option>@foreach ($cities as $option)<option value="{{ $option->id }}">{{ $option->name }}</option>@endforeach</select>
-                </div>
-                <div class="field">
-                    <label for="f-category">Category</label>
-                    <select id="f-category" class="sel" wire:model.live="category"><option value="">All categories</option>@foreach ($categories as $option)<option value="{{ $option->id }}">{{ $option->name }}</option>@endforeach</select>
-                </div>
-                <div class="field">
-                    <label for="f-donor">Donor</label>
-                    <select id="f-donor" class="sel" wire:model.live="donor"><option value="">All donors</option>@foreach ($donors as $option)<option value="{{ $option->id }}">{{ $option->name }}</option>@endforeach</select>
-                </div>
-                @if ($filtered)
-                    <button type="button" class="btn btn-g" wire:click="clearFilters">Clear filters</button>
-                @endif
-            </div>
-        </div>
+        <x-admin.filter-bar placeholder="Name, beneficiary or number" :$filtered>
+            <x-admin.select-field label="City" name="city" :options="$cities" all="All cities" />
+            <x-admin.select-field label="Category" name="category" :options="$categories" all="All categories" />
+            <x-admin.select-field label="Donor" name="donor" :options="$donors" all="All donors" />
+        </x-admin.filter-bar>
 
         @if ($rows->isEmpty())
             <x-admin.empty-state icon="search" title="No projects match">
@@ -152,7 +128,7 @@ new #[Layout('layouts::admin', ['title' => 'Micro projects'])] class extends Com
                     <thead>
                         <tr>
                             <th style="width: 36px">
-                                @if (in_array(true, $bulk, true))
+                                @if ($moves !== [])
                                     <input type="checkbox" class="cb" aria-label="Select every project on this page"
                                         x-on:change="selected = $event.target.checked ? @js($rows->pluck('id')->all()) : []" x-bind:checked="selected.length === {{ $rows->count() }}">
                                 @endif
@@ -164,7 +140,7 @@ new #[Layout('layouts::admin', ['title' => 'Micro projects'])] class extends Com
                         @foreach ($rows as $project)
                             <tr wire:key="row-{{ $project->id }}" x-bind:class="{ sel: selected.includes({{ $project->id }}) }" x-on:click="Livewire.navigate(@js(route('admin.projects.show', $project->id)))">
                                 <td x-on:click.stop>
-                                    @if (in_array(true, $bulk, true))
+                                    @if ($moves !== [])
                                         <input type="checkbox" class="cb" value="{{ $project->id }}" x-model.number="selected" aria-label="Select project #{{ $project->number }}">
                                     @endif
                                 </td>
@@ -186,7 +162,7 @@ new #[Layout('layouts::admin', ['title' => 'Micro projects'])] class extends Com
                                     </div>
                                 </td>
                                 <td><x-admin.status-pill :status="ProjectStatus::of($project->published, $project->done, $project->hidden)" /></td>
-                                <td class="acell"><x-admin.project-actions :project="$project" /></td>
+                                <td class="acell"><x-admin.content-actions :item="$project" /></td>
                             </tr>
                         @endforeach
                     </tbody>
@@ -196,18 +172,8 @@ new #[Layout('layouts::admin', ['title' => 'Micro projects'])] class extends Com
 
         <x-admin.pager :paginator="$rows" />
 
-        @if (in_array(true, $bulk, true))
-            <div class="bulk" x-bind:class="{ on: selected.length > 0 }" role="region" aria-label="Actions for the selection">
-                <b x-text="selected.length + ' selected'"></b><span class="sp"></span>
-                <button type="button" class="btn btn-g s" x-on:click="selected = []">Clear</button>
-                @foreach (['publish' => 'check', 'hide' => 'eyeoff', 'check-english' => 'globe'] as $move => $icon)
-                    @if ($bulk[$move])
-                        <button type="button" @class(['btn s', 'btn-p' => $loop->first, 'btn-g' => ! $loop->first]) x-on:click="$wire.transitionMany(selected, '{{ $move }}').then(() => selected = [])">
-                            <x-admin.icon :name="$icon" />{{ __('admin.transitions.'.$move) }}
-                        </button>
-                    @endif
-                @endforeach
-            </div>
+        @if ($moves !== [])
+            <x-admin.bulk-bar :$moves />
         @endif
     </x-admin.panel>
 </div>

@@ -3,7 +3,7 @@
 namespace App\Enums;
 
 /*
- * What a staff member can do to a micro-project, and which legacy roles may do
+ * What a staff member can do to the site's content (micro-projects, initiatives), and which legacy roles may do
  * it. Taken from the checks in the legacy admin views (projects-index,
  * project-view, home) and made one table, so the sidebar, the buttons and the
  * server all ask the same question.
@@ -20,13 +20,13 @@ namespace App\Enums;
  */
 enum AdminCapability: string
 {
-    case ViewProjects = 'view-projects';
-    case CreateProjects = 'create-projects';
-    case EditProjects = 'edit-projects';
-    case DeleteProjects = 'delete-projects';
-    case PublishProjects = 'publish-projects';
-    case UnpublishProjects = 'unpublish-projects';
-    case HideProjects = 'hide-projects';
+    case View = 'view';
+    case Create = 'create';
+    case Edit = 'edit';
+    case Delete = 'delete';
+    case Publish = 'publish';
+    case Unpublish = 'unpublish';
+    case Hide = 'hide';
     case CheckEnglish = 'check-english';
     case ManagePhotos = 'manage-photos';
 
@@ -34,10 +34,10 @@ enum AdminCapability: string
     public function roles(): array
     {
         return match ($this) {
-            self::ViewProjects => ['Admin', 'Publisher', 'English Editor', 'English Checker', 'Photos Editor', 'Viewer'],
-            self::CreateProjects, self::EditProjects => ['Admin', 'English Editor'],
-            self::DeleteProjects, self::UnpublishProjects => ['Admin'],
-            self::PublishProjects, self::HideProjects => ['Admin', 'Publisher'],
+            self::View => ['Admin', 'Publisher', 'English Editor', 'English Checker', 'Photos Editor', 'Viewer'],
+            self::Create, self::Edit => ['Admin', 'English Editor'],
+            self::Delete, self::Unpublish => ['Admin'],
+            self::Publish, self::Hide => ['Admin', 'Publisher'],
             self::CheckEnglish => ['Admin', 'English Checker'],
             self::ManagePhotos => ['Admin', 'Photos Editor', 'Publisher'],
         };
@@ -46,13 +46,13 @@ enum AdminCapability: string
     public function label(): string
     {
         return match ($this) {
-            self::ViewProjects => 'View projects',
-            self::CreateProjects => 'Create projects',
-            self::EditProjects => 'Edit project text',
-            self::DeleteProjects => 'Delete projects',
-            self::PublishProjects => 'Publish projects',
-            self::UnpublishProjects => 'Take projects offline',
-            self::HideProjects => 'Hide projects',
+            self::View => 'View content',
+            self::Create => 'Create content',
+            self::Edit => 'Edit text',
+            self::Delete => 'Delete content',
+            self::Publish => 'Publish',
+            self::Unpublish => 'Take offline',
+            self::Hide => 'Hide',
             self::CheckEnglish => 'Mark English as checked',
             self::ManagePhotos => 'Manage photos',
         };

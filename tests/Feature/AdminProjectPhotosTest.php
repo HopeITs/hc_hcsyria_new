@@ -171,7 +171,7 @@ describe('with GD', function () {
         $path = Image::query()->where('project_id', $project->id)->value('MPI_Path');
         expect(File::exists($this->media.$path))->toBeTrue();
 
-        Livewire::actingAs(staff('Admin'))->test('pages::admin.projects.index')->call('deleteProject', $project->id);
+        Livewire::actingAs(staff('Admin'))->test('pages::admin.projects.index')->call('deleteItem', $project->id);
 
         expect(File::exists($this->media.$path))->toBeFalse()->and(File::exists($this->media.ProjectPhotoFiles::bigPath($path)))->toBeFalse();
     });

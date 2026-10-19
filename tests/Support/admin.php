@@ -1,6 +1,8 @@
 <?php
 
 use App\Models\Image;
+use App\Models\Initiative;
+use App\Models\InitiativeContent;
 use App\Models\Project;
 use App\Models\ProjectContent;
 use App\Models\Role;
@@ -88,4 +90,37 @@ function adminProject(array $attributes = [], int $photos = 1): Project
 function alertOf(string $type): Closure
 {
     return fn (string $event, array $params): bool => ($params['type'] ?? null) === $type;
+}
+
+/** An initiative of a category the dashboard manages (social activities), with its text and one donor. */
+function adminInitiative(array $attributes = [], array $content = []): Initiative
+{
+    $initiative = Initiative::unguarded(fn () => Initiative::query()->create([
+        'logo' => '0',
+        'video' => '0',
+        'rank' => 0,
+        'english_check' => 1,
+        'french_translation' => '0',
+        'online' => 0,
+        'hidden' => 0,
+        'what_category_id' => 1,
+        'who_category_id' => 1,
+        'sub_what_category_id' => null,
+        'place_id' => 0,
+        ...$attributes,
+    ]));
+
+    InitiativeContent::query()->create([
+        'initiative_id' => $initiative->id,
+        'title' => 'zqi initiative '.$initiative->id,
+        'organization' => 'zqi organization',
+        'date_string' => '2026',
+        'description' => 'A short description.',
+        'content' => '<p>Some content for the initiative.</p>',
+        ...$content,
+    ]);
+
+    DB::table('initiatives_donors')->insert(['initiative_id' => $initiative->id, 'donor_id' => DB::table('donors')->orderBy('id')->value('id')]);
+
+    return $initiative;
 }
