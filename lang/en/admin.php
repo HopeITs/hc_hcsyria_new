@@ -68,6 +68,13 @@ return [
             'deleted' => 'Subscriber removed from the list.',
             'gone' => 'That subscriber is no longer on the list.',
         ],
+        'users' => [
+            'created' => 'User “:name” created.',
+            'saved' => 'User “:name” saved.',
+            'activated' => 'User “:name” is active again.',
+            'deactivated' => 'User “:name” is deactivated and can no longer sign in.',
+            'deleted' => 'User “:name” deleted.',
+        ],
         'invalid' => 'Some fields need attention. They are marked below.',
         'forbidden' => 'Your role cannot do that.',
         'gone' => 'That :noun no longer exists.',
@@ -84,6 +91,9 @@ return [
         'edition_exists' => 'There is already an edition called “:name”.',
         'edition_in_use' => 'Edition “:name” belongs to :count news items. Take it off them first.',
         'duplicate' => 'There is already a project #:number in :city.',
+        'own_account' => 'You cannot do that to your own account.',
+        'last_admin' => 'That would leave no active Admin. Make someone else an Admin first.',
+        'user_has_activity' => ':name has made changes that the activity log keeps, so the account cannot be deleted. Deactivate it instead.',
     ],
 
     // What a project still needs before it can go online (ProjectReadiness).
@@ -138,5 +148,7 @@ return [
         'cancelled' => 'Cancelled',
         'english' => 'English not checked',
         'nophoto' => 'No photos',
+        'active' => 'Active',
+        'inactive' => 'Inactive',
     ],
 ];

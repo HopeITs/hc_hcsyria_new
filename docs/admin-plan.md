@@ -47,7 +47,7 @@ section:
 | Our Team | 7 | To do | — |
 | Cover photos | 6 | To do | — |
 | Page content (`content`) | 10 | To do | — |
-| Users, roles, permissions, places | 5 + 3 | To do | — |
+| Users, roles, places | 5 + 3 | **Done** (page permissions and Study Zone centres not carried over, see below) | `admin-users-roles-places` |
 | Activity log and notifications (the bell) | 2 | To do | — |
 | French translation screens | ~30 | **Not planned** (the French site is out of scope) | — |
 
@@ -194,6 +194,19 @@ Study Zone initiative to the kind "events" (a bug); the kind is kept. The kinds 
 a DISC **success story** (Job Opportunity, Students Of The Month) are no longer
 mixed with the DISC programmes' own kinds.
 
+**Users** (`/admin/users`, Admin only: capabilities `ManageUsers` and `ViewLog`) —
+list with active/inactive tabs, a role filter and a search; create and edit with
+roles and cities; activate, deactivate, delete. Passwords need 12 characters with
+letters and numbers (the Tracking baseline). Changed from legacy: an empty choice of
+roles or cities is saved as empty (legacy ignored it); an account cannot deactivate or
+delete itself, and the last active Admin cannot be deactivated, deleted or stripped
+of the role; an account that has made changes is never deleted (the log and the
+database keep it: deactivate instead); every change is logged under category 12,
+never with the password. **Not carried over:** the page `permissions` and Study Zone
+`users_centers` an account holds in legacy. The dashboard decides by role, so nothing
+reads them; the rows are left untouched on edit and delete (needs sign-off if the
+Study Zone students module wants per-centre access).
+
 **Roots of Hope** — `ContentKind::Roots` (address `/admin/roots`, log category 11):
 a title and the flipbook link (both required, within the columns' real limits of 50
 and 100; legacy checked 150), a cover and an optional PDF. The cover is re-encoded
@@ -265,8 +278,6 @@ npm run build                                # tests read the Vite manifest
    whether national numbers are shown at all.
 2. **Our Team**.
 3. **Cover photos** and **Page content**.
-4. **Users, roles, permissions, places** (the Admin-only page; the roles matrix in
-   section 3 becomes editable).
 5. **Activity log page and the notification bell** (the bell polls the log every
    30 seconds in legacy and marks rows seen).
 6. **Dashboard**: widgets for initiatives, successes and news in the work queue

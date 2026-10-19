@@ -24,6 +24,9 @@ class WriteActivityLog
 
     public const TAGS = 35;
 
+    /** New: legacy did not log changes to accounts. */
+    public const USERS = 12;
+
     public function project(User $by, int $projectId, string $operation, mixed $previous = null, mixed $current = null): void
     {
         $this->item($by, ContentKind::Project, $projectId, $operation, $previous, $current);

@@ -46,6 +46,12 @@ final class Navigation
                     ['label' => 'Roots of Hope', 'icon' => 'book', 'route' => 'admin.roots.index', 'active' => 'admin.roots.*', 'badge' => self::pending($user, fn (): int => AdminRootsQuery::make()->counts()['pending']), 'can' => Gate::forUser($user)->allows('viewAny', RootsOfHope::class)],
                 ],
             ],
+            [
+                'heading' => 'Administration',
+                'items' => [
+                    ['label' => 'Users', 'icon' => 'users', 'route' => 'admin.users.index', 'active' => 'admin.users.*', 'badge' => null, 'can' => Gate::forUser($user)->allows('admin.'.AdminCapability::ManageUsers->value)],
+                ],
+            ],
         ];
 
         return array_values(array_filter(array_map(function (array $group): array {
