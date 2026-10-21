@@ -18,7 +18,7 @@ use InvalidArgumentException;
  * TestimoniesController (store, update, destroy). Only initiatives of the
  * programmes legacy allowed them for have any (DISC, Homework Room, Study Zone).
  *
- * Kept from legacy: the two tables (testimonies and testimonies_english), the
+ * Kept from legacy: the two tables (testimonies and testimony_contents), the
  * picture's path in testimonies.image_path (a column of 80 characters), and the
  * log wording. Fixed: the legacy update looked the initiative's category and title
  * up by the testimony's own id; a removed or replaced picture is really deleted;
@@ -59,14 +59,14 @@ class ManageTestimonies
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
-                DB::table('testimonies_english')->insert(['testimony_id' => $testimonyId, 'name' => $data['name'], 'text' => $data['text']]);
+                DB::table('testimony_contents')->insert(['testimony_id' => $testimonyId, 'name' => $data['name'], 'text' => $data['text']]);
                 $this->log->item($by, ContentKind::Initiative, $id, 'Testimony Created');
 
                 return $testimonyId;
             }
 
             $current = DB::table('testimonies')->where('initiative_id', $id)->where('id', $testimonyId)->first();
-            $english = DB::table('testimonies_english')->where('testimony_id', $testimonyId)->first();
+            $english = DB::table('testimony_contents')->where('testimony_id', $testimonyId)->first();
 
             if ($current === null || $english === null) {
                 throw new AdminActionRefused('testimony_gone');
@@ -80,7 +80,7 @@ class ManageTestimonies
 
             foreach (['name' => 'Testimony name edited', 'text' => 'Testimony text edited'] as $column => $operation) {
                 if (LegacyValue::textChanged($english->{$column}, $data[$column])) {
-                    DB::table('testimonies_english')->where('testimony_id', $testimonyId)->update([$column => $data[$column]]);
+                    DB::table('testimony_contents')->where('testimony_id', $testimonyId)->update([$column => $data[$column]]);
                     $this->log->item($by, ContentKind::Initiative, $id, $operation, $english->{$column}, $data[$column]);
                 }
             }

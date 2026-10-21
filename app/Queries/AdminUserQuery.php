@@ -71,8 +71,8 @@ final class AdminUserQuery
                 'users.email',
                 'users.active',
                 'users.created_at',
-                DB::raw('(SELECT GROUP_CONCAT(roles.name ORDER BY roles.name SEPARATOR ", ") FROM users_roles JOIN roles ON roles.id = users_roles.role_id WHERE users_roles.user_id = users.id) as roles'),
-                DB::raw('(SELECT GROUP_CONCAT(places.name ORDER BY places.name SEPARATOR ", ") FROM users_places JOIN places ON places.id = users_places.place_id WHERE users_places.user_id = users.id) as places'),
+                DB::raw('(SELECT GROUP_CONCAT(roles.name ORDER BY roles.name SEPARATOR ", ") FROM role_user JOIN roles ON roles.id = role_user.role_id WHERE role_user.user_id = users.id) as roles'),
+                DB::raw('(SELECT GROUP_CONCAT(places.name ORDER BY places.name SEPARATOR ", ") FROM place_user JOIN places ON places.id = place_user.place_id WHERE place_user.user_id = users.id) as places'),
             ])
             ->orderByDesc('users.active')
             ->orderBy('users.name')
@@ -89,8 +89,8 @@ final class AdminUserQuery
             return null;
         }
 
-        $user->role_ids = DB::table('users_roles')->where('user_id', $id)->pluck('role_id')->map(fn ($value): int => (int) $value)->all();
-        $user->place_ids = DB::table('users_places')->where('user_id', $id)->pluck('place_id')->map(fn ($value): int => (int) $value)->all();
+        $user->role_ids = DB::table('role_user')->where('user_id', $id)->pluck('role_id')->map(fn ($value): int => (int) $value)->all();
+        $user->place_ids = DB::table('place_user')->where('user_id', $id)->pluck('place_id')->map(fn ($value): int => (int) $value)->all();
 
         return $user;
     }
@@ -112,7 +112,7 @@ final class AdminUserQuery
         $query = DB::table('users');
 
         if ($this->role !== null) {
-            $query->whereExists(fn ($q) => $q->selectRaw('1')->from('users_roles')->whereColumn('users_roles.user_id', 'users.id')->where('users_roles.role_id', $this->role));
+            $query->whereExists(fn ($q) => $q->selectRaw('1')->from('role_user')->whereColumn('role_user.user_id', 'users.id')->where('role_user.role_id', $this->role));
         }
 
         if ($this->search !== '') {

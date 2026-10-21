@@ -167,7 +167,7 @@ class SaveSuccess
     /** "#3071 Tailoring workshop", or nothing if there is no link. */
     private function project(mixed $id): string
     {
-        $project = DB::table('projects')->leftJoin('projects_english', 'projects_english.project_id', '=', 'projects.id')->where('projects.id', $id)->first(['projects.MicroProject_ID as number', 'projects_english.MPE_Name as name']);
+        $project = DB::table('projects')->leftJoin('project_contents', 'project_contents.project_id', '=', 'projects.id')->where('projects.id', $id)->first(['projects.MicroProject_ID as number', 'project_contents.MPE_Name as name']);
 
         return $project === null ? '' : '#'.$project->number.' '.$project->name;
     }

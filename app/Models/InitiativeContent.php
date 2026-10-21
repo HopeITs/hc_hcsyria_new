@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class InitiativeContent extends Model
 {
-    protected $table = 'initiatives_english';
+    protected $table = 'initiative_contents';
 
     protected $fillable = [
         'initiative_id',

@@ -58,8 +58,8 @@ class InitiativeTitleListQuery
     public function titles(): Collection
     {
         $query = Initiative::query()
-            ->join('initiatives_english', 'initiatives_english.initiative_id', '=', 'initiatives.id')
-            ->select('initiatives_english.title')
+            ->join('initiative_contents', 'initiative_contents.initiative_id', '=', 'initiatives.id')
+            ->select('initiative_contents.title')
             ->distinct();
 
         if ($this->whatCategoryId !== null) {
@@ -70,6 +70,6 @@ class InitiativeTitleListQuery
             $query->where('initiatives.online', '1');
         }
 
-        return $query->orderBy('initiatives_english.title')->pluck('title');
+        return $query->orderBy('initiative_contents.title')->pluck('title');
     }
 }

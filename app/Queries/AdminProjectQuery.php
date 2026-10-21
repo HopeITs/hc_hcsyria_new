@@ -18,11 +18,11 @@ final class AdminProjectQuery
     public static function find(int $id): ?object
     {
         return DB::table('projects')
-            ->leftJoin('projects_english', 'projects_english.project_id', '=', 'projects.id')
+            ->leftJoin('project_contents', 'project_contents.project_id', '=', 'projects.id')
             ->leftJoin('places', 'places.id', '=', 'projects.MPE_City')
-            ->leftJoin('projecttype', 'projecttype.id', '=', 'projects.projecttype_id')
-            ->leftJoin('subcategory', 'subcategory.ID', '=', 'projects.SubCategory_ID')
-            ->leftJoin('category', 'category.ID', '=', 'subcategory.Category_ID')
+            ->leftJoin('project_types', 'project_types.id', '=', 'projects.projecttype_id')
+            ->leftJoin('project_sub_categories', 'project_sub_categories.ID', '=', 'projects.SubCategory_ID')
+            ->leftJoin('project_categories', 'project_categories.ID', '=', 'project_sub_categories.Category_ID')
             ->leftJoin('donors', 'donors.id', '=', 'projects.MPE_Donor')
             ->where('projects.id', $id)
             ->select([
@@ -47,14 +47,14 @@ final class AdminProjectQuery
                 'projects.Mobile as mobile',
                 'projects.latitude',
                 'projects.longtitude as longitude',
-                'projects_english.MPE_Name as name',
-                'projects_english.MPE_Suffering as story',
-                'projects_english.MPE_ExpSkill as skills',
+                'project_contents.MPE_Name as name',
+                'project_contents.MPE_Suffering as story',
+                'project_contents.MPE_ExpSkill as skills',
                 'places.name as city',
-                'projecttype.name as kind',
-                'category.ID as category_id',
-                'category.Name as category',
-                'subcategory.Name as sub_category',
+                'project_types.name as kind',
+                'project_categories.ID as category_id',
+                'project_categories.Name as category',
+                'project_sub_categories.Name as sub_category',
                 'donors.name as donor',
                 DB::raw('(SELECT COUNT(*) FROM images WHERE images.project_id = projects.id) as photos'),
             ])

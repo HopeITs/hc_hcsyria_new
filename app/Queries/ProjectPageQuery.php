@@ -33,11 +33,11 @@ final class ProjectPageQuery
     public static function funders(int $categoryId, bool $active): Collection
     {
         return Donor::query()
-            ->join('projects_donors', 'projects_donors.donor_id', '=', 'donors.id')
-            ->where('projects_donors.what_category_id', $categoryId)
-            ->where('projects_donors.isActive', $active ? 1 : 0)
-            ->orderBy('projects_donors.rank')
-            ->orderBy('projects_donors.id')
+            ->join('project_donors', 'project_donors.donor_id', '=', 'donors.id')
+            ->where('project_donors.what_category_id', $categoryId)
+            ->where('project_donors.isActive', $active ? 1 : 0)
+            ->orderBy('project_donors.rank')
+            ->orderBy('project_donors.id')
             ->get(['donors.*']);
     }
 }

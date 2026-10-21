@@ -30,7 +30,7 @@ new #[Layout('layouts::app', [
     'preloader' => true,
 ])] class extends Component
 {
-    /** The page's id in `backgrounds`: its cover photos. */
+    /** The page's id in `covers`: its cover photos. */
     private const COVER = 15;
 
     public bool $phone = false;

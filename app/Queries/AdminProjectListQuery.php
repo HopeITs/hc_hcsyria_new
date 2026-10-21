@@ -63,8 +63,8 @@ class AdminProjectListQuery
                 'projects.id as NO',
                 'projects.MPE_Published',
                 'projects.MicroProject_ID',
-                DB::raw('MIN(projects_english.MPE_Name) as MPE_Name'),
-                DB::raw('MIN(projecttype.name) as type'),
+                DB::raw('MIN(project_contents.MPE_Name) as MPE_Name'),
+                DB::raw('MIN(project_types.name) as type'),
                 'projects.MPE_BeneficiaryName',
                 'projects.MPE_Video',
                 'projects.Mobile',
@@ -74,9 +74,9 @@ class AdminProjectListQuery
                 DB::raw('MIN(donors.code) as MPE_Donor'),
                 DB::raw('COUNT(images.id) as images'),
             ])
-            ->leftJoin('projects_english', 'projects.id', '=', 'projects_english.project_id')
+            ->leftJoin('project_contents', 'projects.id', '=', 'project_contents.project_id')
             ->leftJoin('donors', 'donors.id', '=', 'projects.MPE_Donor')
-            ->leftJoin('projecttype', 'projects.projecttype_id', '=', 'projecttype.id')
+            ->leftJoin('project_types', 'projects.projecttype_id', '=', 'project_types.id')
             ->leftJoin('images', 'projects.id', '=', 'images.project_id')
             // Every non-aggregated column has to be listed: MariaDB does not
             // infer functional dependency on the primary key.

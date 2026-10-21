@@ -88,7 +88,7 @@ new class extends Component
     public function with(): array
     {
         return [
-            'pairs' => DB::table('initiatives_images_rehabilitation')->where('initiative_id', $this->initiativeId)->orderBy('id')->get(['id', 'path_1', 'path_2']),
+            'pairs' => DB::table('initiative_rehabilitation_images')->where('initiative_id', $this->initiativeId)->orderBy('id')->get(['id', 'path_1', 'path_2']),
             'canManage' => Auth::user()->can('managePhotos', $this->initiative()),
         ];
     }

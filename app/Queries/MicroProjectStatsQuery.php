@@ -72,16 +72,16 @@ class MicroProjectStatsQuery
     {
         return collect(
             DB::table('projects')
-                ->leftJoin('subcategory', 'subcategory.ID', '=', 'projects.SubCategory_ID')
-                ->select('subcategory.Name', DB::raw('COUNT(projects.id) AS project_count'))
+                ->leftJoin('project_sub_categories', 'project_sub_categories.ID', '=', 'projects.SubCategory_ID')
+                ->select('project_sub_categories.Name', DB::raw('COUNT(projects.id) AS project_count'))
                 ->whereIn('projects.MPE_Published', self::PUBLISHED)
                 ->where('projects.MPE_Done', 1)
                 ->whereNotIn('projects.SubCategory_ID', self::EXCLUDED_SUBCATEGORIES)
-                ->groupBy('subcategory.Name')
-                ->havingRaw('subcategory.Name is not null')
+                ->groupBy('project_sub_categories.Name')
+                ->havingRaw('project_sub_categories.Name is not null')
                 ->orderByDesc('project_count')
                 // Tied counts had no fixed order in legacy; name gives them one.
-                ->orderBy('subcategory.Name')
+                ->orderBy('project_sub_categories.Name')
                 ->limit(self::TOP_CATEGORIES)
                 ->get()
         );
@@ -97,18 +97,18 @@ class MicroProjectStatsQuery
     {
         return collect(
             DB::table('projects')
-                ->leftJoin('age', function ($join) {
+                ->leftJoin('ages', function ($join) {
                     $join->whereRaw(
                         '(CASE WHEN YEAR(CURDATE()) - projects.DOB = 0 THEN 1'
-                        .' ELSE YEAR(CURDATE()) - projects.DOB END) BETWEEN age.Min AND age.Max'
+                        .' ELSE YEAR(CURDATE()) - projects.DOB END) BETWEEN ages.Min AND ages.Max'
                     );
                 })
-                ->select('age.Name', DB::raw('COUNT(projects.id) AS project_count'))
+                ->select('ages.Name', DB::raw('COUNT(projects.id) AS project_count'))
                 ->whereIn('projects.MPE_Published', self::PUBLISHED)
                 ->where('projects.MPE_Done', 1)
-                ->groupBy('age.Name', 'age.ID')
-                ->havingRaw('age.Name is not null')
-                ->orderBy('age.ID')
+                ->groupBy('ages.Name', 'ages.ID')
+                ->havingRaw('ages.Name is not null')
+                ->orderBy('ages.ID')
                 ->get()
         );
     }

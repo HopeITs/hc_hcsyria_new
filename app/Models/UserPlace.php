@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class UserPlace extends Model
 {
-    protected $table = 'users_places';
+    protected $table = 'place_user';
 
     public $timestamps = false;
 

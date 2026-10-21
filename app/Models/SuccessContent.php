@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class SuccessContent extends Model
 {
-    protected $table = 'successes_english';
+    protected $table = 'success_contents';
 
     protected $fillable = [
         'success_id',

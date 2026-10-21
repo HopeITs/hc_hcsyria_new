@@ -21,7 +21,7 @@ function programmeForm(array $overrides = []): array
 
 function firstCentre(): int
 {
-    return (int) DB::table('studyzonecenters')->orderBy('id')->value('id');
+    return (int) DB::table('study_zone_centers')->orderBy('id')->value('id');
 }
 
 function saveProgramme(array $values)
@@ -88,7 +88,7 @@ it('creates a DISC, a School to School, a Children University and a LEAP initiat
 ]);
 
 it('logs a change of kind, place and centre by name, and does not reset the kind (legacy set every edited Study Zone item to "events")', function () {
-    $other = (int) DB::table('studyzonecenters')->where('id', '!=', firstCentre())->orderBy('id')->value('id');
+    $other = (int) DB::table('study_zone_centers')->where('id', '!=', firstCentre())->orderBy('id')->value('id');
     $initiative = adminInitiative(['what_category_id' => 7, 'sub_what_category_id' => 13, 'place_id' => 1, 'sz_center_id' => firstCentre()]);
 
     Livewire::actingAs(staff('English Editor'))->test('pages::admin.initiatives.form', ['initiative' => $initiative])
@@ -103,7 +103,7 @@ it('logs a change of kind, place and centre by name, and does not reset the kind
     expect($initiative->refresh())->sub_what_category_id->toBe(12)->place_id->toBe(2)->sz_center_id->toBe($other)
         ->and($logs['Kind changed'])->previous_data->toBe('study')->current_data->toBe('events')
         ->and($logs['Place changed'])->previous_data->toBe('Homs')->current_data->toBe('Damascus')
-        ->and($logs['Study Zone centre changed']->current_data)->toBe(DB::table('studyzonecenters')->where('id', $other)->value('name'));
+        ->and($logs['Study Zone centre changed']->current_data)->toBe(DB::table('study_zone_centers')->where('id', $other)->value('name'));
 });
 
 it('never changes the category of an initiative, nor wipes what it needs, whatever the form says', function () {
@@ -118,7 +118,7 @@ it('shows the kind, place and centre on the initiative\'s page', function () {
     $initiative = adminInitiative(['what_category_id' => 7, 'sub_what_category_id' => 13, 'place_id' => 2, 'sz_center_id' => firstCentre()]);
 
     $this->actingAs(staff('Viewer'))->get("/admin/initiatives/{$initiative->id}")->assertOk()->assertSee('Study Zone centre')->assertSee('study')->assertSee('Damascus')
-        ->assertSee(DB::table('studyzonecenters')->where('id', firstCentre())->value('name'));
+        ->assertSee(DB::table('study_zone_centers')->where('id', firstCentre())->value('name'));
 });
 
 it('leaves Homework Room out: not a category here, and its initiatives are neither listed nor opened', function () {

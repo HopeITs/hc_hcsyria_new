@@ -260,9 +260,9 @@ function validForm(array $overrides = []): array
     return [
         'form.number' => (string) random_int(500000, 900000),
         'form.city_id' => '3',
-        'form.kind_id' => (string) DB::table('projecttype')->value('id'),
-        'form.category_id' => (string) DB::table('subcategory')->value('Category_ID'),
-        'form.sub_category_id' => (string) DB::table('subcategory')->value('ID'),
+        'form.kind_id' => (string) DB::table('project_types')->value('id'),
+        'form.category_id' => (string) DB::table('project_sub_categories')->value('Category_ID'),
+        'form.sub_category_id' => (string) DB::table('project_sub_categories')->value('ID'),
         'form.name' => 'zqa new workshop',
         'form.beneficiary' => 'zqa beneficiary',
         'form.birth_year' => '1985',

@@ -95,8 +95,8 @@ it('creates an active account with its roles and cities, hashes the password and
     $user = User::query()->where('email', $values['form.email'])->firstOrFail();
     expect($user)->active->toBeTrue()->name->toBe('zqu New Person')
         ->and(Hash::check('a long enough password 1', $user->password))->toBeTrue()
-        ->and(DB::table('users_roles')->where('user_id', $user->id)->pluck('role_id')->all())->toBe([(int) $values['form.roles'][0]])
-        ->and(DB::table('users_places')->where('user_id', $user->id)->orderBy('place_id')->pluck('place_id')->all())->toBe([1, 3]);
+        ->and(DB::table('role_user')->where('user_id', $user->id)->pluck('role_id')->all())->toBe([(int) $values['form.roles'][0]])
+        ->and(DB::table('place_user')->where('user_id', $user->id)->orderBy('place_id')->pluck('place_id')->all())->toBe([1, 3]);
 
     $log = userLogs($user)->where('operation', 'User Created')->firstOrFail();
     expect($log->user_id)->toBe($admin->id)->and(json_encode($log->getAttributes()))->not->toContain('long enough');
@@ -122,19 +122,19 @@ it('changes roles and cities as chosen, including clearing the cities, and logs 
 
     usersPage(['user' => $user])->set('form.roles', [$publisher])->set('form.places', [])->call('save')->assertHasNoErrors();
 
-    expect(DB::table('users_roles')->where('user_id', $user->id)->pluck('role_id')->all())->toBe([(int) $publisher])
-        ->and(DB::table('users_places')->where('user_id', $user->id)->count())->toBe(0)
+    expect(DB::table('role_user')->where('user_id', $user->id)->pluck('role_id')->all())->toBe([(int) $publisher])
+        ->and(DB::table('place_user')->where('user_id', $user->id)->count())->toBe(0)
         ->and(userLogs($user)->where('operation', 'User Edited: Roles')->first())->previous_data->toBe('Viewer')->current_data->toBe('Publisher')
         ->and(userLogs($user)->where('operation', 'User Edited: Cities')->first())->previous_data->toBe('Homs')->current_data->toBe('none');
 });
 
 it('leaves an account\'s page permissions and Study Zone centres alone', function () {
     $user = staff('Viewer');
-    DB::table('users_permissions')->insert(['user_id' => $user->id, 'permission_id' => 1]);
+    DB::table('permission_user')->insert(['user_id' => $user->id, 'permission_id' => 1]);
 
     usersPage(['user' => $user])->set('form.name', 'zqu kept')->call('save')->assertHasNoErrors();
 
-    expect(DB::table('users_permissions')->where('user_id', $user->id)->count())->toBe(1);
+    expect(DB::table('permission_user')->where('user_id', $user->id)->count())->toBe(1);
 });
 
 it('deactivates and activates an account, which cannot then sign in', function () {
@@ -173,7 +173,7 @@ it('never removes the last active Admin: not by deactivating, deleting or taking
         ->and($refused(fn () => $users->delete($last, $actor)))->toBeTrue()
         ->and($refused(fn () => $users->save(['name' => $last->name, 'email' => $last->email, 'role_ids' => [$viewer], 'place_ids' => []], $actor, $last)))->toBeTrue()
         ->and($last->refresh()->active)->toBeTrue()
-        ->and(DB::table('users_roles')->where('user_id', $last->id)->where('role_id', Role::query()->where('name', 'Admin')->value('id'))->exists())->toBeTrue();
+        ->and(DB::table('role_user')->where('user_id', $last->id)->where('role_id', Role::query()->where('name', 'Admin')->value('id'))->exists())->toBeTrue();
 });
 
 it('allows demoting an Admin when another active one remains', function () {
@@ -194,8 +194,8 @@ it('deletes an account that never made a change, with what it held, and keeps on
     $page = Livewire::actingAs($admin)->test('pages::admin.users.index');
 
     $page->call('remove', $idle->id);
-    expect(User::query()->whereKey($idle->id)->exists())->toBeFalse()->and(DB::table('users_roles')->where('user_id', $idle->id)->count())->toBe(0)
-        ->and(DB::table('users_places')->where('user_id', $idle->id)->count())->toBe(0)
+    expect(User::query()->whereKey($idle->id)->exists())->toBeFalse()->and(DB::table('role_user')->where('user_id', $idle->id)->count())->toBe(0)
+        ->and(DB::table('place_user')->where('user_id', $idle->id)->count())->toBe(0)
         ->and(userLogs($idle)->where('operation', 'User Deleted')->exists())->toBeTrue();
 
     $page->call('remove', $busy->id)->assertDispatched('admin-alert', fn (string $event, array $params): bool => $params['type'] === 'error' && str_contains($params['message'], 'Deactivate it instead'));

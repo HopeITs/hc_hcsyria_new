@@ -22,11 +22,14 @@ return [
     |
     | The folder holding the site's images/, files/ and video/ — served at
     | /images, /files and /video by App\Http\Controllers\ServeMedia, from
-    | outside public/. Content, not code: it is not in the repository.
+    | outside public/. Content, not code: it is not in the repository. Unless
+    | MEDIA_ROOT says otherwise it is Laravel's public disk, storage/app/public,
+    | which `php artisan storage:link` also links into public/ as images, files
+    | and video, so the web server serves them directly at the same URLs.
     |
     */
 
-    'media_root' => env('MEDIA_ROOT'),
+    'media_root' => env('MEDIA_ROOT') ?: storage_path('app/public'),
 
     /*
     |--------------------------------------------------------------------------

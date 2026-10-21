@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class FamilyPartner extends Model
 {
-    protected $table = 'familypartners';
+    protected $table = 'family_partners';
 
     public $timestamps = false;
 

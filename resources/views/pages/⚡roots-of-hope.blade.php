@@ -15,7 +15,7 @@ use Livewire\Component;
  * fancybox, typeahead.js, Leaflet, the heyzine flipbook plugin, ...) for
  * nothing it drew, and the unused Edition and Agent lookups of the controller.
  * The words are the page's own; the latest edition's title, cover, preview
- * link and PDF come from the `rootsofhope` table.
+ * link and PDF come from the `roots_of_hope` table.
  *
  * Legacy crashed (a 500) when no edition was online; here the page is drawn
  * without the latest edition and without the list.

@@ -25,7 +25,7 @@ afterEach(fn () => File::deleteDirectory($this->media));
 
 function iphotos(Initiative $initiative): array
 {
-    return DB::table('initiatives_images')->where('initiative_id', $initiative->id)->orderBy('image_order')->pluck('id')->all();
+    return DB::table('initiative_images')->where('initiative_id', $initiative->id)->orderBy('image_order')->pluck('id')->all();
 }
 
 function ipick(int $count = 1, int $width = 3000, int $height = 2000): array
@@ -64,7 +64,7 @@ describe('with GD', function () {
             ->assertDispatched('photos-changed')
             ->assertDispatched('admin-alert', fn (string $event, array $params): bool => $params['type'] === 'success' && str_contains($params['message'], "initiative #{$initiative->id}"));
 
-        $rows = DB::table('initiatives_images')->where('initiative_id', $initiative->id)->orderBy('image_order')->get();
+        $rows = DB::table('initiative_images')->where('initiative_id', $initiative->id)->orderBy('image_order')->get();
         expect($rows)->toHaveCount(2)->and($rows->pluck('image_order')->all())->toBe([1, 2]);
 
         foreach ($rows as $row) {
@@ -90,7 +90,7 @@ describe('with GD', function () {
         $initiative = adminInitiative();
         $page = component('admin.content-photos', 'Admin', ['kind' => 'initiative', 'itemId' => $initiative->id])->set('uploads', ipick(3));
         [$a, $b, $c] = iphotos($initiative);
-        $removed = DB::table('initiatives_images')->where('id', $b)->value('path');
+        $removed = DB::table('initiative_images')->where('id', $b)->value('path');
 
         $page->call('remove', $b);
         expect(iphotos($initiative))->toBe([$a, $c])
@@ -165,14 +165,14 @@ describe('with GD', function () {
         $page->set('before', ipick(1, 2000, 1000)[0])->set('after', ipick(1, 800, 900)[0])->call('add')
             ->assertDispatched('admin-alert', fn (string $event, array $params): bool => $params['type'] === 'success');
 
-        $pair = DB::table('initiatives_images_rehabilitation')->where('initiative_id', $initiative->id)->first();
+        $pair = DB::table('initiative_rehabilitation_images')->where('initiative_id', $initiative->id)->first();
         expect($pair->path_1)->toEndWith('before.jpg')->and($pair->path_2)->toEndWith('after.jpg')
             ->and(array_slice(getimagesize($this->media.$pair->path_1), 0, 2))->toBe([1200, 800])
             ->and(array_slice(getimagesize($this->media.$pair->path_2), 0, 2))->toBe([1200, 800])
             ->and(initiativeLogs($initiative)->where('operation', 'Before & After Images stored')->exists())->toBeTrue();
 
         $page->call('remove', $pair->id);
-        expect(DB::table('initiatives_images_rehabilitation')->where('initiative_id', $initiative->id)->exists())->toBeFalse()
+        expect(DB::table('initiative_rehabilitation_images')->where('initiative_id', $initiative->id)->exists())->toBeFalse()
             ->and(File::exists($this->media.$pair->path_1))->toBeFalse()->and(File::exists($this->media.$pair->path_2))->toBeFalse();
     });
 
@@ -182,7 +182,7 @@ describe('with GD', function () {
         component('admin.before-after', 'Admin', ['initiativeId' => $initiative->id])->set('before', ipick(1)[0])->call('add');
         component('admin.before-after', 'Viewer', ['initiativeId' => $initiative->id])->set('before', ipick(1)[0])->set('after', ipick(1)[0])->call('add')->assertForbidden();
 
-        expect(DB::table('initiatives_images_rehabilitation')->where('initiative_id', $initiative->id)->exists())->toBeFalse();
+        expect(DB::table('initiative_rehabilitation_images')->where('initiative_id', $initiative->id)->exists())->toBeFalse();
     });
 
     // -------------------------------------------------------------- testimonies
@@ -198,14 +198,14 @@ describe('with GD', function () {
         $row = DB::table('testimonies')->where('initiative_id', $initiative->id)->first();
         expect($row->image_path)->toStartWith('/images/initiatives/Study Zone/')->and(strlen($row->image_path))->toBeLessThanOrEqual(80)
             ->and(array_slice(getimagesize($this->media.$row->image_path), 0, 2))->toBe([400, 400])
-            ->and(DB::table('testimonies_english')->where('testimony_id', $row->id)->value('name'))->toBe('Lina');
+            ->and(DB::table('testimony_contents')->where('testimony_id', $row->id)->value('name'))->toBe('Lina');
 
         $page->call('edit', $row->id)->assertSet('name', 'Lina')->set('text', 'It changed my whole year.')->call('save');
         expect(initiativeLogs($initiative)->orderBy('id')->pluck('operation')->all())->toBe(['Testimony Created', 'Testimony text edited']);
 
         $page->call('remove', $row->id);
         expect(DB::table('testimonies')->where('initiative_id', $initiative->id)->exists())->toBeFalse()
-            ->and(DB::table('testimonies_english')->where('testimony_id', $row->id)->exists())->toBeFalse()
+            ->and(DB::table('testimony_contents')->where('testimony_id', $row->id)->exists())->toBeFalse()
             ->and(File::exists($this->media.$row->image_path))->toBeFalse()
             ->and(initiativeLogs($initiative)->where('operation', 'Testimony deleted')->exists())->toBeTrue();
     });

@@ -64,9 +64,9 @@ new class extends Component
     public function edit(int $testimonyId): void
     {
         $this->editable();
-        $row = DB::table('testimonies')->join('testimonies_english', 'testimonies_english.testimony_id', '=', 'testimonies.id')
+        $row = DB::table('testimonies')->join('testimony_contents', 'testimony_contents.testimony_id', '=', 'testimonies.id')
             ->where('testimonies.initiative_id', $this->initiativeId)->where('testimonies.id', $testimonyId)
-            ->first(['testimonies.id', 'testimonies_english.name', 'testimonies_english.text']);
+            ->first(['testimonies.id', 'testimony_contents.name', 'testimony_contents.text']);
 
         if ($row === null) {
             $this->alert('refusals.testimony_gone', type: 'error');
@@ -142,9 +142,9 @@ new class extends Component
     public function with(): array
     {
         return [
-            'testimonies' => DB::table('testimonies')->join('testimonies_english', 'testimonies_english.testimony_id', '=', 'testimonies.id')
+            'testimonies' => DB::table('testimonies')->join('testimony_contents', 'testimony_contents.testimony_id', '=', 'testimonies.id')
                 ->where('testimonies.initiative_id', $this->initiativeId)->orderBy('testimonies.id')
-                ->get(['testimonies.id', 'testimonies.image_path', 'testimonies_english.name', 'testimonies_english.text']),
+                ->get(['testimonies.id', 'testimonies.image_path', 'testimony_contents.name', 'testimony_contents.text']),
             'canEdit' => Auth::user()->can('update', $this->initiative()),
         ];
     }

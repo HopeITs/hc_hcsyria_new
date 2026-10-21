@@ -19,7 +19,7 @@ use Throwable;
  * initiativeImagesRehabilitationController.
  *
  * Kept from legacy: where each path is kept (initiatives.logo, and path_1 and
- * path_2 of initiatives_images_rehabilitation) and the log wording ("Logo
+ * path_2 of initiative_rehabilitation_images) and the log wording ("Logo
  * changed", "Before & After Images stored"). Changed: a replaced or removed file
  * is really deleted (legacy asked File::delete() for a path that does not exist
  * on disk); the pair's two pictures are cut to one size, so the before-and-after
@@ -73,7 +73,7 @@ class ManageInitiativeImages
             $this->requireFits($first, self::PAIR_LENGTH, $stored);
             $this->requireFits($second, self::PAIR_LENGTH, $stored);
 
-            DB::table('initiatives_images_rehabilitation')->insert([
+            DB::table('initiative_rehabilitation_images')->insert([
                 'initiative_id' => $initiative->getKey(),
                 'path_1' => $first,
                 'path_2' => $second,
@@ -91,13 +91,13 @@ class ManageInitiativeImages
 
     public function removePair(Initiative $initiative, int $pairId, User $by): void
     {
-        $pair = DB::table('initiatives_images_rehabilitation')->where('initiative_id', $initiative->getKey())->where('id', $pairId)->first();
+        $pair = DB::table('initiative_rehabilitation_images')->where('initiative_id', $initiative->getKey())->where('id', $pairId)->first();
 
         if ($pair === null) {
             return;
         }
 
-        DB::table('initiatives_images_rehabilitation')->where('id', $pairId)->delete();
+        DB::table('initiative_rehabilitation_images')->where('id', $pairId)->delete();
         $this->forget($pair->path_1);
         $this->forget($pair->path_2);
 

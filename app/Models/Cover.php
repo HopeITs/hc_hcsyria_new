@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Cover extends Model
 {
-    protected $table = 'backgrounds';
+    protected $table = 'covers';
 
     protected $fillable = [
         'what_category_id',

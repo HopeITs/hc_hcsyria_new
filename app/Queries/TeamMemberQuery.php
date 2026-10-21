@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Collection;
 /*
  * Staff profiles for the public team pages.
  *
- * Replaces ten near-identical DB::table('profile') calls spread across
+ * Replaces ten near-identical DB::table('team_members') calls spread across
  * PublicController::about(), our_team(), show_team(), studyzone_team(),
  * disc_team(), children_team(), leap_team(), show_homs_hope_team(),
  * show_damascus_hope_team() and show_latakia_hope_team().

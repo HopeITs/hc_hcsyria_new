@@ -23,5 +23,7 @@ Homestead.json
 Homestead.yaml
 Thumbs.db
 
-# Junction to the legacy public/images during the migration.
+# Links made by `php artisan storage:link` (and the legacy public/images junction during the migration).
 /public/images
+/public/files
+/public/video

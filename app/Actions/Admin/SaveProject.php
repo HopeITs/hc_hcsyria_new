@@ -47,7 +47,7 @@ class SaveProject
         'video' => ['MPE_Video', 'Video Edited', true],
     ];
 
-    /** content key => [projects_english column, log wording] */
+    /** content key => [project_contents column, log wording] */
     private const CONTENT = [
         'name' => ['MPE_Name', 'Project Name Edited'],
         'story' => ['MPE_Suffering', 'Story Edited'],

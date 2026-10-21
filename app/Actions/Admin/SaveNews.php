@@ -47,7 +47,7 @@ class SaveNews
         'video' => ['video', 'Video', true],
     ];
 
-    /** data key => [news_english column, log field name, "0" when empty]. */
+    /** data key => [news_contents column, log field name, "0" when empty]. */
     private const TEXTS = [
         'title' => ['title', 'Title', false],
         'description' => ['description', 'Description', true],

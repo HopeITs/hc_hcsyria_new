@@ -26,7 +26,7 @@ use Illuminate\Support\Facades\DB;
  */
 class SaveInitiative
 {
-    /** data key => [initiatives_english column, log wording]; "0" stands for "none". */
+    /** data key => [initiative_contents column, log wording]; "0" stands for "none". */
     private const TEXTS = [
         'title' => ['title', 'Title edited', false],
         'organization' => ['organization', 'Organization edited', true],
@@ -39,7 +39,7 @@ class SaveInitiative
     private const CHOICES = [
         'sub_what_category_id' => ['sub_what_category_id', 'Kind changed', 'sub_what_categories'],
         'place_id' => ['place_id', 'Place changed', 'places'],
-        'sz_center_id' => ['sz_center_id', 'Study Zone centre changed', 'studyzonecenters'],
+        'sz_center_id' => ['sz_center_id', 'Study Zone centre changed', 'study_zone_centers'],
     ];
 
     public function __construct(private readonly WriteActivityLog $log) {}
@@ -77,7 +77,7 @@ class SaveInitiative
         }
         $content->save();
 
-        DB::table('initiatives_donors')->insert(array_map(fn (int $donor): array => ['initiative_id' => $initiative->getKey(), 'donor_id' => $donor], $data['donors']));
+        DB::table('initiative_donors')->insert(array_map(fn (int $donor): array => ['initiative_id' => $initiative->getKey(), 'donor_id' => $donor], $data['donors']));
 
         $this->log->item($by, ContentKind::Initiative, $initiative->getKey(), 'Initiative Created');
 
@@ -127,16 +127,16 @@ class SaveInitiative
     /** @param list<int> $wanted */
     private function syncDonors(int $initiativeId, array $wanted, User $by): void
     {
-        $current = DB::table('initiatives_donors')->where('initiative_id', $initiativeId)->pluck('donor_id')->map(fn ($id): int => (int) $id)->all();
+        $current = DB::table('initiative_donors')->where('initiative_id', $initiativeId)->pluck('donor_id')->map(fn ($id): int => (int) $id)->all();
         $names = DB::table('donors')->whereIn('id', [...$current, ...$wanted])->pluck('name', 'id');
 
         foreach (array_diff($wanted, $current) as $donor) {
-            DB::table('initiatives_donors')->insert(['initiative_id' => $initiativeId, 'donor_id' => $donor]);
+            DB::table('initiative_donors')->insert(['initiative_id' => $initiativeId, 'donor_id' => $donor]);
             $this->log->item($by, ContentKind::Initiative, $initiativeId, 'Donor '.$names[$donor].' attached');
         }
 
         foreach (array_diff($current, $wanted) as $donor) {
-            DB::table('initiatives_donors')->where(['initiative_id' => $initiativeId, 'donor_id' => $donor])->delete();
+            DB::table('initiative_donors')->where(['initiative_id' => $initiativeId, 'donor_id' => $donor])->delete();
             $this->log->item($by, ContentKind::Initiative, $initiativeId, 'Donor '.$names[$donor].' detached');
         }
     }
