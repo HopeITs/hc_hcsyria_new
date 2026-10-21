@@ -22,11 +22,12 @@ return [
     |
     | The folder holding the site's images/, files/ and video/ — served at
     | /images, /files and /video by App\Http\Controllers\ServeMedia, from
-    | outside public/. Content, not code: it is not in the repository.
+    | outside public/. Content, not code: it is not in the repository. Unless
+    | MEDIA_ROOT says otherwise it is Laravel's public disk, storage/app/public.
     |
     */
 
-    'media_root' => env('MEDIA_ROOT'),
+    'media_root' => env('MEDIA_ROOT') ?: storage_path('app/public'),
 
     /*
     |--------------------------------------------------------------------------
