@@ -106,7 +106,7 @@ final class AdminNewsIndexQuery
                 'news.date',
                 'news.priority_status as priority',
                 'news.file',
-                'news_english.title as name',
+                'news_contents.title as name',
                 'places.name as place',
                 'editions.name as edition',
                 DB::raw('(SELECT GROUP_CONCAT(tags.name ORDER BY tags.name SEPARATOR ", ") FROM news_tags JOIN tags ON tags.id = news_tags.tag_id WHERE news_tags.news_id = news.id) as tags'),
@@ -119,7 +119,7 @@ final class AdminNewsIndexQuery
     private function base(bool $withTab = true): Builder
     {
         $query = DB::table('news')
-            ->join('news_english', 'news_english.news_id', '=', 'news.id')
+            ->join('news_contents', 'news_contents.news_id', '=', 'news.id')
             ->leftJoin('places', 'places.id', '=', 'news.place_id')
             ->leftJoin('editions', 'editions.id', '=', 'news.edition_id');
 
@@ -138,7 +138,7 @@ final class AdminNewsIndexQuery
         if ($this->search !== '') {
             $like = '%'.addcslashes($this->search, '%_\\').'%';
 
-            $query->where(fn (Builder $q) => $q->where('news_english.title', 'like', $like)->orWhere('news.id', 'like', $like));
+            $query->where(fn (Builder $q) => $q->where('news_contents.title', 'like', $like)->orWhere('news.id', 'like', $like));
         }
 
         if ($withTab) {

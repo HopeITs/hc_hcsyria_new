@@ -58,7 +58,7 @@ it('filters by category and by donor', function () {
     $social = adminInitiative();
     $relief = adminInitiative(['what_category_id' => 4]);
     $other = DB::table('donors')->orderByDesc('id')->value('id');
-    DB::table('initiatives_donors')->where('initiative_id', $relief->id)->update(['donor_id' => $other]);
+    DB::table('initiative_donors')->where('initiative_id', $relief->id)->update(['donor_id' => $other]);
 
     $page = Livewire::actingAs(staff('Admin'))->test('pages::admin.initiatives.index')->set('search', 'zqi initiative');
 
@@ -160,7 +160,7 @@ it('creates an initiative as legacy did: offline, unchecked, "0" for what was le
     expect($initiative)->online->toBe(0)->english_check->toBe(0)->hidden->toBeFalse()->logo->toBe('0')->video->toBe('0')->what_category_id->toBe(1)
         ->and($content)->organization->toBe('0')->date_string->toBe('0')->description->toBe('0')
         ->and($content->content)->toBe('<p>A long enough text for an initiative.</p>x')
-        ->and(DB::table('initiatives_donors')->where('initiative_id', $initiative->id)->count())->toBe(1)
+        ->and(DB::table('initiative_donors')->where('initiative_id', $initiative->id)->count())->toBe(1)
         ->and(initiativeLogs($initiative)->where(['operation' => 'Initiative Created', 'user_id' => $user->id])->exists())->toBeTrue();
 });
 
@@ -191,7 +191,7 @@ it('makes a Family to Family initiative a partner or a story', function () {
 it('edits an initiative and logs one row for each change, worded as legacy did', function () {
     $initiative = adminInitiative();
     $user = staff('English Editor');
-    $firstDonor = DB::table('initiatives_donors')->where('initiative_id', $initiative->id)->value('donor_id');
+    $firstDonor = DB::table('initiative_donors')->where('initiative_id', $initiative->id)->value('donor_id');
     $newDonor = DB::table('donors')->where('id', '!=', $firstDonor)->orderBy('id')->value('id');
 
     Livewire::actingAs($user)->test('pages::admin.initiatives.form', ['initiative' => $initiative])
@@ -205,7 +205,7 @@ it('edits an initiative and logs one row for each change, worded as legacy did',
     expect($logs->keys()->all())->toEqualCanonicalizing(['Donor '.DB::table('donors')->where('id', $newDonor)->value('name').' attached', 'Donor '.DB::table('donors')->where('id', $firstDonor)->value('name').' detached', 'Serve category changed', 'Title edited'])
         ->and($logs['Title edited'])->previous_data->toBe("zqi initiative {$initiative->id}")->current_data->toBe('zqi renamed')
         ->and($logs['Serve category changed'])->previous_data->toBe('men')->current_data->toBe('women')
-        ->and(DB::table('initiatives_donors')->where('initiative_id', $initiative->id)->pluck('donor_id')->all())->toBe([$newDonor]);
+        ->and(DB::table('initiative_donors')->where('initiative_id', $initiative->id)->pluck('donor_id')->all())->toBe([$newDonor]);
 });
 
 it('does not log an edit when only line endings changed, and never changes the category', function () {
@@ -247,7 +247,7 @@ it('deletes an initiative for an Admin only, with its rows and its logo, and log
 
     expect(Initiative::query()->whereKey($initiative->id)->exists())->toBeFalse()
         ->and(InitiativeContent::query()->where('initiative_id', $initiative->id)->exists())->toBeFalse()
-        ->and(DB::table('initiatives_donors')->where('initiative_id', $initiative->id)->exists())->toBeFalse()
+        ->and(DB::table('initiative_donors')->where('initiative_id', $initiative->id)->exists())->toBeFalse()
         ->and(File::exists($media.'/images/initiatives/logo.png'))->toBeFalse()
         ->and(initiativeLogs($initiative)->where(['operation' => 'Initiative deleted', 'user_id' => $admin->id])->exists())->toBeTrue();
 

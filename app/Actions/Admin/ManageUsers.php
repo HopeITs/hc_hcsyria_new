@@ -70,14 +70,14 @@ class ManageUsers
 
         $id = $user->getKey();
 
-        if (DB::table('logs')->where('user_id', $id)->exists() || DB::table('student_entries')->where('user_id', $id)->exists()) {
+        if (DB::table('logs')->where('user_id', $id)->exists()) {
             throw new AdminActionRefused('user_has_activity', ['name' => $user->name]);
         }
 
         $email = $user->email;
 
         DB::transaction(function () use ($id): void {
-            foreach (['users_roles', 'users_places', 'users_permissions', 'users_centers'] as $table) {
+            foreach (['role_user', 'place_user', 'permission_user', 'study_zone_center_user'] as $table) {
                 DB::table($table)->where('user_id', $id)->delete();
             }
 
@@ -94,8 +94,8 @@ class ManageUsers
         $user = new User(['name' => $data['name'], 'email' => $data['email'], 'password' => (string) ($data['password'] ?? ''), 'active' => true]);
         $user->save();
 
-        $this->sync('users_roles', 'role_id', $user->getKey(), $data['role_ids']);
-        $this->sync('users_places', 'place_id', $user->getKey(), $data['place_ids']);
+        $this->sync('role_user', 'role_id', $user->getKey(), $data['role_ids']);
+        $this->sync('place_user', 'place_id', $user->getKey(), $data['place_ids']);
 
         $this->log->record($by, WriteActivityLog::USERS, $user->getKey(), 'User Created', null, $user->email);
         AdminAccessQuery::flush();
@@ -110,7 +110,7 @@ class ManageUsers
     {
         $id = $user->getKey();
         $adminRole = (int) Role::query()->where('name', self::ADMIN)->value('id');
-        $hadAdmin = DB::table('users_roles')->where('user_id', $id)->where('role_id', $adminRole)->exists();
+        $hadAdmin = DB::table('role_user')->where('user_id', $id)->where('role_id', $adminRole)->exists();
 
         if ($hadAdmin && ! in_array($adminRole, $data['role_ids'], true)) {
             $this->requireAnotherAdmin($user);
@@ -132,8 +132,8 @@ class ManageUsers
 
         $user->save();
 
-        $this->logChoice($by, $id, 'Roles', 'users_roles', 'role_id', 'roles', $data['role_ids']);
-        $this->logChoice($by, $id, 'Cities', 'users_places', 'place_id', 'places', $data['place_ids']);
+        $this->logChoice($by, $id, 'Roles', 'role_user', 'role_id', 'roles', $data['role_ids']);
+        $this->logChoice($by, $id, 'Cities', 'place_user', 'place_id', 'places', $data['place_ids']);
         AdminAccessQuery::flush();
     }
 
@@ -184,15 +184,15 @@ class ManageUsers
     {
         $adminRole = (int) Role::query()->where('name', self::ADMIN)->value('id');
 
-        $isActiveAdmin = (bool) $user->active && DB::table('users_roles')->where('user_id', $user->getKey())->where('role_id', $adminRole)->exists();
+        $isActiveAdmin = (bool) $user->active && DB::table('role_user')->where('user_id', $user->getKey())->where('role_id', $adminRole)->exists();
 
         if (! $isActiveAdmin) {
             return;
         }
 
         $others = DB::table('users')
-            ->join('users_roles', 'users_roles.user_id', '=', 'users.id')
-            ->where('users_roles.role_id', $adminRole)
+            ->join('role_user', 'role_user.user_id', '=', 'users.id')
+            ->where('role_user.role_id', $adminRole)
             ->where('users.active', 1)
             ->where('users.id', '!=', $user->getKey())
             ->exists();

@@ -93,12 +93,12 @@ final class AdminSuccessIndexQuery
                 DB::raw('0 as hidden'),
                 'successes.english_check',
                 'successes.image_path',
-                'successes_english.title as name',
+                'success_contents.title as name',
                 'what_categories.name as category',
                 'sub_what_categories.name as kind',
                 'who_categories.name as serves',
                 'places.name as place',
-                'studyzonecenters.name as centre',
+                'study_zone_centers.name as centre',
             ])
             ->orderByDesc('successes.id')
             ->paginate($perPage);
@@ -107,12 +107,12 @@ final class AdminSuccessIndexQuery
     private function base(bool $withTab = true): Builder
     {
         $query = DB::table('successes')
-            ->join('successes_english', 'successes_english.success_id', '=', 'successes.id')
+            ->join('success_contents', 'success_contents.success_id', '=', 'successes.id')
             ->leftJoin('what_categories', 'what_categories.id', '=', 'successes.what_category_id')
             ->leftJoin('sub_what_categories', 'sub_what_categories.id', '=', 'successes.sub_what_category_id')
             ->leftJoin('who_categories', 'who_categories.id', '=', 'successes.who_category_id')
             ->leftJoin('places', 'places.id', '=', 'successes.place_id')
-            ->leftJoin('studyzonecenters', 'studyzonecenters.id', '=', 'successes.sz_center_id')
+            ->leftJoin('study_zone_centers', 'study_zone_centers.id', '=', 'successes.sz_center_id')
             ->whereIn('successes.what_category_id', ContentLookups::SUCCESS_CATEGORIES);
 
         if ($this->category !== null) {
@@ -126,7 +126,7 @@ final class AdminSuccessIndexQuery
         if ($this->search !== '') {
             $like = '%'.addcslashes($this->search, '%_\\').'%';
 
-            $query->where(fn (Builder $q) => $q->where('successes_english.title', 'like', $like)->orWhere('successes.id', 'like', $like));
+            $query->where(fn (Builder $q) => $q->where('success_contents.title', 'like', $like)->orWhere('successes.id', 'like', $like));
         }
 
         if ($withTab) {

@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class TestimonyContent extends Model
 {
-    protected $table = 'testimonies_english';
+    protected $table = 'testimony_contents';
 
     public $timestamps = false;
 

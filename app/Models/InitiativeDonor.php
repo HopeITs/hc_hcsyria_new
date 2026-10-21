@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class InitiativeDonor extends Model
 {
-    protected $table = 'initiatives_donors';
+    protected $table = 'initiative_donors';
 
     public $timestamps = false;
 

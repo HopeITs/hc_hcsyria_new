@@ -14,7 +14,7 @@ use RuntimeException;
  * File::delete() for paths like "/images/..." that do not exist on disk, so no
  * file was ever removed.
  *
- * The database cascades the rows (initiatives_english, _french, _donors,
+ * The database cascades the rows (initiative_contents, _french, _donors,
  * _images, _images_rehabilitation, testimonies); the paths are read first, and the
  * files go once the rows have.
  */
@@ -30,9 +30,9 @@ class DeleteInitiative
         }
 
         $paths = collect([$initiative->logo])
-            ->merge(DB::table('initiatives_images')->where('initiative_id', $initiativeId)->pluck('path'))
-            ->merge(DB::table('initiatives_images_rehabilitation')->where('initiative_id', $initiativeId)->pluck('path_1'))
-            ->merge(DB::table('initiatives_images_rehabilitation')->where('initiative_id', $initiativeId)->pluck('path_2'))
+            ->merge(DB::table('initiative_images')->where('initiative_id', $initiativeId)->pluck('path'))
+            ->merge(DB::table('initiative_rehabilitation_images')->where('initiative_id', $initiativeId)->pluck('path_1'))
+            ->merge(DB::table('initiative_rehabilitation_images')->where('initiative_id', $initiativeId)->pluck('path_2'))
             ->merge(DB::table('testimonies')->where('initiative_id', $initiativeId)->pluck('image_path'))
             ->filter(fn ($path): bool => is_string($path) && $path !== '0' && $path !== '')
             ->unique();

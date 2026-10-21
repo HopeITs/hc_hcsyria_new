@@ -37,19 +37,19 @@ final class ContentLookups
     /** "Micro Project", "Rehabilitation", "Agricultural Project". @return Collection<int, object{id: int, name: string}> */
     public static function types(): Collection
     {
-        return DB::table('projecttype')->orderBy('id')->get(['id', 'name']);
+        return DB::table('project_types')->orderBy('id')->get(['id', 'name']);
     }
 
     /** @return Collection<int, object{id: int, name: string}> */
     public static function categories(): Collection
     {
-        return DB::table('category')->orderBy('ID')->get(['ID as id', 'Name as name']);
+        return DB::table('project_categories')->orderBy('ID')->get(['ID as id', 'Name as name']);
     }
 
     /** @return Collection<int, object{id: int, name: string, category_id: int}> */
     public static function subCategories(): Collection
     {
-        return DB::table('subcategory')->orderBy('Name')->get(['ID as id', 'Name as name', 'Category_ID as category_id']);
+        return DB::table('project_sub_categories')->orderBy('Name')->get(['ID as id', 'Name as name', 'Category_ID as category_id']);
     }
 
     /** The next unused MicroProject_ID, offered on a new project. */
@@ -147,7 +147,7 @@ final class ContentLookups
     /** @return Collection<int, object{id: int, name: string}> */
     public static function studyCenters(): Collection
     {
-        return DB::table('studyzonecenters')->orderBy('rank')->orderBy('name')->get(['id', 'name']);
+        return DB::table('study_zone_centers')->orderBy('rank')->orderBy('name')->get(['id', 'name']);
     }
 
     /** Every place, "All" included, as the legacy forms listed them. @return Collection<int, object{id: int, name: string}> */
@@ -159,8 +159,8 @@ final class ContentLookups
     /** One project's number and name, to show which is linked. */
     public static function projectLabel(int $id): ?object
     {
-        return DB::table('projects')->join('projects_english', 'projects_english.project_id', '=', 'projects.id')
-            ->where('projects.id', $id)->first(['projects.id', 'projects.MicroProject_ID as number', 'projects_english.MPE_Name as name']);
+        return DB::table('projects')->join('project_contents', 'project_contents.project_id', '=', 'projects.id')
+            ->where('projects.id', $id)->first(['projects.id', 'projects.MicroProject_ID as number', 'project_contents.MPE_Name as name']);
     }
 
     /**
@@ -173,13 +173,13 @@ final class ContentLookups
         $like = '%'.addcslashes(trim($term), '%_\\').'%';
 
         return DB::table('projects')
-            ->join('projects_english', 'projects_english.project_id', '=', 'projects.id')
+            ->join('project_contents', 'project_contents.project_id', '=', 'projects.id')
             ->leftJoin('places', 'places.id', '=', 'projects.MPE_City')
             ->where('projects.MPE_Published', '1')
-            ->where(fn ($q) => $q->where('projects_english.MPE_Name', 'like', $like)->orWhere('projects.MicroProject_ID', 'like', $like))
+            ->where(fn ($q) => $q->where('project_contents.MPE_Name', 'like', $like)->orWhere('projects.MicroProject_ID', 'like', $like))
             ->orderByDesc('projects.MicroProject_ID')
             ->limit($limit)
-            ->get(['projects.id', 'projects.MicroProject_ID as number', 'projects_english.MPE_Name as name', 'places.name as city']);
+            ->get(['projects.id', 'projects.MicroProject_ID as number', 'project_contents.MPE_Name as name', 'places.name as city']);
     }
 
     /** The magazine editions a newsletter item may belong to. @return Collection<int, object{id: int, name: string}> */

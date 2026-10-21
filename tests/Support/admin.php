@@ -68,12 +68,12 @@ function adminProject(array $attributes = [], int $photos = 1): Project
         'MPE_Donor' => DB::table('donors')->where('is_micro', 1)->value('id'),
         'DOB' => 1980,
         'FamilyMembers' => 4,
-        'projecttype_id' => DB::table('projecttype')->value('id'),
+        'projecttype_id' => DB::table('project_types')->value('id'),
         'WorkLoss' => 0,
         'Mobile' => '0',
         'latitude' => '36.2',
         'longtitude' => '37.1',
-        'SubCategory_ID' => DB::table('subcategory')->value('ID'),
+        'SubCategory_ID' => DB::table('project_sub_categories')->value('ID'),
         ...$attributes,
     ]));
 
@@ -126,7 +126,7 @@ function adminInitiative(array $attributes = [], array $content = []): Initiativ
         ...$content,
     ]);
 
-    DB::table('initiatives_donors')->insert(['initiative_id' => $initiative->id, 'donor_id' => DB::table('donors')->orderBy('id')->value('id')]);
+    DB::table('initiative_donors')->insert(['initiative_id' => $initiative->id, 'donor_id' => DB::table('donors')->orderBy('id')->value('id')]);
 
     return $initiative;
 }

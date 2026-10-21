@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class InitiativeImageRehabilitation extends Model
 {
-    protected $table = 'initiatives_images_rehabilitation';
+    protected $table = 'initiative_rehabilitation_images';
 
     protected $fillable = [
         'path_1',

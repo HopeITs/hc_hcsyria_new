@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class UserPermission extends Model
 {
-    protected $table = 'users_permissions';
+    protected $table = 'permission_user';
 
     public $timestamps = false;
 

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class RootsOfHope extends Model
 {
-    protected $table = 'rootsofhope';
+    protected $table = 'roots_of_hope';
 
     protected $fillable = [
         'title',

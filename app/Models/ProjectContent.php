@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ProjectContent extends Model
 {
-    protected $table = 'projects_english';
+    protected $table = 'project_contents';
 
     public $timestamps = false;
 

@@ -55,7 +55,7 @@ class DeleteProject
 
         DB::transaction(function () use ($projectId) {
             /*
-             * projects_english, projects_french and images all cascade from
+             * project_contents, projects_french and images all cascade from
              * this one delete. The legacy code deleted them explicitly as well,
              * which was redundant.
              */

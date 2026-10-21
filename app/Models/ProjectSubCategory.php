@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ProjectSubCategory extends Model
 {
-    protected $table = 'subcategory';
+    protected $table = 'project_sub_categories';
 
     protected $primaryKey = 'ID';
 

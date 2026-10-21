@@ -41,12 +41,6 @@ class Place extends Model
         return $this->hasMany(Project::class, 'MPE_City', 'id');
     }
 
-    /** @return HasMany<Street, $this> */
-    public function streets(): HasMany
-    {
-        return $this->hasMany(Street::class, 'place_id', 'id');
-    }
-
     /** @return HasMany<StudyzoneCenter, $this> */
     public function studyzoneCenters(): HasMany
     {

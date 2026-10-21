@@ -102,7 +102,7 @@ enum ContentKind: string
     {
         return match ($this) {
             self::Project => ['table' => 'images', 'owner' => 'project_id', 'path' => 'MPI_Path'],
-            self::Initiative => ['table' => 'initiatives_images', 'owner' => 'initiative_id', 'path' => 'path'],
+            self::Initiative => ['table' => 'initiative_images', 'owner' => 'initiative_id', 'path' => 'path'],
             self::News => ['table' => 'news_images', 'owner' => 'news_id', 'path' => 'path'],
             self::Success, self::Roots => throw new LogicException('This kind has one picture, not a gallery.'),
         };

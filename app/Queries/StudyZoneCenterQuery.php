@@ -59,26 +59,26 @@ class StudyZoneCenterQuery
     public function builder(): Builder
     {
         $query = StudyzoneCenter::query()
-            ->select('studyzonecenters.*')
+            ->select('study_zone_centers.*')
             // The centre names are stored as "City - Centre"; the public page
             // shows only the part after the last dash.
-            ->selectRaw("SUBSTRING_INDEX(studyzonecenters.name, '-', -1) as short_name");
+            ->selectRaw("SUBSTRING_INDEX(study_zone_centers.name, '-', -1) as short_name");
 
         if ($this->withPlace) {
-            $query->leftJoin('places', 'places.id', '=', 'studyzonecenters.place_id')
+            $query->leftJoin('places', 'places.id', '=', 'study_zone_centers.place_id')
                 ->addSelect('places.name as place_name');
         }
 
         if ($this->placeId !== null) {
-            $query->where('studyzonecenters.place_id', $this->placeId);
+            $query->where('study_zone_centers.place_id', $this->placeId);
         }
 
         if ($this->activeOnly) {
-            $query->where('studyzonecenters.active', '1');
+            $query->where('study_zone_centers.active', '1');
         }
 
         // rank is not guaranteed unique; id keeps tied rows in a fixed order.
-        return $query->orderBy('studyzonecenters.rank')->orderBy('studyzonecenters.id');
+        return $query->orderBy('study_zone_centers.rank')->orderBy('study_zone_centers.id');
     }
 
     /** @return Collection<int, StudyzoneCenter> */

@@ -15,14 +15,14 @@ final class AdminSuccessQuery
     public static function find(int $id): ?object
     {
         return DB::table('successes')
-            ->join('successes_english', 'successes_english.success_id', '=', 'successes.id')
+            ->join('success_contents', 'success_contents.success_id', '=', 'successes.id')
             ->leftJoin('what_categories', 'what_categories.id', '=', 'successes.what_category_id')
             ->leftJoin('sub_what_categories', 'sub_what_categories.id', '=', 'successes.sub_what_category_id')
             ->leftJoin('who_categories', 'who_categories.id', '=', 'successes.who_category_id')
             ->leftJoin('places', 'places.id', '=', 'successes.place_id')
-            ->leftJoin('studyzonecenters', 'studyzonecenters.id', '=', 'successes.sz_center_id')
+            ->leftJoin('study_zone_centers', 'study_zone_centers.id', '=', 'successes.sz_center_id')
             ->leftJoin('projects', 'projects.id', '=', 'successes.project_id')
-            ->leftJoin('projects_english', 'projects_english.project_id', '=', 'projects.id')
+            ->leftJoin('project_contents', 'project_contents.project_id', '=', 'projects.id')
             ->where('successes.id', $id)
             ->select([
                 'successes.id',
@@ -39,15 +39,15 @@ final class AdminSuccessQuery
                 'successes.place_id',
                 'successes.sz_center_id as centre_id',
                 'successes.project_id',
-                'successes_english.title as name',
-                'successes_english.text',
+                'success_contents.title as name',
+                'success_contents.text',
                 'what_categories.name as category',
                 'sub_what_categories.name as kind',
                 'who_categories.name as serves',
                 'places.name as place',
-                'studyzonecenters.name as centre',
+                'study_zone_centers.name as centre',
                 'projects.MicroProject_ID as project_number',
-                'projects_english.MPE_Name as project_name',
+                'project_contents.MPE_Name as project_name',
             ])
             ->first();
     }

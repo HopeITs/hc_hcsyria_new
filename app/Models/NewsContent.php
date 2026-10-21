@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class NewsContent extends Model
 {
-    protected $table = 'news_english';
+    protected $table = 'news_contents';
 
     protected $fillable = [
         'news_id',

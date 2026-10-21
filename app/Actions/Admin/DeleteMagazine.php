@@ -28,7 +28,7 @@ class DeleteMagazine
             ->filter(fn (string $path): bool => $path !== '0' && $path !== '')
             ->unique();
 
-        DB::transaction(fn () => DB::table('rootsofhope')->where('id', $id)->delete());
+        DB::transaction(fn () => DB::table('roots_of_hope')->where('id', $id)->delete());
 
         return $paths->sum(fn (string $path): int => PhotoFiles::delete($path));
     }

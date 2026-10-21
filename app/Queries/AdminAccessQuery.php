@@ -9,8 +9,8 @@ use App\Models\UserPlace;
 use App\Models\UserRole;
 
 /*
- * Who may do what in the admin: the roles an account holds (users_roles) and
- * the cities it is limited to (users_places).
+ * Who may do what in the admin: the roles an account holds (role_user) and
+ * the cities it is limited to (place_user).
  *
  * Places, as in legacy projectsController::index(): an Admin sees every city; so
  * does anyone with no place rows, or with the "All" place (id 0). Everyone else

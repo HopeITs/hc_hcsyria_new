@@ -10,6 +10,35 @@ side by side against the *same* database while routes move across one at a time.
 The moment this schema diverges from the live one, the legacy application breaks.
 So the database is treated as fixed, and every simplification happens in code.
 
+## The cutover migrations
+
+`database/cutover/` holds the changes to apply **once, at cutover**, when the
+legacy site is switched off. They are not in `database/migrations`, so the rule
+above, `scripts/verify-schema.php` and the legacy site are unaffected until then.
+The application code already uses the new names, so it runs only against a
+database those migrations have been applied to.
+
+1. `drop_unused_tables`: the students module (`students`, `student_entries`,
+   `street`, `genders`, `religions`, `educationlevel/field/degree`), the five
+   `*_french` tables and ten tables nothing reads. **Deletes data: back up first.**
+2. `rename_tables`: 23 tables to plural snake_case (`profile` to `team_members`,
+   `users_roles` to `role_user`, `news_english` to `news_contents` ...). Rows,
+   keys and column names are kept.
+3. `tidy_indexes`: unique keys on pairs that must not repeat (existing repeats
+   are removed first), one-row-per-owner keys on the content tables, and keys on
+   the columns the site filters and sorts by, including `logs`.
+
+Try them on a copy, never on `hcsyria_db` itself (the guard below refuses):
+
+```bash
+mysqldump --routines hcsyria_db | mysql hcsyria_new_db
+DB_DATABASE=hcsyria_new_db php artisan migrate --path=database/cutover
+```
+
+Run against a copy this way, the suite passes except the four `MigrationGuardTest`
+cases, which expect the protected name `hcsyria_db`. Applying them to the real
+database needs the guard lifted for that one run.
+
 ## One database, not several
 
 The application points at `hcsyria_db` directly — the same database the legacy

@@ -135,7 +135,7 @@ final class InitiativeListQuery
     /**
      * Every online activity of a category, newest first, with its photos in the
      * order the editors set. A rehabilitation project also has before-and-after
-     * pairs (initiatives_images_rehabilitation); they follow its photos, one
+     * pairs (initiative_rehabilitation_images); they follow its photos, one
      * after the other. Legacy shuffled them in with the rest on every visit; the
      * order here is fixed.
      *

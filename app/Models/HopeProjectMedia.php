@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class HopeProjectMedia extends Model
 {
-    protected $table = 'hope_projects_media';
+    protected $table = 'hope_project_media';
 
     protected $fillable = [
         'project_id',

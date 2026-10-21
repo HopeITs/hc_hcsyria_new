@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ProjectType extends Model
 {
-    protected $table = 'projecttype';
+    protected $table = 'project_types';
 
     public $timestamps = false;
 

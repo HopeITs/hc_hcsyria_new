@@ -16,7 +16,7 @@ final class AdminNewsQuery
     public static function find(int $id): ?object
     {
         return DB::table('news')
-            ->join('news_english', 'news_english.news_id', '=', 'news.id')
+            ->join('news_contents', 'news_contents.news_id', '=', 'news.id')
             ->leftJoin('places', 'places.id', '=', 'news.place_id')
             ->leftJoin('editions', 'editions.id', '=', 'news.edition_id')
             ->where('news.id', $id)
@@ -37,9 +37,9 @@ final class AdminNewsQuery
                 'news.view_count',
                 'news.total_views',
                 'news.created_at',
-                'news_english.title as name',
-                'news_english.description',
-                'news_english.content',
+                'news_contents.title as name',
+                'news_contents.description',
+                'news_contents.content',
                 'places.name as place',
                 'editions.name as edition',
                 DB::raw('(SELECT COUNT(*) FROM news_images WHERE news_images.news_id = news.id) as photos'),

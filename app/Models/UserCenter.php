@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class UserCenter extends Model
 {
-    protected $table = 'users_centers';
+    protected $table = 'study_zone_center_user';
 
     public $timestamps = false;
 

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class StudyzoneCenter extends Model
 {
-    protected $table = 'studyzonecenters';
+    protected $table = 'study_zone_centers';
 
     public $timestamps = false;
 

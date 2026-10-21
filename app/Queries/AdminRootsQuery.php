@@ -43,7 +43,7 @@ final class AdminRootsQuery
     public function counts(): array
     {
         $row = $this->base(withTab: false)
-            ->selectRaw('COUNT(*) as total, COALESCE(SUM(rootsofhope.online = 0), 0) as pending, COALESCE(SUM(rootsofhope.online = 1), 0) as online')
+            ->selectRaw('COUNT(*) as total, COALESCE(SUM(roots_of_hope.online = 0), 0) as pending, COALESCE(SUM(roots_of_hope.online = 1), 0) as online')
             ->first();
 
         return ['all' => (int) $row->total, 'pending' => (int) $row->pending, 'online' => (int) $row->online];
@@ -52,44 +52,44 @@ final class AdminRootsQuery
     /** @return LengthAwarePaginator<int, object> */
     public function paginate(int $perPage = 15): LengthAwarePaginator
     {
-        return $this->base()->select(self::columns())->orderByDesc('rootsofhope.id')->paginate($perPage);
+        return $this->base()->select(self::columns())->orderByDesc('roots_of_hope.id')->paginate($perPage);
     }
 
     public static function find(int $id): ?object
     {
-        return DB::table('rootsofhope')->where('rootsofhope.id', $id)->first(self::columns());
+        return DB::table('roots_of_hope')->where('roots_of_hope.id', $id)->first(self::columns());
     }
 
     /** @return list<mixed> */
     private static function columns(): array
     {
         return [
-            'rootsofhope.id',
-            'rootsofhope.id as number',
-            'rootsofhope.online as published',
+            'roots_of_hope.id',
+            'roots_of_hope.id as number',
+            'roots_of_hope.online as published',
             DB::raw('0 as hidden'),
-            'rootsofhope.title as name',
-            'rootsofhope.image_path',
-            'rootsofhope.file_path',
-            'rootsofhope.url',
-            'rootsofhope.created_at',
+            'roots_of_hope.title as name',
+            'roots_of_hope.image_path',
+            'roots_of_hope.file_path',
+            'roots_of_hope.url',
+            'roots_of_hope.created_at',
         ];
     }
 
     private function base(bool $withTab = true): Builder
     {
-        $query = DB::table('rootsofhope');
+        $query = DB::table('roots_of_hope');
 
         if ($this->search !== '') {
             $like = '%'.addcslashes($this->search, '%_\\').'%';
 
-            $query->where(fn (Builder $q) => $q->where('rootsofhope.title', 'like', $like)->orWhere('rootsofhope.id', 'like', $like));
+            $query->where(fn (Builder $q) => $q->where('roots_of_hope.title', 'like', $like)->orWhere('roots_of_hope.id', 'like', $like));
         }
 
         if ($withTab) {
             match ($this->tab) {
-                'pending' => $query->where('rootsofhope.online', 0),
-                'online' => $query->where('rootsofhope.online', 1),
+                'pending' => $query->where('roots_of_hope.online', 0),
+                'online' => $query->where('roots_of_hope.online', 1),
                 default => null,
             };
         }

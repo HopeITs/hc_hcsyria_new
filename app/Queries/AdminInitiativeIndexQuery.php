@@ -104,16 +104,16 @@ final class AdminInitiativeIndexQuery
                 'initiatives.hidden',
                 'initiatives.english_check',
                 'initiatives.logo',
-                'initiatives_english.title as name',
-                'initiatives_english.organization',
-                'initiatives_english.date_string',
+                'initiative_contents.title as name',
+                'initiative_contents.organization',
+                'initiative_contents.date_string',
                 'what_categories.name as category',
                 'who_categories.name as serves',
                 'sub_what_categories.name as kind',
                 'places.name as place',
-                'studyzonecenters.name as centre',
-                DB::raw('(SELECT GROUP_CONCAT(donors.name ORDER BY donors.name SEPARATOR ", ") FROM initiatives_donors JOIN donors ON donors.id = initiatives_donors.donor_id WHERE initiatives_donors.initiative_id = initiatives.id) as donors'),
-                DB::raw('(SELECT COUNT(*) FROM initiatives_images WHERE initiatives_images.initiative_id = initiatives.id) as photos'),
+                'study_zone_centers.name as centre',
+                DB::raw('(SELECT GROUP_CONCAT(donors.name ORDER BY donors.name SEPARATOR ", ") FROM initiative_donors JOIN donors ON donors.id = initiative_donors.donor_id WHERE initiative_donors.initiative_id = initiatives.id) as donors'),
+                DB::raw('(SELECT COUNT(*) FROM initiative_images WHERE initiative_images.initiative_id = initiatives.id) as photos'),
             ])
             ->orderByDesc('initiatives.id')
             ->paginate($perPage);
@@ -122,12 +122,12 @@ final class AdminInitiativeIndexQuery
     private function base(bool $withTab = true): Builder
     {
         $query = DB::table('initiatives')
-            ->join('initiatives_english', 'initiatives_english.initiative_id', '=', 'initiatives.id')
+            ->join('initiative_contents', 'initiative_contents.initiative_id', '=', 'initiatives.id')
             ->leftJoin('what_categories', 'what_categories.id', '=', 'initiatives.what_category_id')
             ->leftJoin('who_categories', 'who_categories.id', '=', 'initiatives.who_category_id')
             ->leftJoin('sub_what_categories', 'sub_what_categories.id', '=', 'initiatives.sub_what_category_id')
             ->leftJoin('places', 'places.id', '=', 'initiatives.place_id')
-            ->leftJoin('studyzonecenters', 'studyzonecenters.id', '=', 'initiatives.sz_center_id')
+            ->leftJoin('study_zone_centers', 'study_zone_centers.id', '=', 'initiatives.sz_center_id')
             ->whereIn('initiatives.what_category_id', ContentLookups::INITIATIVE_CATEGORIES);
 
         if ($this->category !== null) {
@@ -139,15 +139,15 @@ final class AdminInitiativeIndexQuery
         }
 
         if ($this->donor !== null) {
-            $query->whereExists(fn ($q) => $q->selectRaw('1')->from('initiatives_donors')->whereColumn('initiatives_donors.initiative_id', 'initiatives.id')->where('initiatives_donors.donor_id', $this->donor));
+            $query->whereExists(fn ($q) => $q->selectRaw('1')->from('initiative_donors')->whereColumn('initiative_donors.initiative_id', 'initiatives.id')->where('initiative_donors.donor_id', $this->donor));
         }
 
         if ($this->search !== '') {
             $like = '%'.addcslashes($this->search, '%_\\').'%';
 
             $query->where(function (Builder $q) use ($like): void {
-                $q->where('initiatives_english.title', 'like', $like)
-                    ->orWhere('initiatives_english.organization', 'like', $like)
+                $q->where('initiative_contents.title', 'like', $like)
+                    ->orWhere('initiative_contents.organization', 'like', $like)
                     ->orWhere('initiatives.id', 'like', $like);
             });
         }

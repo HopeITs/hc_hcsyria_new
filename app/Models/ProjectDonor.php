@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ProjectDonor extends Model
 {
-    protected $table = 'projects_donors';
+    protected $table = 'project_donors';
 
     public $timestamps = false;
 
