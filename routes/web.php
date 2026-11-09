@@ -34,6 +34,8 @@ Route::livewire('/christianyouth', 'pages::christian-youth')->name('public.youth
 
 Route::livewire('/rootsofhope', 'pages::roots-of-hope')->name('roots');
 
+Route::livewire('/rootsofhope/{id}', 'pages::roots-of-hope-reader')->whereNumber('id')->name('roots.read');
+
 Route::livewire('/our-news', 'pages::our-news')->name('new.public.newsletter');
 
 // One story. Only the id picks it; the city (a slug, so it may hold hyphens) and the date (eight digits) are as the list links them.

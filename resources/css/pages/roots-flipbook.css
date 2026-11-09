@@ -1,0 +1,100 @@
+/* /rootsofhope/{id}: the page-turning reader (resources/js/flipbook.js). */
+@layer components {
+    .flipbook {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+        height: 100vh;
+        height: 100dvh;
+        padding: 12px 16px;
+        overflow: hidden;
+        background: #2b2b2b;
+        color: #fff;
+    }
+
+    .flipbook-body {
+        margin: 0;
+        background: #2b2b2b;
+    }
+
+    .flipbook__bar {
+        display: flex;
+        width: 100%;
+        max-width: 1100px;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        font-size: 0.95rem;
+    }
+
+    .flipbook__title {
+        flex: 1;
+        text-align: center;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+
+    .flipbook__back,
+    .flipbook__bar a {
+        color: #fff;
+    }
+
+    .flipbook__tools,
+    .flipbook__nav {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .flipbook__btn {
+        min-width: 40px;
+        padding: 6px 12px;
+        border: 1px solid rgb(255 255 255 / 0.4);
+        border-radius: 999px;
+        background: transparent;
+        color: #fff;
+        font-size: 1rem;
+        cursor: pointer;
+    }
+
+    .flipbook__btn:hover {
+        background: rgb(255 255 255 / 0.15);
+    }
+
+    .flipbook__stage-wrap {
+        display: flex;
+        width: 100%;
+        flex: 1;
+        align-items: center;
+        justify-content: center;
+        min-height: 0;
+    }
+
+    .flipbook__stage {
+        margin: 0 auto;
+    }
+
+    .flipbook__leaf {
+        background: #fff;
+        overflow: hidden;
+    }
+
+    .flipbook__leaf img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        user-select: none;
+    }
+
+    .flipbook__note a {
+        color: #fff;
+        text-decoration: underline;
+    }
+
+    .flipbook__count {
+        min-width: 70px;
+        text-align: center;
+    }
+}

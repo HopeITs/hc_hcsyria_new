@@ -8,6 +8,7 @@ import carousel from './carousel';
 import categoryShowcase from './category-showcase';
 import centreSpread from './centre-spread';
 import familyMap from './family-map';
+import flipbook from './flipbook';
 import hideNavBetween from './hide-nav-between';
 import lightbox from './lightbox';
 import { clock, newsColumns, shareMenu } from './news-page';
@@ -33,6 +34,7 @@ document.addEventListener('alpine:init', () => {
     window.Alpine.data('categoryShowcase', categoryShowcase);
     window.Alpine.data('centreSpread', centreSpread);
     window.Alpine.data('familyMap', familyMap);
+    window.Alpine.data('flipbook', flipbook);
     window.Alpine.data('lightbox', lightbox);
     window.Alpine.data('newsColumns', newsColumns);
     window.Alpine.data('clock', clock);
