@@ -116,7 +116,7 @@ new #[Layout('layouts::admin', ['title' => 'Magazine edition'])] class extends C
             <x-admin.field label="Title" name="form.title" required full>
                 <input id="f-form.title" class="inp" wire:model="form.title" maxlength="50">
             </x-admin.field>
-            <x-admin.field label="Online link" name="form.url" required full help="The address of the page that shows the magazine as a flipbook.">
+            <x-admin.field label="Online link" name="form.url" full help="Optional. With a PDF the site shows the magazine itself as a flipbook; this link is only used for an edition without one.">
                 <input id="f-form.url" type="url" class="inp" placeholder="https://…" wire:model="form.url" maxlength="100">
             </x-admin.field>
         </x-admin.form-section>

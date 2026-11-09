@@ -28,7 +28,7 @@ class RootsForm extends Form
     {
         return [
             'title' => ['required', 'string', 'max:50'],
-            'url' => ['required', 'url:https,http', 'max:100'],
+            'url' => ['nullable', 'url:https,http', 'max:100'],
         ];
     }
 
@@ -43,6 +43,6 @@ class RootsForm extends Form
     {
         $data = $this->validate();
 
-        return ['title' => trim($data['title']), 'url' => trim($data['url'])];
+        return ['title' => trim($data['title']), 'url' => trim((string) ($data['url'] ?? ''))];
     }
 }

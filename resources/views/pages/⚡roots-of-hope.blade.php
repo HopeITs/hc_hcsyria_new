@@ -56,7 +56,7 @@ new #[Layout('layouts::app', [
                 <div class="uppercase">
                     <div class="roots-latest__actions">
                         <div class="roots-latest__preview">
-                            <a target="_blank" href="{{ $latest->url }}">
+                            <a @if ($latest->file_path !== '0') href="{{ route('roots.read', $latest->id) }}" @else target="_blank" href="{{ $latest->url }}" @endif>
                                 <img class="roots-latest__preview-icon" src="/images/ico/preview-icon.png" alt="Preview">
                             </a>
                         </div>
@@ -112,7 +112,7 @@ new #[Layout('layouts::app', [
                                 <div class="roots-edition__meta">
                                     <span class="roots-edition__title">{{ $edition->title }}</span>
                                     <span>
-                                        <a target="_blank" href="{{ $edition->url }}">
+                                        <a @if ($edition->file_path !== '0') href="{{ route('roots.read', $edition->id) }}" @else target="_blank" href="{{ $edition->url }}" @endif>
                                             <img class="roots-edition__icon" src="/images/ico/eye-icon.png" alt="Preview">
                                         </a>
                                     </span>

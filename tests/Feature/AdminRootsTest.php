@@ -104,7 +104,7 @@ it('lets a role only do what it may', function (string $role, bool $publish, boo
 it('asks for a title and a link, within the length of the columns', function (array $values, array $errors) {
     magazinePage()->fill($values)->call('save')->assertHasErrors($errors);
 })->with([
-    'nothing' => [[], ['form.title', 'form.url']],
+    'nothing' => [[], ['form.title']],
     'a title too long for the column' => [['form.title' => str_repeat('a', 51), 'form.url' => 'https://example.test/a'], ['form.title']],
     'a link too long for the column' => [['form.title' => 'T', 'form.url' => 'https://example.test/'.str_repeat('a', 90)], ['form.url']],
     'a link that is not one' => [['form.title' => 'T', 'form.url' => 'javascript:alert(1)'], ['form.url']],

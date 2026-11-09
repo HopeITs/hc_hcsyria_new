@@ -24,7 +24,7 @@ it('shows the last online edition large, with its preview link and PDF', functio
     $this->get('/rootsofhope')
         ->assertOk()
         ->assertSee('class="roots-cover__edition" src="'.e($latest->image_path).'"', false)
-        ->assertSee('<a target="_blank" href="'.e($latest->url).'">', false)
+        ->assertSee(route('roots.read', $latest->id), false)
         ->assertSee('<a href="'.e($latest->file_path).'" download>', false);
 });
 
@@ -61,4 +61,18 @@ it('counts a visit once per session under the legacy page name', function () {
     $this->get('/rootsofhope')->assertSessionHas('has_viewed_roots_of_hope', true);
 
     expect((int) PageView::query()->where('page_name', 'roots_of_hope')->value('views'))->toBe($before + 1);
+});
+
+it('reads an online edition that has a PDF as a flipbook', function () {
+    $edition = RootsOfHope::query()->create(['title' => 'Readable', 'image_path' => '0', 'file_path' => '/files/rootsofhope/readable.pdf', 'url' => '', 'online' => 1]);
+
+    $this->get(route('roots.read', $edition->id))->assertOk()->assertSee('flipbook', false)->assertSee('/files/rootsofhope/readable.pdf', false);
+});
+
+it('does not read an offline edition or one without a PDF', function () {
+    $offline = RootsOfHope::query()->create(['title' => 'Off', 'image_path' => '0', 'file_path' => '/files/rootsofhope/off.pdf', 'url' => '', 'online' => 0]);
+    $noPdf = RootsOfHope::query()->create(['title' => 'No PDF', 'image_path' => '0', 'file_path' => '0', 'url' => '', 'online' => 1]);
+
+    $this->get(route('roots.read', $offline->id))->assertNotFound();
+    $this->get(route('roots.read', $noPdf->id))->assertNotFound();
 });
