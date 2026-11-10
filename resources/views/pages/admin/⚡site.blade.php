@@ -251,7 +251,8 @@ new #[Layout('layouts::admin', ['title' => 'Site content'])] class extends Compo
     public function with(): array
     {
         $pages = SiteContent::pages();
-        $rewrites = DB::table('site_contents')->where('slot', 'like', 'text:%')->get(['slot', 'value', 'original']);
+        $ready = SiteContent::ready();
+        $rewrites = $ready ? DB::table('site_contents')->where('slot', 'like', 'text:%')->get(['slot', 'value', 'original']) : collect();
 
         if ($this->page === 'sitewide') {
             $current = ['label' => 'Menu, header and footer', 'url' => '/home', 'icon' => 'menu', 'blurb' => 'The words on every page: the menu, the header and the footer.', 'slots' => []];
@@ -269,7 +270,8 @@ new #[Layout('layouts::admin', ['title' => 'Site content'])] class extends Compo
             'changedBy' => collect($pages)->map(fn (array $p, string $id): int => collect($p['slots'])->where('changed', true)->count())->all(),
             'wordsBy' => collect($pages)->map(fn (array $p): int => $count($p['url']))->all() + ['sitewide' => $count('*')],
             'previewUrl' => $current['url'].'?studio='.$this->stamp,
-            'words' => $this->mode === 'words' ? $this->words($rewrites) : null,
+            'ready' => $ready,
+            'words' => $ready && $this->mode === 'words' ? $this->words($rewrites) : null,
         ];
     }
 
@@ -277,7 +279,7 @@ new #[Layout('layouts::admin', ['title' => 'Site content'])] class extends Compo
      * The lines of the page with what was rewritten, and the rewrites whose line left the page.
      *
      * @param  \Illuminate\Support\Collection<int, object>  $rewrites
-     * @return array{rows: list<array<string, mixed>>, gone: list<array<string, mixed>>, failed: bool, shown: int}
+     * @return array{rows: list<array<string, mixed>>, gone: list<array<string, mixed>>, failed: bool, error: ?string, shown: int}
      */
     private function words($rewrites): array
     {
@@ -300,7 +302,7 @@ new #[Layout('layouts::admin', ['title' => 'Site content'])] class extends Compo
         $gone = $mine->reject(fn (object $row, string $hash): bool => in_array($hash, $seen, true))
             ->map(fn (object $row, string $hash): array => ['hash' => $hash, 'original' => (string) $row->original, 'value' => $row->value])->values()->all();
 
-        return ['rows' => $shown, 'gone' => $gone, 'failed' => $lines === null, 'shown' => count($rows)];
+        return ['rows' => $shown, 'gone' => $gone, 'failed' => $lines === null, 'error' => PageScan::$error, 'shown' => count($rows)];
     }
 };
 ?>
@@ -317,6 +319,12 @@ new #[Layout('layouts::admin', ['title' => 'Site content'])] class extends Compo
     </x-admin.page-header>
 
     {{-- The stages: one card per public page, showing how much of it has been changed. --}}
+    @unless ($ready)
+        <x-admin.empty-state icon="warn" title="Site content is not set up on this database yet">
+            Its table is missing. Run this once on the server, then reload:
+            <div style="margin-top: 10px"><code>php artisan migrate --path=database/cutover/2026_11_10_000001_create_site_contents_table.php --force</code></div>
+        </x-admin.empty-state>
+    @else
     <nav class="sc-stages" aria-label="Public pages">
         @foreach ($pages as $id => $stage)
             <button type="button" wire:key="stage-{{ $id }}" wire:click="$set('page', '{{ $id }}')" @class(['sc-stage', 'on' => $id === $page]) aria-current="{{ $id === $page ? 'page' : 'false' }}">
@@ -410,4 +418,5 @@ new #[Layout('layouts::admin', ['title' => 'Site content'])] class extends Compo
             @if ($frame === 'phone')<p class="muted" style="margin: 8px 0 0; font-size: 12px">Narrow like a phone. Phones also get their own cover pictures, which show on real phones.</p>@endif
         </aside>
     </div>
+@endunless
 </div>

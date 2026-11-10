@@ -13,7 +13,7 @@
     <p class="muted" style="margin: 0">{{ $current['blurb'] }} Each line below is a stretch of text the visitor reads. A sentence broken by bold words or a line break shows as separate lines.</p>
 
     @if ($words['failed'])
-        <x-admin.empty-state icon="warn" title="This page could not be read">It did not load for the reader. Try “Read page again”, or open the page to see what is wrong.</x-admin.empty-state>
+        <x-admin.empty-state icon="warn" title="This page could not be read">The page did not load when the dashboard asked for it. Try “Read page again”, or open the page to see what is wrong.@if ($words['error'])<div class="muted" style="margin-top: 10px; font-size: 12px; max-width: 46rem; word-break: break-word">Detail: {{ $words['error'] }}</div>@endif</x-admin.empty-state>
     @elseif ($words['shown'] === 0)
         <x-admin.empty-state icon="doc" title="No words found">This page has no text of its own.</x-admin.empty-state>
     @elseif ($words['rows'] === [])
