@@ -92,6 +92,12 @@ final class SiteContent
         );
     }
 
+    /** False until the site_contents table (with its original column) exists: the dashboard says so instead of failing. */
+    public static function ready(): bool
+    {
+        return Schema::hasTable('site_contents') && Schema::hasColumn('site_contents', 'original');
+    }
+
     /** Forget what was read: the next question asks the database again. */
     public function refresh(): void
     {
