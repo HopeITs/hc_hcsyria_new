@@ -448,3 +448,10 @@ a.tile:hover,button.tile:hover{transform:translateY(-2px);box-shadow:var(--card-
 .sc-live .load{position:absolute;inset:0;z-index:1;display:grid;place-content:center;justify-items:center;gap:6px;color:var(--ink-m);background:var(--head);font-size:13px}
 @media (prefers-reduced-motion:reduce){.sc-card,.sc-stage,.sc-pic img,.sc-pic video,.sc-live .stage{transition:none}}
 [x-cloak]{display:none!important}
+.sc-words-bar{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+.sc-lines{display:grid;gap:10px}
+.sc-line{display:grid;gap:8px;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--board);box-shadow:var(--card)}
+.sc-line.is-changed{border-color:color-mix(in srgb,var(--warn) 55%,var(--line))}
+.sc-line .was{font-size:12px;color:var(--ink-m)}.sc-line .was q{color:var(--ink);quotes:"“" "”"}
+.sc-line .ta{min-height:0}
+.sc-line .act{display:flex;gap:8px;flex-wrap:wrap}

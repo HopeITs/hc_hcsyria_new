@@ -104,6 +104,10 @@ return [
                 'steps_image' => ['type' => 'image', 'label' => 'Steps picture', 'default' => '/images/home/steps.jpg', 'box' => [2400, 1200], 'where' => 'The wide picture near the foot of the page.'],
             ],
         ],
+        'children-university' => ['label' => 'Children University', 'url' => '/projects/childrenuni', 'icon' => 'users', 'blurb' => 'The Children University page.', 'slots' => []],
+        'school-to-school' => ['label' => 'School to School', 'url' => '/projects/school-to-school', 'icon' => 'book', 'blurb' => 'The School to School page.', 'slots' => []],
+        'family-to-family' => ['label' => 'Family to Family', 'url' => '/projects/family-to-family', 'icon' => 'users', 'blurb' => 'The Family to Family page.', 'slots' => []],
+        'christian-youth' => ['label' => 'Christian Youth', 'url' => '/christianyouth', 'icon' => 'spark', 'blurb' => 'The Syrian Christian Youth Leaders gathering page.', 'slots' => []],
         'micro' => [
             'label' => 'Micro projects',
             'url' => '/projects/micro-projects',

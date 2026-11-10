@@ -18,6 +18,9 @@ use Illuminate\Support\Facades\Schema;
  */
 final class SiteContent
 {
+    /** True while the site:scan command reads a page, so it reads the original words. */
+    public static bool $scanning = false;
+
     /** @var array<string, string>|null slot => value, loaded on first use */
     private ?array $changes = null;
 
@@ -73,6 +76,20 @@ final class SiteContent
         $slot = config("site_content.pages.$page.slots.$name");
 
         return is_array($slot) ? $slot + ['alpha' => false, 'box' => null, 'key' => $key] : null;
+    }
+
+    /**
+     * The rewritten lines that apply to a page: its own and the site-wide ones (menu, header, footer).
+     *
+     * @return array<string, string> key (PageText::key) => new words
+     */
+    public static function textFor(string $page): array
+    {
+        return array_filter(
+            app(self::class)->all(),
+            fn (string $value, string $slot): bool => str_starts_with($slot, 'text:*:') || str_starts_with($slot, 'text:'.$page.':'),
+            ARRAY_FILTER_USE_BOTH,
+        );
     }
 
     /** Forget what was read: the next question asks the database again. */

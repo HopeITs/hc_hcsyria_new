@@ -1,7 +1,10 @@
 <?php
 
+use App\Support\Site\PageText;
 use App\Support\Site\SiteContent;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Livewire\Livewire;
@@ -96,4 +99,68 @@ it('answers 404 for a slot of another page or one that does not exist', function
 
 it('refuses a role without the capability, even for a direct call', function () {
     siteEditor('Viewer')->assertForbidden();
+});
+
+/*
+ * Words: every line of text a visitor reads, found by reading the page, and rewritten one line at a time.
+ */
+function wordsPage(string $page = 'christian-youth')
+{
+    Artisan::call('site:scan', ['path' => config("site_content.pages.$page.url")]);
+    $lines = json_decode(trim(Artisan::output()), true);
+    Cache::put('site-scan:'.config("site_content.pages.$page.url"), $lines, 60);
+
+    return Livewire::actingAs(staff('Admin'))->withQueryParams(['mode' => 'words', 'page' => $page])->test('pages::admin.site');
+}
+
+it('reads the words of a page, own lines apart from the menu and footer', function () {
+    $own = collect(PageText::lines($this->get('/christianyouth')->getContent()))->where('wide', false)->pluck('text');
+
+    expect($own)->toContain('Participants')->toContain('The Main Objectives:')
+        ->and(collect(PageText::lines($this->get('/christianyouth')->getContent()))->where('wide', true)->pluck('text'))->toContain('Who We Are');
+});
+
+it('leaves markup, scripts and attributes alone and keeps the spacing around a rewritten line', function () {
+    $html = '<nav><a href="/x" @click="a > b">Home page</a></nav><p>Hello <b>big</b> world</p><script>var a="<p>Hello</p>";</script>';
+    $out = PageText::rewrite($html, [PageText::key('/p', 'Hello') => 'Hi <there>'], '/p');
+
+    expect($out)->toBe('<nav><a href="/x" @click="a > b">Home page</a></nav><p>Hi &lt;there&gt; <b>big</b> world</p><script>var a="<p>Hello</p>";</script>');
+});
+
+it('rewrites a line of a page, shows it on that page only, and puts it back', function () {
+    $page = wordsPage()->assertSee('The Main Objectives:')
+        ->set('edits.'.substr(sha1('The Main Objectives:'), 0, 16), 'Our Aims:')
+        ->call('saveLine', substr(sha1('The Main Objectives:'), 0, 16))
+        ->assertDispatched('admin-alert');
+
+    $this->get('/christianyouth')->assertSee('Our Aims:')->assertDontSee('The Main Objectives:');
+    $this->get('/home')->assertDontSee('Our Aims:');
+
+    $page->call('resetLine', substr(sha1('The Main Objectives:'), 0, 16));
+    $this->get('/christianyouth')->assertSee('The Main Objectives:');
+    expect(DB::table('site_contents')->where('slot', 'like', 'text:%')->count())->toBe(0);
+});
+
+it('rewrites a menu line for every page', function () {
+    $hash = substr(sha1('Who We Are'), 0, 16);
+    wordsPage('christian-youth')->set('page', 'sitewide')->set("edits.$hash", 'About us')->call('saveLine', $hash);
+
+    expect(DB::table('site_contents')->where('slot', "text:*:$hash")->value('value'))->toBe('About us');
+    $this->get('/christianyouth')->assertSee('About us');
+    $this->get('/who-we-are')->assertSee('About us');
+});
+
+it('refuses to rewrite a line the page does not have, or with nothing', function () {
+    wordsPage()->set('edits.0123456789abcdef', 'x')->call('saveLine', '0123456789abcdef')->assertDispatched('admin-alert', type: 'error');
+
+    $hash = substr(sha1('Participants'), 0, 16);
+    wordsPage()->set("edits.$hash", '   ')->call('saveLine', $hash)->assertDispatched('admin-alert', type: 'error');
+    expect(DB::table('site_contents')->count())->toBe(0);
+});
+
+it('lists a rewrite whose original left the page, so it can be removed', function () {
+    DB::table('site_contents')->insert(['slot' => 'text:/christianyouth:0123456789abcdef', 'value' => 'New', 'original' => 'Old words', 'created_at' => now(), 'updated_at' => now()]);
+
+    wordsPage()->assertSee('No longer on the page')->assertSee('Old words')->call('resetLine', '0123456789abcdef');
+    expect(DB::table('site_contents')->count())->toBe(0);
 });

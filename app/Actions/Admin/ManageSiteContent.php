@@ -5,6 +5,7 @@ namespace App\Actions\Admin;
 use App\Exceptions\AdminActionRefused;
 use App\Models\User;
 use App\Support\Admin\PhotoFiles;
+use App\Support\Site\PageText;
 use App\Support\Site\SiteContent;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
@@ -82,6 +83,36 @@ class ManageSiteContent
         $this->store($key, $text, $by, 'Text changed');
     }
 
+    /**
+     * Rewrite one line of text of a page ($where is a page's address, or "*" for the menu,
+     * header and footer). Writing the original words again is no change.
+     *
+     * @throws AdminActionRefused
+     */
+    public function setLine(string $where, string $original, string $text, User $by): void
+    {
+        $text = trim(str_replace(["\r\n", "\r"], "\n", $text));
+        $known = $where === '*' || collect((array) config('site_content.pages'))->contains(fn (array $page): bool => $page['url'] === $where);
+
+        if (! $known || $original === '') {
+            throw new AdminActionRefused('slot_unknown');
+        }
+
+        if ($text === '' || mb_strlen($text) > self::MAX_TEXT) {
+            throw new AdminActionRefused('text_rejected', ['max' => self::MAX_TEXT]);
+        }
+
+        $key = PageText::key($where, $original);
+
+        if ($text === $original) {
+            $this->reset($key, $by);
+
+            return;
+        }
+
+        $this->store($key, $text, $by, 'Words changed', $original);
+    }
+
     /** Back to the original. Nothing to do when nothing was changed. */
     public function reset(string $key, User $by): void
     {
@@ -99,14 +130,14 @@ class ManageSiteContent
         $this->log->record($by, WriteActivityLog::SITE, $this->logId($key), 'Site content reset: '.$key, $old);
     }
 
-    private function store(string $key, string $value, User $by, string $operation): void
+    private function store(string $key, string $value, User $by, string $operation, ?string $original = null): void
     {
         $old = DB::table('site_contents')->where('slot', $key)->value('value');
 
         DB::table('site_contents')->upsert(
-            [['slot' => $key, 'value' => $value, 'updated_by' => $by->getKey(), 'created_at' => now(), 'updated_at' => now()]],
+            [['slot' => $key, 'value' => $value, 'original' => $original, 'updated_by' => $by->getKey(), 'created_at' => now(), 'updated_at' => now()]],
             ['slot'],
-            ['value', 'updated_by', 'updated_at'],
+            ['value', 'original', 'updated_by', 'updated_at'],
         );
 
         if ($old !== null && $old !== $value) {
@@ -124,6 +155,11 @@ class ManageSiteContent
      */
     private function slot(string $key, ?string $kind = null): array
     {
+        // A rewritten line of text has no slot in the config: its key says what it is.
+        if (str_starts_with($key, 'text:')) {
+            return ['type' => 'line'];
+        }
+
         $slot = SiteContent::slot($key);
         $type = $slot['type'] ?? null;
         $matches = $kind === 'text' ? in_array($type, ['text', 'long'], true) : ($kind === null ? $type !== null : $type === $kind);
