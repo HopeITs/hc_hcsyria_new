@@ -412,3 +412,39 @@ a.tile:hover,button.tile:hover{transform:translateY(-2px);box-shadow:var(--card-
   .focus-fig b{font-size:34px}
   .sec-cards{grid-template-columns:1fr}
 }
+
+/* Site content (/admin/site): the stages strip, the slot cards and the live view of the public page. */
+.sc-stages{display:flex;gap:10px;overflow-x:auto;padding:2px 2px 8px;scrollbar-width:thin}
+.sc-stage{display:flex;align-items:center;gap:10px;flex:none;padding:10px 14px 10px 10px;border:1px solid var(--line);border-radius:12px;background:var(--board);text-align:start;box-shadow:var(--card);transition:transform .15s var(--ease),border-color .15s,box-shadow .15s}
+.sc-stage:hover{transform:translateY(-2px);box-shadow:var(--card-h)}
+.sc-stage .ic{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:var(--s-soft);color:var(--s-dark);transition:background .15s,color .15s}
+.sc-stage .tx{display:grid;line-height:1.25}.sc-stage b{font-size:14px;color:var(--s-dark)}.dark .sc-stage b{color:var(--ink)}
+.sc-stage small{font-size:12px;color:var(--ink-m)}.sc-stage small em{font-style:normal;font-weight:700;color:var(--warn)}
+.sc-stage.on{border-color:var(--primary);box-shadow:0 0 0 1px var(--primary),var(--card)}.sc-stage.on .ic{background:var(--primary);color:#fff}
+.sc-split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,26rem);gap:24px;align-items:start}
+@media (max-width:1180px){.sc-split{grid-template-columns:minmax(0,1fr)}}
+.sc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(15.5rem,1fr));gap:16px}
+.sc-card{display:flex;flex-direction:column;gap:12px;padding:14px;border:1px solid var(--line);border-radius:14px;background:var(--board);box-shadow:var(--card);transition:border-color .15s,box-shadow .15s,transform .15s var(--ease)}
+.sc-card.is-text{grid-column:1/-1}
+.sc-card.is-changed{border-color:color-mix(in srgb,var(--warn) 55%,var(--line))}
+.sc-card.is-drag{border-color:var(--primary);box-shadow:0 0 0 3px color-mix(in srgb,var(--primary) 22%,transparent);transform:scale(1.015)}
+.sc-card header{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.sc-card h3{margin:0;font-size:14px;font-weight:700;color:var(--s-dark)}.dark .sc-card h3{color:var(--ink)}
+.sc-card header p{margin:2px 0 0;font-size:12px;color:var(--ink-m)}
+.sc-card footer{display:flex;justify-content:flex-end}
+.sc-pic{position:relative;display:block;aspect-ratio:4/3;border-radius:10px;overflow:hidden;cursor:pointer;background:repeating-conic-gradient(var(--head) 0 25%,var(--board) 0 50%) 0 0/16px 16px;border:1px solid var(--line)}
+.sc-pic img,.sc-pic video{width:100%;height:100%;object-fit:contain;display:block;transition:transform .4s var(--ease)}
+.sc-pic:hover img,.sc-pic:hover video{transform:scale(1.04)}
+.sc-pic .over{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:12px;text-align:center;font-size:12.5px;font-weight:600;color:#fff;background:rgb(21 22 24/.62);opacity:0;transition:opacity .18s}
+.sc-pic:hover .over,.sc-pic:focus-within .over,.is-drag .sc-pic .over,.sc-pic .over.busy{opacity:1}
+.sc-pic:focus-within{outline:2px solid var(--primary);outline-offset:2px}
+.sc-pic .over svg{width:24px;height:24px}
+.sc-text{display:grid;gap:10px}
+.sc-live{position:sticky;top:76px;border:1px solid var(--line);border-radius:14px;background:var(--board);box-shadow:var(--card);padding:12px}
+.sc-live .bar{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}
+.sc-live .stage{position:relative;margin:0 auto;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--head);transition:width .35s var(--ease);width:100%;height:min(68vh,640px)}
+.sc-live .stage.phone{width:min(100%,19.5rem);border-radius:22px;border-width:6px;border-color:var(--s-dark)}
+.sc-live iframe{width:100%;height:100%;border:0;background:#fff;display:block}
+.sc-live .load{position:absolute;inset:0;z-index:1;display:grid;place-content:center;justify-items:center;gap:6px;color:var(--ink-m);background:var(--head);font-size:13px}
+@media (prefers-reduced-motion:reduce){.sc-card,.sc-stage,.sc-pic img,.sc-pic video,.sc-live .stage{transition:none}}
+[x-cloak]{display:none!important}

@@ -9,7 +9,7 @@
     line in place of the form.
 --}}
 <div class="locked-gate">
-    <img class="locked-gate__image" src="/images/micro/locked-projects-bg.png" width="5504" height="3072" alt="">
+    <img class="locked-gate__image" src="{{ \App\Support\Site\SiteContent::image('micro.locked_background') }}" width="5504" height="3072" alt="">
     <div class="locked-gate__content">
         <p class="locked-gate__notice">
             <span>This section contains private information</span>

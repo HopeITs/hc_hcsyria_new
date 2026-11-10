@@ -123,7 +123,7 @@ new #[Layout('layouts::app', [
         <div class="px-3">
             <x-ui.reveal :ms="1000" class="showcase">
                 <div class="showcase__half">
-                    <img class="showcase__photo" src="/images/mission/Responsibility.jpg" alt="">
+                    <img class="showcase__photo" src="{{ \App\Support\Site\SiteContent::image('who-we-are.mission_photo') }}" alt="">
                     <img class="torn-edge" src="/images/home/image-mask.png" alt="">
                 </div>
                 <div class="showcase__half">

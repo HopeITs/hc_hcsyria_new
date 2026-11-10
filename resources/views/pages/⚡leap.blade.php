@@ -223,7 +223,7 @@ new #[Layout('layouts::app', [
         <div class="flex flex-col items-center justify-center">
             <x-ui.section-title class="mt-4 pb-0">Steps</x-ui.section-title>
         </div>
-        <img class="block w-full px-3" src="/images/home/steps.jpg" alt="Steps">
+        <img class="block w-full px-3" src="{{ \App\Support\Site\SiteContent::image('leap.steps_image') }}" alt="Steps">
     </x-ui.reveal>
 
     @if ($hasActivities)

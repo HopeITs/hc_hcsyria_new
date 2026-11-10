@@ -48,6 +48,8 @@ Route::prefix('admin')->name('admin.')->middleware(['web', 'auth', 'admin.access
     Route::livewire('/roots/{edition}/edit', 'pages::admin.roots.form')->whereNumber('edition')->name('roots.edit');
     Route::livewire('/roots/{edition}', 'pages::admin.roots.show')->whereNumber('edition')->name('roots.show');
 
+    Route::livewire('/site', 'pages::admin.site')->name('site');
+
     Route::livewire('/reports', 'pages::admin.reports')->name('reports');
     Route::get('/reports/{report}.csv', ReportExportController::class)->name('reports.export');
 

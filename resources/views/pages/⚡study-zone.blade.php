@@ -157,7 +157,7 @@ new #[Layout('layouts::app', [
                 'label' => 'Social',
                 'title' => 'Social Zone',
                 'color' => '#F99D1C',
-                'image' => '/images/home/zone-categories.jpg',
+                'image' => \App\Support\Site\SiteContent::image('study-zone.social_image'),
                 'lines' => [
                     ['ms' => 300, 'text' => 'Designated for small group study and permits study and'],
                     ['ms' => 600, 'text' => 'project-related discussions without causing disturbance to others.'],
@@ -174,7 +174,7 @@ new #[Layout('layouts::app', [
                 'label' => 'Quiet',
                 'title' => 'Quiet Zone',
                 'color' => '#414042',
-                'image' => '/images/home/zone-categories.jpg',
+                'image' => \App\Support\Site\SiteContent::image('study-zone.quiet_image'),
                 'lines' => [
                     ['ms' => 300, 'text' => 'Intended for individuals who wish to study in a quiet setting,'],
                     ['ms' => 500, 'text' => 'with the option of brief and subdued conversations.'],
@@ -192,7 +192,7 @@ new #[Layout('layouts::app', [
                 'label' => 'Silent',
                 'title' => 'Silent Zone',
                 'color' => '#BC1818',
-                'image' => '/images/home/zone-categories.jpg',
+                'image' => \App\Support\Site\SiteContent::image('study-zone.silent_image'),
                 'lines' => [
                     ['ms' => 300, 'text' => 'Designated for those who prefer to study alone without any talking.'],
                     ['ms' => 500, 'text' => 'All cellphones must be put on silent or on vibrate mode,'],
