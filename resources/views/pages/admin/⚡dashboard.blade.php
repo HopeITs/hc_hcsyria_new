@@ -10,6 +10,7 @@ use App\Queries\AdminDashboardQuery;
 use App\Queries\AdminInitiativeIndexQuery;
 use App\Queries\AdminNewsIndexQuery;
 use App\Queries\AdminProjectIndexQuery;
+use App\Queries\AdminStatisticsQuery;
 use App\Queries\AdminSuccessIndexQuery;
 use App\Support\Admin\WorkQueue;
 use Illuminate\Support\Facades\Auth;
@@ -78,8 +79,21 @@ new #[Layout('layouts::admin', ['title' => 'Dashboard'])] class extends Componen
         $dashboard = new AdminDashboardQuery($places);
         $queue = WorkQueue::for($user);
         $may = fn (AdminCapability $capability): bool => AdminAccessQuery::can($user, $capability);
+        $stats = new AdminStatisticsQuery($places);
+        $reports = $may(AdminCapability::ViewReports);
 
         return [
+            // Work that is stuck, for everyone; money, people and readers only for those who see reports.
+            'attention' => $stats->attention(),
+            'reports' => $reports,
+            'funding' => $reports ? $stats->funding() : null,
+            'fundedPerMonth' => $reports ? $stats->fundedPerMonth() : collect(),
+            'beneficiaries' => $reports ? $stats->beneficiaries() : null,
+            'subscribers' => $reports ? $stats->subscribers() : null,
+            'topPages' => $reports ? $stats->topPages() : collect(),
+            'topArticles' => $reports ? $stats->topArticles() : collect(),
+            'team' => $may(AdminCapability::ViewLog) ? $stats->teamActivity() : collect(),
+            'currency' => (string) config('hcsyria.currency'),
             'queue' => $queue,
             'queueRows' => AdminProjectIndexQuery::make()->limitedTo($places)->tab($queue['tab'])->paginate(self::QUEUE_SIZE)->items(),
             'queueTotal' => $counts[$queue['tab']],
@@ -106,6 +120,45 @@ new #[Layout('layouts::admin', ['title' => 'Dashboard'])] class extends Componen
             @endif
         </x-slot:actions>
     </x-admin.page-header>
+
+    <div class="tiles">
+        <x-admin.stat-tile label="Funded, not published" :value="number_format($attention['unpublished'])" icon="folder" :tone="$attention['unpublished'] > 0 ? 'warn' : 'good'" :hint="$attention['oldest_days'] !== null ? 'Oldest has waited '.number_format($attention['oldest_days']).' days' : 'Nothing is waiting'" :href="route('admin.projects.index', ['tab' => 'pending'])" />
+        <x-admin.stat-tile label="Waiting for English check" :value="number_format($attention['english'])" icon="edit" :tone="$attention['english'] > 0 ? 'warn' : 'good'" :href="route('admin.projects.index', ['tab' => 'english'])" />
+        <x-admin.stat-tile label="Online without photos" :value="number_format($attention['photos'])" icon="warn" :tone="$attention['photos'] > 0 ? 'crit' : 'good'" :href="route('admin.projects.index', ['tab' => 'nophoto'])" />
+        <x-admin.stat-tile label="Hidden projects" :value="number_format($attention['hidden'])" icon="log" :href="route('admin.projects.index', ['tab' => 'hidden'])" />
+    </div>
+
+    @if ($reports)
+        <div class="tiles">
+            <x-admin.stat-tile label="Money donated" :value="number_format($funding['donated'])" :hint="$currency.' · '.number_format($funding['share'], 0).'% of '.number_format($funding['needed'])" icon="trophy" tone="good" />
+            <x-admin.stat-tile label="Still missing" :value="number_format($funding['missing'])" :hint="$currency" icon="warn" :tone="$funding['missing'] > 0 ? 'warn' : 'good'" />
+            <x-admin.stat-tile label="People reached" :value="number_format($beneficiaries['people'])" :hint="number_format($beneficiaries['families']).' families · '.$beneficiaries['average_family'].' per family'" icon="users" />
+            <x-admin.stat-tile label="Days, funded to online" :value="$funding['avg_days_to_publish'] === null ? 'No data' : number_format($funding['avg_days_to_publish'], 0)" hint="Average, published projects" icon="spark" />
+        </div>
+
+        <div class="cols" style="grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr))">
+            <x-admin.panel title="Projects funded, last 12 months">
+                <x-admin.bar-list :rows="$fundedPerMonth" label="month" value="projects" empty="No funded projects in the last year." />
+            </x-admin.panel>
+            <x-admin.panel title="Readers of the site">
+                <x-admin.bar-list :rows="$topPages" label="page" value="views" empty="No page views are counted yet." />
+                <div class="mt" style="padding: 0 16px 14px">
+                    <span class="muted">Newsletter: <b class="tnum">{{ number_format($subscribers['active']) }}</b> active · <b class="tnum">{{ number_format($subscribers['new_week']) }}</b> new this week ({{ number_format($subscribers['previous_week']) }} the week before)</span>
+                </div>
+            </x-admin.panel>
+            <x-admin.panel title="Most read newsletter items">
+                <x-admin.bar-list :rows="$topArticles" label="title" value="views" suffix=" views" empty="No newsletter item has been read yet." />
+            </x-admin.panel>
+        </div>
+
+        <p style="margin: 0"><a href="{{ route('admin.reports') }}" wire:navigate class="btn btn-o s"><x-admin.icon name="log" />Open the reports</a> <span class="muted">for funding by city, donor and category, beneficiaries, and CSV downloads.</span></p>
+    @endif
+
+    @if ($team->isNotEmpty())
+        <x-admin.panel title="Team activity, last 7 days">
+            <x-admin.bar-list :rows="$team" label="name" value="actions" suffix=" actions" />
+        </x-admin.panel>
+    @endif
 
     <x-admin.panel title="Online micro projects by city" :count="number_format($counts['online'])">
         <div class="cities">

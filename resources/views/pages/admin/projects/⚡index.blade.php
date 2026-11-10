@@ -101,6 +101,7 @@ new #[Layout('layouts::admin', ['title' => 'Micro projects'])] class extends Com
 <div class="stack">
     <x-admin.page-header title="Micro projects" :count="number_format($counts['all'])" subtitle="Everything on the public micro-projects page, and what is waiting to go there.">
         <x-slot:actions>
+            <a href="{{ route('admin.projects.export', array_filter(['search' => $search, 'city' => $city, 'category' => $category, 'donor' => $donor, 'tab' => $tab !== 'all' ? $tab : ''])) }}" class="btn btn-o" download><x-admin.icon name="doc" />Download CSV</a>
             <a href="/projects/micro-projects" target="_blank" rel="noopener" class="btn btn-o"><x-admin.icon name="ext" />View public page</a>
             @if ($create)
                 <a href="{{ route('admin.projects.create') }}" wire:navigate class="btn btn-p"><x-admin.icon name="plus" />New project</a>

@@ -49,6 +49,7 @@ final class Navigation
             [
                 'heading' => 'Administration',
                 'items' => [
+                    ['label' => 'Reports', 'icon' => 'doc', 'route' => 'admin.reports', 'active' => 'admin.reports*', 'badge' => null, 'can' => Gate::forUser($user)->allows('admin.'.AdminCapability::ViewReports->value)],
                     ['label' => 'Users', 'icon' => 'users', 'route' => 'admin.users.index', 'active' => 'admin.users.*', 'badge' => null, 'can' => Gate::forUser($user)->allows('admin.'.AdminCapability::ManageUsers->value)],
                     ['label' => 'Activity log', 'icon' => 'log', 'route' => 'admin.log', 'active' => 'admin.log', 'badge' => null, 'can' => Gate::forUser($user)->allows('admin.'.AdminCapability::ViewLog->value)],
                 ],

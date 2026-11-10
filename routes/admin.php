@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Admin\ListExportController;
+use App\Http\Controllers\Admin\ReportExportController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,6 +16,9 @@ Route::prefix('admin')->name('admin.')->middleware(['web', 'auth', 'admin.access
     // Legacy's dashboard address was /admin/home; /admin leads there.
     Route::redirect('/', '/admin/home');
     Route::livewire('/home', 'pages::admin.dashboard')->name('dashboard');
+
+    Route::get('/projects.csv', [ListExportController::class, 'projects'])->name('projects.export');
+    Route::get('/news/subscribers.csv', [ListExportController::class, 'subscribers'])->name('news.subscribers.export');
 
     Route::livewire('/projects', 'pages::admin.projects.index')->name('projects.index');
     Route::livewire('/projects/create', 'pages::admin.projects.form')->name('projects.create');
@@ -42,6 +47,9 @@ Route::prefix('admin')->name('admin.')->middleware(['web', 'auth', 'admin.access
     Route::livewire('/roots/create', 'pages::admin.roots.form')->name('roots.create');
     Route::livewire('/roots/{edition}/edit', 'pages::admin.roots.form')->whereNumber('edition')->name('roots.edit');
     Route::livewire('/roots/{edition}', 'pages::admin.roots.show')->whereNumber('edition')->name('roots.show');
+
+    Route::livewire('/reports', 'pages::admin.reports')->name('reports');
+    Route::get('/reports/{report}.csv', ReportExportController::class)->name('reports.export');
 
     Route::livewire('/log', 'pages::admin.log')->name('log');
     Route::livewire('/users', 'pages::admin.users.index')->name('users.index');
