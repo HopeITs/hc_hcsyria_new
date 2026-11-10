@@ -17,7 +17,9 @@
     };
 @endphp
 
-@php($arranging = \App\Support\Site\SiteContent::arranging())
+@php
+    $arranging = \App\Support\Site\SiteContent::arranging();
+@endphp
 <div {{ $attributes->class('funders') }}>
     <div class="px-3">
         <x-ui.reveal :ms="600" class="flex flex-col items-center justify-center">
