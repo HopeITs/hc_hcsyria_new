@@ -450,3 +450,18 @@ it('lets the editor drag logos into a new order', function () {
 
     expect($page)->toContain("addEventListener('dragstart'")->toContain("type: 'order'")->toContain('Drag to reorder');
 });
+
+it('draws the funders of a programme, in the order given, with and without the editor', function () {
+    $logo = fn (int $id): object => (object) ['id' => $id, 'name' => "Funder $id", 'logo' => "/images/logos/f$id.png"];
+    $draw = fn () => Blade::render('<x-site.funders :ongoing="$ongoing" :previous="$previous" page="/projects/disc" class="more"/>', ['ongoing' => collect([$logo(3), $logo(7)]), 'previous' => collect([$logo(9)])]);
+
+    $plain = $draw();
+    expect($plain)->toContain('Funder 3')->toContain('Funder 9')->toContain('class="funders more"')->not->toContain('data-sc-item');
+
+    $this->actingAs(staff('Publisher'))->postJson('/site-edit/order', ['group' => '/projects/disc:ongoing', 'ids' => [7, 3]])->assertOk();
+    $this->get('/projects/disc?sc-edit=1');
+    $marked = $draw();
+
+    expect($marked)->toContain('data-sc-group="/projects/disc:ongoing"')->toContain('data-sc-item="7"')
+        ->and(strpos($marked, 'Funder 7'))->toBeLessThan(strpos($marked, 'Funder 3'));
+});
