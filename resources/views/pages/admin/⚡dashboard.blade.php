@@ -115,7 +115,6 @@ new #[Layout('layouts::admin', ['title' => 'Dashboard'])] class extends Componen
             'topPages' => $reports ? $stats->topPages() : collect(),
             'topArticles' => $reports ? $stats->topArticles() : collect(),
             'team' => $log ? $stats->teamActivity() : collect(),
-            'recent' => $log ? $dashboard->recentActivity() : collect(),
             'currency' => (string) config('hcsyria.currency'),
             'queue' => $queue,
             'queueRows' => AdminProjectIndexQuery::make()->limitedTo($places)->tab($queue['tab'])->paginate(self::QUEUE_SIZE)->items(),
@@ -255,12 +254,6 @@ new #[Layout('layouts::admin', ['title' => 'Dashboard'])] class extends Componen
             @if ($team->isNotEmpty())
                 <x-admin.panel title="Team activity, last 7 days" icon="users">
                     <x-admin.bar-list :rows="$team" label="name" value="actions" suffix=" actions" />
-                </x-admin.panel>
-            @endif
-
-            @if ($recent->isNotEmpty())
-                <x-admin.panel title="Recent changes" icon="log">
-                    <x-admin.activity-feed :rows="$recent" />
                 </x-admin.panel>
             @endif
         </div>
