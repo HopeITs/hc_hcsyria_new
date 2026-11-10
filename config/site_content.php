@@ -22,6 +22,18 @@ $card = fn (string $name, string $title, string $image, string $text): array => 
 ];
 
 return [
+    /*
+     * Pictures in the page that the visual editor does not offer to swap, by pattern on the address:
+     * the ones staff already manage elsewhere (projects, news, successes, an initiative's own gallery,
+     * roots of hope), icons, the torn-edge mask and our own uploads.
+     */
+    'not_swappable' => [
+        '~^/images/(projects[a-z_]*|successes|news|rootsofhope|covers|site)/~i',
+        '~^/images/initiatives/[^/]+/\d+/~i',
+        '~^/images/ico/~i',
+        '~image-mask~i',
+    ],
+
     'pages' => [
         'home' => [
             'label' => 'Home',

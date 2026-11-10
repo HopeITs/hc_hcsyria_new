@@ -2,10 +2,12 @@
 
 namespace App\Http\Middleware;
 
+use App\Enums\AdminCapability;
 use App\Support\Site\PageText;
 use App\Support\Site\SiteContent;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Symfony\Component\HttpFoundation\Response;
 
 /*
@@ -27,6 +29,15 @@ class ApplySiteText
 
         $page = '/'.trim($request->path(), '/');
         $changes = SiteContent::textFor($page);
+
+        // The visual editor: staff who may change the site get the page marked up, with the editor inside it.
+        if ($request->boolean('sc-edit') && Gate::allows('admin.'.AdminCapability::ManageSite->value)) {
+            $html = PageText::decorate((string) $response->getContent(), $changes, $page, SiteContent::slotAddresses());
+            $editor = view('site.editor')->render();
+            $html = str_contains($html, '</body>') ? str_replace('</body>', $editor.'</body>', $html) : $html.$editor;
+
+            return $response->setContent($html)->withHeaders(['Cache-Control' => 'no-store, private']);
+        }
 
         if ($changes !== []) {
             $response->setContent(PageText::rewrite((string) $response->getContent(), $changes, $page));

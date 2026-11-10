@@ -113,6 +113,25 @@ class ManageSiteContent
         $this->store($key, $text, $by, 'Words changed', $original);
     }
 
+    /**
+     * Swap one of the page's own pictures, for that page alone ($where is its address, or "*" for a
+     * picture in the menu, header or footer). $src is the picture's address as the page draws it.
+     *
+     * @throws AdminActionRefused
+     */
+    public function replacePageImage(string $where, string $src, UploadedFile $file, User $by): void
+    {
+        $known = $where === '*' || collect((array) config('site_content.pages'))->contains(fn (array $page): bool => $page['url'] === $where);
+
+        if (! $known || ! PageText::swappable($src)) {
+            throw new AdminActionRefused('slot_unknown');
+        }
+
+        $path = PhotoFiles::storeOne((string) $file->getRealPath(), '/images/site', [2400, 2400], cover: false, suffix: '-'.Str::lower(Str::random(4)), keepAlpha: true);
+
+        $this->store(PageText::imageKey($where, $src), $path, $by, 'Picture changed', $src);
+    }
+
     /** Back to the original. Nothing to do when nothing was changed. */
     public function reset(string $key, User $by): void
     {
@@ -124,7 +143,7 @@ class ManageSiteContent
         }
 
         DB::table('site_contents')->where('slot', $key)->delete();
-        $this->forget((string) $old);
+        $this->forget($key, (string) $old);
         app(SiteContent::class)->refresh();
 
         $this->log->record($by, WriteActivityLog::SITE, $this->logId($key), 'Site content reset: '.$key, $old);
@@ -141,7 +160,7 @@ class ManageSiteContent
         );
 
         if ($old !== null && $old !== $value) {
-            $this->forget((string) $old);
+            $this->forget($key, (string) $old);
         }
 
         app(SiteContent::class)->refresh();
@@ -155,8 +174,8 @@ class ManageSiteContent
      */
     private function slot(string $key, ?string $kind = null): array
     {
-        // A rewritten line of text has no slot in the config: its key says what it is.
-        if (str_starts_with($key, 'text:')) {
+        // A rewritten line of text or a swapped picture has no slot in the config: its key says what it is.
+        if (str_starts_with($key, 'text:') || str_starts_with($key, 'img:')) {
             return ['type' => 'line'];
         }
 
@@ -172,8 +191,13 @@ class ManageSiteContent
     }
 
     /** A file we stored goes with its row; only our own folders are ever touched. */
-    private function forget(string $value): void
+    private function forget(string $key, string $value): void
     {
+        // Only a picture or film we stored has a file; a line of words is never a path.
+        if (str_starts_with($key, 'text:')) {
+            return;
+        }
+
         if (str_starts_with($value, '/images/site/')) {
             PhotoFiles::delete($value);
         } elseif (str_starts_with($value, '/video/site/')) {
