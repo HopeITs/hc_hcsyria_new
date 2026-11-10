@@ -2,6 +2,7 @@
 
 use App\Actions\RecordPageView;
 use App\Support\Device;
+use App\Support\Site\SiteContent;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 
@@ -38,58 +39,58 @@ new #[Layout('layouts::app', [
             [
                 'year' => '2024',
                 'name' => 'LEAP',
-                'text' => 'The LEAP is designed to empower a new generation of young Syrian Christian leaders who live out their faith with integrity, insight, and empathy.Through a dynamic and values-driven approuch, that will help..',
+                'text' => SiteContent::text('home.leap_text'),
                 'href' => '/projects/leap',
-                'image' => '/images/home/LEAP.jpg',
+                'image' => SiteContent::image('home.leap_image'),
             ],
             [
                 'year' => '2023',
                 'name' => 'Rehabilitation',
-                'text' => 'Distorted financial capacities were followed by an earthquake that shook the infrastructure of the country, rehabilitating family residencies became the first step to re-normalizing life…',
+                'text' => SiteContent::text('home.rehabilitation_text'),
                 'href' => '/projects/rehabilitation',
-                'image' => '/images/home/Reh.jpg',
+                'image' => SiteContent::image('home.rehabilitation_image'),
             ],
             [
                 'year' => '2022',
                 'name' => 'Children University',
-                'text' => 'Children were the youngest victims of war, which took a toll on their healthy upbringing, our child-friendly space is a lighthouse that promotes social-emotional health besides educational development…',
+                'text' => SiteContent::text('home.children_university_text'),
                 'href' => '/projects/childrenuni',
-                'image' => '/images/home/CU.jpg',
+                'image' => SiteContent::image('home.children_university_image'),
             ],
             [
                 'year' => '2019',
                 'name' => 'School to School',
-                'text' => 'The road to shaping the future generation of the country was paved with financial hardships jeopardizing the educational process, Polish schools helped schools in need with equipment and teachers training…',
+                'text' => SiteContent::text('home.school_to_school_text'),
                 'href' => '/projects/school-to-school',
-                'image' => '/images/home/S2S.jpg',
+                'image' => SiteContent::image('home.school_to_school_image'),
             ],
             [
                 'year' => '2018',
                 'name' => 'Family To Family',
-                'text' => 'Families suffered to make ends meet amid a very sharp increase in the prices of daily commodities, which is why Polish families started supporting vulnerable families through monthly cash aid…',
+                'text' => SiteContent::text('home.family_to_family_text'),
                 'href' => '/projects/family-to-family',
-                'image' => '/images/home/F2F.jpg',
+                'image' => SiteContent::image('home.family_to_family_image'),
             ],
             [
                 'year' => '2018',
                 'name' => 'Micro Project',
-                'text' => 'Family providers lost their livelihoods, becoming unable to generate an income, our program aimed to facilitate vocational recovery and encourage beneficiaries’ financial independence…',
+                'text' => SiteContent::text('home.micro_project_text'),
                 'href' => '/projects/micro-projects',
-                'image' => '/images/home/MP.jpg',
+                'image' => SiteContent::image('home.micro_project_image'),
             ],
             [
                 'year' => '2016',
                 'name' => 'DISC',
-                'text' => 'Our training program focuses on equipping university graduates with job skills they lack sought by all employers and helping them land job opportunities to establish sustainable careers…',
+                'text' => SiteContent::text('home.disc_text'),
                 'href' => '/projects/disc',
-                'image' => '/images/home/DISC.jpg',
+                'image' => SiteContent::image('home.disc_image'),
             ],
             [
                 'year' => '2013',
                 'name' => 'Study Zone',
-                'text' => 'The scarcity of electricity disrupted university student\'s ability to complete their academic careers, what they truly needed, was a study-friendly environment equipped with basic amenities...',
+                'text' => SiteContent::text('home.study_zone_text'),
                 'href' => '/projects/study-zone',
-                'image' => '/images/home/SZ.jpg',
+                'image' => SiteContent::image('home.study_zone_image'),
             ],
         ];
     }
@@ -101,16 +102,16 @@ new #[Layout('layouts::app', [
     <section class="home-cover {{ $phone ? 'home-cover--phone' : 'home-cover--desktop' }}" x-data @contextmenu.prevent>
         <div class="home-cover__frame">
             @if ($phone)
-                <img class="home-cover__photo" src="/images/home/roots-cover-mobile.jpg"
+                <img class="home-cover__photo" src="{{ \App\Support\Site\SiteContent::image('home.cover_mobile') }}"
                      alt="Roots of Hope — stories of hope, faith &amp; heritage" width="1080" height="1920">
                 <a href="/rootsofhope" class="home-cover__magazine" aria-label="Read Roots of Hope magazine">
-                    <img src="/images/home/roots-magazine-mobile.png" alt="Roots of Hope magazine cover" width="349" height="478">
+                    <img src="{{ \App\Support\Site\SiteContent::image('home.magazine_mobile') }}" alt="Roots of Hope magazine cover" width="349" height="478">
                 </a>
             @else
-                <img class="home-cover__photo" src="/images/home/roots-cover-desktop.jpg"
+                <img class="home-cover__photo" src="{{ \App\Support\Site\SiteContent::image('home.cover_desktop') }}"
                      alt="Roots of Hope — stories of hope, faith &amp; heritage" width="3000" height="1553">
                 <a href="/rootsofhope" class="home-cover__magazine" aria-label="Read Roots of Hope magazine">
-                    <img src="/images/home/roots-magazine-desktop.png" alt="Roots of Hope magazine cover" width="441" height="624">
+                    <img src="{{ \App\Support\Site\SiteContent::image('home.magazine_desktop') }}" alt="Roots of Hope magazine cover" width="441" height="624">
                 </a>
             @endif
         </div>
@@ -130,7 +131,7 @@ new #[Layout('layouts::app', [
 
                 <div>
                     <video class="home-matters__video" playsinline muted autoplay loop>
-                        <source src="/images/home/matters.mp4" type="video/mp4">
+                        <source src="{{ \App\Support\Site\SiteContent::video('home.matters_video') }}" type="video/mp4">
                     </video>
                 </div>
             </div>

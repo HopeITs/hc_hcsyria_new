@@ -44,6 +44,7 @@ final class Navigation
                     ['label' => 'Successes', 'icon' => 'trophy', 'route' => 'admin.successes.index', 'active' => 'admin.successes.*', 'badge' => self::pending($user, fn (): int => AdminSuccessIndexQuery::make()->counts()['pending']), 'can' => Gate::forUser($user)->allows('viewAny', Success::class)],
                     ['label' => 'Newsletter', 'icon' => 'news', 'route' => 'admin.news.index', 'active' => 'admin.news.*', 'badge' => self::pending($user, fn (): int => AdminNewsIndexQuery::make()->counts()['pending']), 'can' => Gate::forUser($user)->allows('viewAny', News::class)],
                     ['label' => 'Roots of Hope', 'icon' => 'book', 'route' => 'admin.roots.index', 'active' => 'admin.roots.*', 'badge' => self::pending($user, fn (): int => AdminRootsQuery::make()->counts()['pending']), 'can' => Gate::forUser($user)->allows('viewAny', RootsOfHope::class)],
+                    ['label' => 'Site content', 'icon' => 'img', 'route' => 'admin.site', 'active' => 'admin.site', 'badge' => null, 'can' => Gate::forUser($user)->allows('admin.'.AdminCapability::ManageSite->value)],
                 ],
             ],
             [

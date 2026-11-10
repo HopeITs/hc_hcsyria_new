@@ -81,7 +81,7 @@ new #[Layout('layouts::app', [
             [
                 'label' => 'English|Skills',
                 'title' => 'English Skills',
-                'image' => '/images/initiatives/DISC/courses/english.jpg',
+                'image' => \App\Support\Site\SiteContent::image('disc.english_image'),
                 'lines' => [
                     ['ms' => 300, 'text' => 'Fluency in English is essential to access more opportunities and have a successful career.'],
                     ['ms' => 600, 'text' => 'Our goal is to create a positive and exciting learning environment where students'],
@@ -94,7 +94,7 @@ new #[Layout('layouts::app', [
             [
                 'label' => 'Computer|Skills',
                 'title' => 'Computer Skills',
-                'image' => '/images/initiatives/DISC/courses/computer.jpg',
+                'image' => \App\Support\Site\SiteContent::image('disc.computer_image'),
                 'lines' => [
                     ['ms' => 600, 'text' => 'These sessions aid in the development of digital skills, fostering confidence,'],
                     ['ms' => 800, 'text' => 'and keeping participants up-to-date with the latest software.'],
@@ -105,7 +105,7 @@ new #[Layout('layouts::app', [
             [
                 'label' => 'Accompaniment',
                 'title' => 'Accompaniment',
-                'image' => '/images/initiatives/DISC/courses/compan.jpg',
+                'image' => \App\Support\Site\SiteContent::image('disc.accompaniment_image'),
                 'lines' => [
                     ['ms' => 600, 'text' => 'The program aims to foster individuals in personal growth'],
                     ['ms' => 800, 'text' => 'the youth by promoting self-awareness and development.'],
@@ -119,7 +119,7 @@ new #[Layout('layouts::app', [
             [
                 'label' => 'Employability|Skills',
                 'title' => 'Employability Skills',
-                'image' => '/images/initiatives/DISC/courses/skills.jpg',
+                'image' => \App\Support\Site\SiteContent::image('disc.employability_image'),
                 'lines' => [
                     ['ms' => 600, 'text' => 'A seriese of training sessions focusing on crucial interpersonal skills'],
                     ['ms' => 800, 'text' => 'to assist individuals in securing employment and thriving in professional settings.'],

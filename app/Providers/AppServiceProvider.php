@@ -17,6 +17,7 @@ use App\Policies\SuccessPolicy;
 use App\Queries\AdminAccessQuery;
 use App\Queries\MemberAccessQuery;
 use Illuminate\Cache\RateLimiting\Limit;
+use App\Support\Site\SiteContent;
 use Illuminate\Console\Events\CommandStarting;
 use Illuminate\Contracts\Console\Kernel as ConsoleKernel;
 use Illuminate\Database\Events\MigrationsStarted;
@@ -71,7 +72,8 @@ class AppServiceProvider extends ServiceProvider
 
     public function register(): void
     {
-        //
+        // What staff changed on the public pages, read once per request (and once per test).
+        $this->app->scoped(SiteContent::class);
     }
 
     public function boot(): void

@@ -91,7 +91,7 @@ new #[Layout('layouts::app', [
 
         <div class="news-hero">
             <div class="news-hero__photo">
-                <img class="news-hero__image" src="{{ $cover?->image_path ?? '/images/our-news/header-image.jpg' }}" alt="Header">
+                <img class="news-hero__image" src="{{ $cover?->image_path ?? \App\Support\Site\SiteContent::image('news.header_image') }}" alt="Header">
                 @if (! empty($cover?->caption))
                     <div class="news-hero__caption">{{ $cover->caption }}</div>
                 @endif
@@ -111,7 +111,7 @@ new #[Layout('layouts::app', [
             <div class="news-top__magazine">
                 @if ($hasEdition)
                     <a href="/rootsofhope" class="news-magazine">
-                        <img src="/images/our-news/roots-of-hope-magazine.png" alt="Roots of Hope Magazine" class="news-magazine__image">
+                        <img src="{{ \App\Support\Site\SiteContent::image('news.magazine_image') }}" alt="Roots of Hope Magazine" class="news-magazine__image">
                     </a>
                 @endif
             </div>

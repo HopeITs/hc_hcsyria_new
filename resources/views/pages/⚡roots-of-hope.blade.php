@@ -47,7 +47,7 @@ new #[Layout('layouts::app', [
     <x-site.page-title title="STORIES OF HOPE, FAITH & HERITAGE" subtitle="roots of hope"/>
 
     <div class="roots-cover">
-        <img class="block w-full" src="/images/rootsofhope/Cover.png" alt="">
+        <img class="block w-full" src="{{ \App\Support\Site\SiteContent::image('roots.banner') }}" alt="">
 
         @if ($latest)
             <img class="roots-cover__edition" src="{{ $latest->image_path }}" alt="">

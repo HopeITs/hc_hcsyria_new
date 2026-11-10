@@ -27,6 +27,9 @@ class WriteActivityLog
     /** New: legacy did not log changes to accounts. */
     public const USERS = 12;
 
+    /** New: changes to the pictures and words of the public pages (Site content). */
+    public const SITE = 40;
+
     public function project(User $by, int $projectId, string $operation, mixed $previous = null, mixed $current = null): void
     {
         $this->item($by, ContentKind::Project, $projectId, $operation, $previous, $current);
