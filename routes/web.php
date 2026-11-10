@@ -67,6 +67,7 @@ Route::livewire('/projects/{type}', 'pages::project-category')->name('public.ini
 Route::middleware(['auth', 'throttle:120,1'])->prefix('site-edit')->name('site-edit.')->group(function (): void {
     Route::post('/text', [SiteEditController::class, 'text'])->name('text');
     Route::post('/file', [SiteEditController::class, 'file'])->name('file');
+    Route::post('/order', [SiteEditController::class, 'order'])->name('order');
     Route::post('/reset', [SiteEditController::class, 'reset'])->name('reset');
 });
 

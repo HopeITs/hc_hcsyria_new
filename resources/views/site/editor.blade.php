@@ -27,11 +27,15 @@
     #sc-bar button{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:6px;padding:8px 11px;border-radius:999px;background:#be1f24;color:#fff;box-shadow:0 2px 8px rgb(0 0 0/.3)}
     #sc-bar button.back{background:#fff;color:#444;border:1px solid #ccc}
     #sc-bar button:hover{filter:brightness(1.1)}
+    #sc-bar .tip{padding:8px 11px;border-radius:999px;background:rgb(21 22 24/.86);color:#fff}
     #sc-hint{position:fixed;z-index:2147483002;left:50%;bottom:14px;transform:translateX(-50%);padding:8px 14px;border-radius:999px;background:rgb(21 22 24/.86);color:#fff;font:500 12.5px/1 system-ui,sans-serif;pointer-events:none;opacity:1;transition:opacity .6s}
     #sc-done{position:fixed;z-index:2147483002;right:14px;bottom:14px;padding:11px 16px;border-radius:999px;background:#1d7a4c;color:#fff!important;font:700 13px/1 system-ui,sans-serif;text-decoration:none!important;box-shadow:0 4px 14px rgb(0 0 0/.3)}
     #sc-toast{position:fixed;z-index:2147483002;right:14px;top:14px;padding:9px 13px;border-radius:10px;background:#1d7a4c;color:#fff;font:600 12.5px/1 system-ui,sans-serif;display:none}
     #sc-toast.bad{background:#be1f24}
     .sc-drop{outline:3px solid #be1f24!important;outline-offset:2px;filter:brightness(.8)}
+    [data-sc-item]{cursor:grab}
+    .sc-dragging{opacity:.35}
+    .sc-over{outline:3px dashed #be1f24!important;outline-offset:4px;border-radius:6px}
     .sc-busy{opacity:.5!important;outline:2px dashed #9a6412}
 </style>
 <div id="sc-box"></div>
@@ -63,6 +67,7 @@
     function local(m) {
         var finish = function (result) { finished(m.id, result); };
         if (m.type === 'text') request('/text', {where: m.where, original: m.original, text: m.text}).then(finish);
+        else if (m.type === 'order') request('/order', {group: m.group, ids: m.ids}).then(function (r) { if (r.ok) location.reload(); else { finish(r); location.reload(); } });
         else if (m.type === 'reset') request('/reset', {key: m.key}).then(function (r) { if (r.ok) location.reload(); else finish(r); });
         else if (m.type === 'image') {
             var send = function (file) {
@@ -102,6 +107,11 @@
         bar.innerHTML = '';
         if (!isText) bar.appendChild(button('Replace picture', function () { pick(el); }));
         if (isText) bar.appendChild(button('✎ Edit text', function () { edit(el); }));
+        var group = el.closest && el.closest('[data-sc-group]');
+        if (group && el.closest('[data-sc-item]')) {
+            var hint = document.createElement('span'); hint.textContent = '⠿ Drag to reorder'; hint.className = 'tip'; bar.appendChild(hint);
+            if (group.hasAttribute('data-sc-c')) bar.appendChild(button('↺ Original order', function () { resetKey(group.getAttribute('data-sc-order-key'), group); }, 'back'));
+        }
         if (changed) bar.appendChild(button('↺ Back to the original', function () { reset(el); }, 'back'));
         bar.style.display = 'flex';
         var top = Math.max(6, r.top - 38), left = Math.min(Math.max(6, r.left), window.innerWidth - bar.offsetWidth - 6);
@@ -204,6 +214,49 @@
         if (!file || (video ? file.type !== 'video/mp4' : !/^image\/(jpeg|png|webp)$/.test(file.type))) { toast(video ? 'That needs an MP4 film' : 'That needs a JPEG, PNG or WebP picture', true); return; }
         pick(t, file);
     }, true);
+    function resetKey(key, el) {
+        var id = ++seq; pending[id] = el;
+        post({type: 'reset', id: id, key: key});
+    }
+
+    // Logos: drag one onto another to put it there. The rest move along; the page is rebuilt when it is saved.
+    var dragItem = null, overItem = null;
+    function itemsOf(group) { return Array.prototype.filter.call(group.children, function (n) { return n.hasAttribute && n.hasAttribute('data-sc-item'); }); }
+    document.querySelectorAll('[data-sc-group]').forEach(function (g) {
+        itemsOf(g).forEach(function (it) { it.setAttribute('draggable', 'true'); it.querySelectorAll('img').forEach(function (i) { i.setAttribute('draggable', 'false'); }); });
+    });
+    function clearOver() { if (overItem) overItem.classList.remove('sc-over'); overItem = null; }
+    document.addEventListener('dragstart', function (e) {
+        var it = e.target.closest && e.target.closest('[data-sc-item]');
+        if (!it || !it.parentNode.hasAttribute('data-sc-group')) return;
+        dragItem = it; it.classList.add('sc-dragging');
+        e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', it.getAttribute('data-sc-item'));
+        box.style.display = 'none'; bar.style.display = 'none';
+    }, true);
+    document.addEventListener('dragover', function (e) {
+        if (!dragItem) return;
+        var t = e.target.closest && e.target.closest('[data-sc-item]');
+        if (!t || t.parentNode !== dragItem.parentNode) { clearOver(); return; }
+        e.preventDefault(); e.dataTransfer.dropEffect = 'move';
+        if (t !== overItem) { clearOver(); if (t !== dragItem) { overItem = t; t.classList.add('sc-over'); } }
+    }, true);
+    document.addEventListener('drop', function (e) {
+        if (!dragItem) return;
+        var t = e.target.closest && e.target.closest('[data-sc-item]'), from = dragItem;
+        if (!t || t === from || t.parentNode !== from.parentNode) return;
+        e.preventDefault(); e.stopPropagation();
+        var group = from.parentNode, list = itemsOf(group), order = list.slice();
+        order.splice(order.indexOf(from), 1);
+        order.splice(order.indexOf(t) + (list.indexOf(from) < list.indexOf(t) ? 1 : 0), 0, from);
+        // Put the logos into the same places in the page in their new order, so a line break after the sixth stays after the sixth.
+        var holes = list.map(function (n) { var h = document.createComment(''); group.insertBefore(h, n); return h; });
+        list.forEach(function (n) { group.removeChild(n); });
+        order.forEach(function (n, i) { group.insertBefore(n, holes[i]); group.removeChild(holes[i]); });
+        var id = ++seq; pending[id] = group;
+        post({type: 'order', id: id, group: group.getAttribute('data-sc-group'), ids: order.map(function (n) { return parseInt(n.getAttribute('data-sc-item'), 10); })});
+    }, true);
+    document.addEventListener('dragend', function () { if (dragItem) dragItem.classList.remove('sc-dragging'); dragItem = null; clearOver(); }, true);
+
     function reset(el) {
         var id = ++seq; pending[id] = el;
         post({type: 'reset', id: id, key: el.getAttribute('data-sc-slot') || el.getAttribute('data-sc-i') || el.getAttribute('data-sc-t')});

@@ -81,13 +81,13 @@ new #[Layout('layouts::app', [
             <livewire:micro-project-list/>
         </div>
         <x-ui.red-rule/>
-        <x-site.funders :ongoing="$ongoing" :previous="$previous"/>
+        <x-site.funders :ongoing="$ongoing" :previous="$previous" page="/projects/micro-projects"/>
     @else
         <div class="locked-section">
             <div class="locked-section__rule"></div>
             <x-site.locked-gate/>
             <div class="locked-section__rule"></div>
-            <x-site.funders :ongoing="$ongoing" :previous="$previous" class="funders--after-gate"/>
+            <x-site.funders :ongoing="$ongoing" :previous="$previous" page="/projects/micro-projects" class="funders--after-gate"/>
         </div>
     @endcan
 

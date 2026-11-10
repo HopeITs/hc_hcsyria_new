@@ -234,6 +234,6 @@ new #[Layout('layouts::app', [
     @endif
 
     <x-ui.red-rule :ms="800"/>
-    <x-site.funders :ongoing="$ongoing" :previous="$previous"/>
+    <x-site.funders :ongoing="$ongoing" :previous="$previous" page="/projects/leap"/>
     <x-ui.red-rule class="red-rule--end"/>
 </div>

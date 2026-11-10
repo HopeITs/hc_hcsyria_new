@@ -132,6 +132,25 @@ class ManageSiteContent
         $this->store(PageText::imageKey($where, $src), $path, $by, 'Picture changed', $src);
     }
 
+    /**
+     * Give a group of logos a new order (the partners strip, a programme's funders). $group is
+     * "<page>:<partners|ongoing|previous>"; $ids are what is in the group, as the page lists them.
+     *
+     * @param  list<int>  $ids
+     *
+     * @throws AdminActionRefused
+     */
+    public function setOrder(string $group, array $ids, User $by): void
+    {
+        $ids = array_values(array_unique(array_map('intval', $ids)));
+
+        if (preg_match('~^(/[A-Za-z0-9/_-]*):(partners|ongoing|previous)$~', $group, $m) !== 1 || ! SiteContent::editablePage($m[1]) || $ids === [] || count($ids) > 200) {
+            throw new AdminActionRefused('slot_unknown');
+        }
+
+        $this->store('order:'.$group, (string) json_encode($ids), $by, 'Logos reordered');
+    }
+
     /** Back to the original. Nothing to do when nothing was changed. */
     public function reset(string $key, User $by): void
     {
@@ -174,8 +193,8 @@ class ManageSiteContent
      */
     private function slot(string $key, ?string $kind = null): array
     {
-        // A rewritten line of text or a swapped picture has no slot in the config: its key says what it is.
-        if (str_starts_with($key, 'text:') || str_starts_with($key, 'img:')) {
+        // A rewritten line of text, a swapped picture or a new order of logos has no slot in the config: its key says what it is.
+        if (str_starts_with($key, 'text:') || str_starts_with($key, 'img:') || str_starts_with($key, 'order:')) {
             return ['type' => 'line'];
         }
 

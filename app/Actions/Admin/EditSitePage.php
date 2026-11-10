@@ -79,7 +79,20 @@ class EditSitePage
         });
     }
 
-    /** Put one thing back: a slot name, or a "text:" or "img:" key. @return array{ok: bool, message: string} */
+    /**
+     * Logos dragged into a new order.
+     *
+     * @param  list<int>  $ids
+     * @return array{ok: bool, message: string}
+     */
+    public function order(string $group, array $ids, User $by): array
+    {
+        $this->need($by, AdminCapability::EditSitePictures);
+
+        return $this->attempt(fn () => $this->site->setOrder($group, $ids, $by));
+    }
+
+    /** Put one thing back: a slot name, or a "text:", "img:" or "order:" key. @return array{ok: bool, message: string} */
     public function reset(string $key, User $by): array
     {
         // What is put back decides who may: words for a line or a text slot, pictures for a picture, logo or film.
@@ -87,7 +100,7 @@ class EditSitePage
         $isText = str_starts_with($key, 'text:') || in_array($slot['type'] ?? null, ['text', 'long'], true);
         $this->need($by, $isText ? AdminCapability::EditSiteWords : AdminCapability::EditSitePictures);
 
-        abort_unless(preg_match('~^(text|img):(\*|/[A-Za-z0-9/_-]*):[a-f0-9]{16}$~', $key) === 1 || SiteContent::slot($key) !== null, 404);
+        abort_unless(preg_match('~^(text|img):(\*|/[A-Za-z0-9/_-]*):[a-f0-9]{16}$~', $key) === 1 || preg_match('~^order:/[A-Za-z0-9/_-]*:(partners|ongoing|previous)$~', $key) === 1 || SiteContent::slot($key) !== null, 404);
 
         return $this->attempt(fn () => $this->site->reset($key, $by));
     }

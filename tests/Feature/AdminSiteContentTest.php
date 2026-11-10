@@ -3,7 +3,9 @@
 use App\Support\Site\PageText;
 use App\Support\Site\SiteContent;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
@@ -384,4 +386,67 @@ it('lets a file be dropped on a picture in the editor', function () {
     $script = $this->actingAs(staff('Publisher'))->get('/who-we-are?sc-edit=1')->getContent();
 
     expect($script)->toContain("addEventListener('drop'")->toContain('sc-drop')->toContain('Click a picture or logo to replace it, or drop a file onto it');
+});
+
+/*
+ * Logos in a new order: the partners strip and a programme's funders, dragged into place on the page.
+ */
+function logos(): Collection
+{
+    return collect([3, 7, 9, 12])->map(fn (int $id): object => (object) ['id' => $id, 'name' => "Partner $id", 'logo' => "/images/logos/p$id.png"]);
+}
+
+it('lays a group of logos out in the order staff gave it, the others after', function () {
+    expect(SiteContent::ordered('/who-we-are:partners', logos())->pluck('id')->all())->toBe([3, 7, 9, 12]);
+
+    DB::table('site_contents')->insert(['slot' => 'order:/who-we-are:partners', 'value' => '[12,3]', 'created_at' => now(), 'updated_at' => now()]);
+    app(SiteContent::class)->refresh();
+
+    expect(SiteContent::order('/who-we-are:partners'))->toBe([12, 3])
+        ->and(SiteContent::ordered('/who-we-are:partners', logos())->pluck('id')->all())->toBe([12, 3, 7, 9])
+        ->and(SiteContent::ordered('/projects/disc:ongoing', logos())->pluck('id')->all())->toBe([3, 7, 9, 12]);
+});
+
+it('shows the partners in that order on the page, and marks them for dragging only while editing', function () {
+    $this->actingAs(staff('Publisher'))->postJson('/site-edit/order', ['group' => '/who-we-are:partners', 'ids' => [12, 9, 7, 3]])->assertOk()->assertJson(['ok' => true]);
+
+    $this->get('/who-we-are');
+    $plain = Blade::render('<x-site.partners :donors="$donors"/>', ['donors' => logos()]);
+    expect($plain)->not->toContain('data-sc-item');
+    preg_match_all('~/images/logos/p(\d+)\.png~', $plain, $found);
+    expect(array_map('intval', $found[1]))->toBe([12, 9, 7, 3]);
+
+    $this->get('/who-we-are?sc-edit=1');
+    $marked = Blade::render('<x-site.partners :donors="$donors"/>', ['donors' => logos()]);
+    expect($marked)->toContain('data-sc-group="/who-we-are:partners"')->toContain('data-sc-item="12"')->toContain('data-sc-c="1"');
+});
+
+it('keeps the order to whoever may change pictures, and puts the original back', function () {
+    $body = ['group' => '/who-we-are:partners', 'ids' => [3, 7]];
+
+    $this->actingAs(staff('English Checker'))->postJson('/site-edit/order', $body)->assertForbidden();
+    $this->actingAs(staff('Publisher'))->postJson('/site-edit/order', $body)->assertOk()->assertJson(['ok' => true]);
+    expect(DB::table('site_contents')->where('slot', 'order:/who-we-are:partners')->value('value'))->toBe('[3,7]');
+
+    $this->actingAs(staff('English Checker'))->postJson('/site-edit/reset', ['key' => 'order:/who-we-are:partners'])->assertForbidden();
+    $this->actingAs(staff('Photos Editor'))->postJson('/site-edit/reset', ['key' => 'order:/who-we-are:partners'])->assertOk();
+    expect(DB::table('site_contents')->count())->toBe(0);
+
+    // A group that is not one of the strips, or a page that cannot be edited, is refused.
+    $this->actingAs(staff('Admin'))->postJson('/site-edit/order', ['group' => '/nowhere:partners', 'ids' => [1]])->assertJson(['ok' => false]);
+    $this->postJson('/site-edit/order', ['group' => '/who-we-are:everything', 'ids' => [1]])->assertJson(['ok' => false]);
+    $this->postJson('/site-edit/reset', ['key' => 'order:/who-we-are:oops'])->assertNotFound();
+});
+
+it('saves a new order from the dashboard too', function () {
+    Livewire::actingAs(staff('Publisher'))->test('pages::admin.site')->call('saveOrder', '/projects/disc:ongoing', [5, 2])->assertReturned(['ok' => true, 'message' => '']);
+    expect(SiteContent::order('/projects/disc:ongoing'))->toBe([5, 2]);
+
+    Livewire::actingAs(staff('English Checker'))->test('pages::admin.site')->call('saveOrder', '/projects/disc:ongoing', [1])->assertForbidden();
+});
+
+it('lets the editor drag logos into a new order', function () {
+    $page = $this->actingAs(staff('Publisher'))->get('/who-we-are?sc-edit=1')->getContent();
+
+    expect($page)->toContain("addEventListener('dragstart'")->toContain("type: 'order'")->toContain('Drag to reorder');
 });

@@ -35,6 +35,13 @@ class SiteEditController
         return response()->json($this->edit->file((string) ($data['slot'] ?? ''), (string) ($data['key'] ?? ''), (string) ($data['src'] ?? ''), (bool) ($data['video'] ?? false), $request->file('file'), $this->user()));
     }
 
+    public function order(Request $request): JsonResponse
+    {
+        $data = $request->validate(['group' => ['required', 'string', 'max:200'], 'ids' => ['required', 'array', 'min:1', 'max:200'], 'ids.*' => ['integer']]);
+
+        return response()->json($this->edit->order($data['group'], $data['ids'], $this->user()));
+    }
+
     public function reset(Request $request): JsonResponse
     {
         $data = $request->validate(['key' => ['required', 'string', 'max:300']]);
