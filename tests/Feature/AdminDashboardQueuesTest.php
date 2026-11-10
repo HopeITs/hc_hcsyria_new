@@ -31,7 +31,7 @@ it('shows each section\'s pending items to whoever publishes, with the same coun
         ->and($queues['admin.successes']['count'])->toBe(AdminSuccessIndexQuery::make()->counts()['pending'])
         ->and($queues['admin.news']['count'])->toBe(AdminNewsIndexQuery::make()->counts()['pending'])
         ->and($queues['admin.news']['count'])->toBeGreaterThan(0);
-    $page->assertSee('Initiatives waiting to be published')->assertSee('Successes waiting to be published')->assertSee('Newsletter items waiting to be published');
+    $page->assertSee('Initiatives')->assertSee('Successes')->assertSee('Newsletter items')->assertSee('Waiting to be published');
 });
 
 it('shows the items waiting for the English check to whoever checks it', function () {
@@ -40,14 +40,14 @@ it('shows the items waiting for the English check to whoever checks it', functio
     [$page, $queues] = dashboardQueues('English Checker');
 
     expect($queues['admin.news'])->tab->toBe('english')->count->toBe(AdminNewsIndexQuery::make()->counts()['english']);
-    $page->assertSee('Newsletter items waiting for the English check');
+    $page->assertSee('Newsletter items')->assertSee('Waiting for the English check');
 });
 
 it('shows the latest items to those who neither publish nor check English', function (string $role) {
     [$page, $queues] = dashboardQueues($role);
 
     expect($queues->pluck('tab')->unique()->all())->toBe(['all']);
-    $page->assertSee('Latest initiatives')->assertSee('Latest successes')->assertSee('Latest newsletter items');
+    $page->assertSee('Initiatives')->assertSee('Successes')->assertSee('Newsletter items')->assertSee('Latest added');
 })->with(['Viewer', 'English Editor', 'Photos Editor']);
 
 it('links each row to the item\'s own page, and the panel to the list on the same tab', function () {
