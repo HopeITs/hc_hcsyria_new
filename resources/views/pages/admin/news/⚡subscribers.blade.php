@@ -57,7 +57,11 @@ new #[Layout('layouts::admin', ['title' => 'Newsletter subscribers'])] class ext
 ?>
 
 <div class="stack">
-    <x-admin.page-header title="Newsletter" :count="number_format($total).' subscribers'" subtitle="The addresses that receive the newsletter." />
+    <x-admin.page-header title="Newsletter" :count="number_format($total).' subscribers'" subtitle="The addresses that receive the newsletter.">
+        <x-slot:actions>
+            <a href="{{ route('admin.news.subscribers.export', array_filter(['search' => $search])) }}" class="btn btn-o" download><x-admin.icon name="doc" />Download CSV</a>
+        </x-slot:actions>
+    </x-admin.page-header>
     <x-admin.news-nav />
 
     <x-admin.panel title="Subscribers" :count="number_format($subscribers->total())">

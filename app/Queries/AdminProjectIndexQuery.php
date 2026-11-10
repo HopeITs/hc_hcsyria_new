@@ -4,6 +4,7 @@ namespace App\Queries;
 
 use Illuminate\Database\Query\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 /*
@@ -111,31 +112,52 @@ final class AdminProjectIndexQuery
     public function paginate(int $perPage = 15): LengthAwarePaginator
     {
         return $this->base()
-            ->select([
-                'projects.id',
-                'projects.MicroProject_ID as number',
-                'projects.MPE_City as city_id',
-                'projects.MPE_Published as published',
-                'projects.MPE_Done as done',
-                'projects.hidden',
-                'projects.english_check',
-                'projects.MPE_FundedDate as funded',
-                'projects.MPE_Donor as donor_id',
-                'projects.MPE_BeneficiaryName as beneficiary',
-                'projects.latitude',
-                'projects.Mobile as mobile',
-                'projects.MPE_Video as video',
-                'project_contents.MPE_Name as name',
-                'places.name as city',
-                'project_types.name as kind',
-                'project_categories.Name as category',
-                'project_sub_categories.Name as sub_category',
-                'donors.name as donor',
-                DB::raw('(SELECT COUNT(*) FROM images WHERE images.project_id = projects.id) as photos'),
-            ])
+            ->select($this->columns())
             ->orderByDesc('projects.MicroProject_ID')
             ->orderByDesc('projects.id')
             ->paginate($perPage);
+    }
+
+    /**
+     * Every project the filters match, newest first, for the CSV download.
+     *
+     * @return Collection<int, \stdClass>
+     */
+    public function export(int $limit = 20000): Collection
+    {
+        return $this->base()
+            ->select($this->columns())
+            ->orderByDesc('projects.MicroProject_ID')
+            ->orderByDesc('projects.id')
+            ->limit($limit)
+            ->get();
+    }
+
+    /** @return list<mixed> */
+    private function columns(): array
+    {
+        return [
+            'projects.id',
+            'projects.MicroProject_ID as number',
+            'projects.MPE_City as city_id',
+            'projects.MPE_Published as published',
+            'projects.MPE_Done as done',
+            'projects.hidden',
+            'projects.english_check',
+            'projects.MPE_FundedDate as funded',
+            'projects.MPE_Donor as donor_id',
+            'projects.MPE_BeneficiaryName as beneficiary',
+            'projects.latitude',
+            'projects.Mobile as mobile',
+            'projects.MPE_Video as video',
+            'project_contents.MPE_Name as name',
+            'places.name as city',
+            'project_types.name as kind',
+            'project_categories.Name as category',
+            'project_sub_categories.Name as sub_category',
+            'donors.name as donor',
+            DB::raw('(SELECT COUNT(*) FROM images WHERE images.project_id = projects.id) as photos'),
+        ];
     }
 
     private function base(bool $withTab = true): Builder

@@ -49,4 +49,16 @@ return [
         'key' => env('STADIA_API_KEY'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Currency of the funding figures
+    |--------------------------------------------------------------------------
+    |
+    | The projects table stores money as plain integers with no currency. This
+    | is only the label the dashboard and the reports print beside them.
+    |
+    */
+
+    'currency' => env('HCSYRIA_CURRENCY', 'USD'),
+
 ];

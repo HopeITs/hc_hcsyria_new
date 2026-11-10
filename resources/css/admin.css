@@ -316,3 +316,11 @@ a.tile:hover,button.tile:hover{transform:translateY(-2px);box-shadow:var(--card-
 .spin{width:16px;height:16px;border-radius:50%;border:2px solid currentColor;border-top-color:transparent;animation:spin .7s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
 [wire\:loading]{display:none}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* Ranked bars for the statistics (x-admin.bar-list) */
+.bars{display:grid;gap:10px;padding:14px 16px}
+.bar-row{display:grid;grid-template-columns:minmax(80px,10rem) minmax(0,1fr) auto;gap:12px;align-items:center;font-size:13px}
+.bar-l{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600;color:var(--s-dark)}.dark .bar-l{color:var(--ink)}
+.bar-t{height:8px;border-radius:4px;background:var(--s-soft);overflow:hidden}.bar-t i{display:block;height:100%;background:var(--primary);border-radius:4px}
+.bar-v{color:var(--ink-m);min-width:3.5rem;text-align:end}
+@media (max-width:560px){.bar-row{grid-template-columns:minmax(0,1fr) auto}.bar-t{grid-column:1/-1;order:3}}
