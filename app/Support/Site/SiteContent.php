@@ -2,6 +2,9 @@
 
 namespace App\Support\Site;
 
+use App\Enums\AdminCapability;
+use App\Queries\AdminAccessQuery;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
@@ -111,6 +114,52 @@ final class SiteContent
         }
 
         return collect($found)->filter(fn (array $keys): bool => count($keys) === 1)->map(fn (array $keys): string => $keys[0])->all();
+    }
+
+    /**
+     * The order staff gave a group of logos (the partners strip, a programme's funders), as the ids of
+     * what is in it; empty when nobody reordered it. $group is "<page>:<partners|ongoing|previous>".
+     *
+     * @return list<int>
+     */
+    public static function order(string $group): array
+    {
+        $saved = json_decode(app(self::class)->all()['order:'.$group] ?? '[]', true);
+
+        return is_array($saved) ? array_values(array_map('intval', $saved)) : [];
+    }
+
+    /**
+     * $items in the order staff gave their group, those they did not place after, in their usual order.
+     *
+     * @template TKey of array-key
+     * @template TItem of object
+     *
+     * @param  Collection<TKey, TItem>  $items
+     * @return Collection<int, TItem>
+     */
+    public static function ordered(string $group, $items, string $by = 'id')
+    {
+        $order = self::order($group);
+
+        if ($order === []) {
+            return $items->values();
+        }
+
+        // sortBy is stable: what was not placed keeps its usual order.
+        return $items->sortBy(fn (object $item): int => ($at = array_search((int) $item->{$by}, $order, true)) === false ? PHP_INT_MAX : $at)->values();
+    }
+
+    /**
+     * True while an account that may change pictures is editing this very request's page (?sc-edit=1): the
+     * logo strips then mark their logos so the editor can drag them into a new order.
+     */
+    public static function arranging(): bool
+    {
+        $request = request();
+        $user = auth()->user();
+
+        return $request->boolean('sc-edit') && $user !== null && AdminAccessQuery::can($user, AdminCapability::EditSitePictures) && self::editablePage('/'.trim($request->path(), '/'));
     }
 
     /** True for a public page the editor can change (one of config/site_content.php's pages). */

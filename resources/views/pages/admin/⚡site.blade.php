@@ -213,6 +213,19 @@ new #[Layout('layouts::admin', ['title' => 'Site content'])] class extends Compo
         return $this->saved($result, $video ? 'site.video' : 'site.image');
     }
 
+    /**
+     * Logos dragged into a new order on the page.
+     *
+     * @param  list<int>  $ids
+     * @return array{ok: bool, message: string}
+     */
+    public function saveOrder(string $group, array $ids): array
+    {
+        $this->allow(AdminCapability::EditSitePictures);
+
+        return $this->saved(app(EditSitePage::class)->order($group, $ids, Auth::user()), 'site.order');
+    }
+
     /** Put one thing back to its original from the page: a slot name, or a "text:" / "img:" key. */
     public function resetEdit(string $key): bool
     {

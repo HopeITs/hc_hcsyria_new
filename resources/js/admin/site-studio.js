@@ -39,6 +39,10 @@ export default function siteStudio($wire) {
                 this.answer(d.id, await $wire.saveEdit(d.where, d.original, d.text));
             } else if (d.type === 'image') {
                 this.choose(d);
+            } else if (d.type === 'order') {
+                const result = await $wire.saveOrder(d.group, d.ids);
+                this.answer(d.id, result);
+                this.reload();
             } else if (d.type === 'reset') {
                 await $wire.resetEdit(d.key);
                 this.reload();

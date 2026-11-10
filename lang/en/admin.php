@@ -80,6 +80,7 @@ return [
             'video' => 'Film changed. The page shows it now.',
             'text' => 'Text changed. The page shows it now.',
             'reset' => 'Back to the original.',
+            'order' => 'New order saved. The page shows it now.',
         ],
         'invalid' => 'Some fields need attention. They are marked below.',
         'forbidden' => 'Your role cannot do that.',

@@ -267,6 +267,6 @@ new #[Layout('layouts::app', [
                           :tiles="config('hcsyria.map_tiles.url').'?api_key='.config('hcsyria.map_tiles.key')"/>
 
     <x-ui.red-rule :ms="800"/>
-    <x-site.funders :ongoing="$ongoing" :previous="$previous"/>
+    <x-site.funders :ongoing="$ongoing" :previous="$previous" page="/projects/study-zone"/>
     <x-ui.red-rule class="red-rule--end"/>
 </div>

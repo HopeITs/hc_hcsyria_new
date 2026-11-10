@@ -200,6 +200,6 @@ new #[Layout('layouts::app', [
                             :title="__('studyzone.activities')" :phone="$phone"/>
 
     <x-ui.red-rule :ms="800"/>
-    <x-site.funders :ongoing="$ongoing" :previous="$previous"/>
+    <x-site.funders :ongoing="$ongoing" :previous="$previous" page="/projects/disc"/>
     <x-ui.red-rule class="red-rule--end"/>
 </div>

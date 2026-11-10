@@ -118,6 +118,6 @@ new #[Layout('layouts::app', [
     </x-ui.reveal>
 
     <x-ui.red-rule :ms="800"/>
-    <x-site.funders :ongoing="$ongoing" :previous="$previous"/>
+    <x-site.funders :ongoing="$ongoing" :previous="$previous" page="/projects/school-to-school"/>
     <x-ui.red-rule class="red-rule--end"/>
 </div>
