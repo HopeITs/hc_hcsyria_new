@@ -2,7 +2,6 @@
 
 namespace App\Queries;
 
-use App\Actions\Admin\WriteActivityLog;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -45,19 +44,6 @@ final class AdminDashboardQuery
             ->groupBy('places.id', 'places.name')
             ->orderByDesc('total')
             ->get(['places.name as city', DB::raw('COUNT(*) as total')]);
-    }
-
-    /** @return Collection<int, object{operation: string, project_id: int, number: ?int, by: ?string, at: string}> */
-    public function recentActivity(int $limit = 6): Collection
-    {
-        return DB::table('logs')
-            ->leftJoin('users', 'users.id', '=', 'logs.user_id')
-            ->leftJoin('projects', 'projects.id', '=', 'logs.project_id')
-            ->where('logs.category', WriteActivityLog::PROJECT)
-            ->when($this->placeIds !== null, fn ($query) => $query->whereIn('projects.MPE_City', $this->placeIds))
-            ->orderByDesc('logs.id')
-            ->limit($limit)
-            ->get(['logs.operation', 'logs.project_id', 'projects.MicroProject_ID as number', 'users.name as by', 'logs.created_at as at']);
     }
 
     private function projects(): Builder
