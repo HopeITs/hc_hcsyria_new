@@ -44,7 +44,7 @@ section:
 | Study Zone students and entries (registration, visits, statistics) | 11 + 3 | **To do** — personal data, needs decisions first (section 8) | — |
 | DISC, Study Zone and Children University statistics pages | in the programme routes | To do | — |
 | Roots of Hope (editions of the magazine) | 8 | **Done** | `admin-roots-of-hope` |
-| Site content: pictures, films and wording of the public pages (new; `/admin/site`, slots declared in `config/site_content.php`) | — | **Done** for Home, Who we are, Our news, Roots of Hope, Study Zone, DISC, LEAP, Micro projects | `admin-site-content` |
+| Site content (`/admin/site`): edit the real public page in place — click any text to type over it, click any picture to replace it; also a pictures-and-films list (slots in `config/site_content.php`) and a words list. Every page, however its copy is written | — | **Done** | `site-content-visual-editor` |
 | Our Team | 7 | To do | — |
 | Cover photos | 6 | To do | — |
 | Page content (`content`) | 10 | To do | — |

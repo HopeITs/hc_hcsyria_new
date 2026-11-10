@@ -87,9 +87,30 @@ final class SiteContent
     {
         return array_filter(
             app(self::class)->all(),
-            fn (string $value, string $slot): bool => str_starts_with($slot, 'text:*:') || str_starts_with($slot, 'text:'.$page.':'),
+            fn (string $value, string $slot): bool => preg_match('~^(text|img):(\*|'.preg_quote($page, '~').'):~', $slot) === 1,
             ARRAY_FILTER_USE_BOTH,
         );
+    }
+
+    /**
+     * The pictures and films the page draws from a slot, by the address they have now (so the editor can tell
+     * which slot a picture on the page belongs to). An address two slots share cannot say which, and is left out.
+     *
+     * @return array<string, string> address => slot key
+     */
+    public static function slotAddresses(): array
+    {
+        $found = [];
+
+        foreach (self::pages() as $page) {
+            foreach ($page['slots'] as $slot) {
+                if (in_array($slot['type'], ['image', 'video'], true)) {
+                    $found[$slot['value']][] = $slot['key'];
+                }
+            }
+        }
+
+        return collect($found)->filter(fn (array $keys): bool => count($keys) === 1)->map(fn (array $keys): string => $keys[0])->all();
     }
 
     /** False until the site_contents table (with its original column) exists: the dashboard says so instead of failing. */

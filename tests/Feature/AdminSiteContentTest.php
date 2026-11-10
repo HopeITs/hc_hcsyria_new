@@ -164,3 +164,67 @@ it('lists a rewrite whose original left the page, so it can be removed', functio
     wordsPage()->assertSee('No longer on the page')->assertSee('Old words')->call('resetLine', '0123456789abcdef');
     expect(DB::table('site_contents')->count())->toBe(0);
 });
+
+/*
+ * The visual editor: the public page opened with ?sc-edit=1 by staff is marked up so each line and
+ * picture can be changed in place; the dashboard saves what the page reports.
+ */
+it('marks the page up for staff who may change it, and for nobody else', function () {
+    $marked = $this->actingAs(staff('Admin'))->get('/who-we-are?sc-edit=1');
+    $marked->assertOk()->assertSee('data-sc-t="text:*:', false)->assertSee('id="sc-script"', false)->assertSee('data-sc-i="img:/who-we-are:', false);
+    expect($marked->headers->get('Cache-Control'))->toContain('no-store');
+
+    foreach ([null, 'Viewer', 'English Editor'] as $role) {
+        $this->app['auth']->forgetGuards();
+        $guest = $role === null ? $this : $this->actingAs(staff($role));
+        $guest->get('/who-we-are?sc-edit=1')->assertOk()->assertDontSee('data-sc-t', false)->assertDontSee('sc-script', false);
+    }
+});
+
+it('tells a picture of a slot from one of the page', function () {
+    $html = '<img src="/images/mission/Responsibility.jpg"><img src="/images/who-we-serve/1.jpg"><img src="/images/ico/eye-icon.png"><img src="/images/news/3/a.jpg"><img src="/images/logos/hc.svg"><img src="/images/home/image-mask.png">';
+    $out = PageText::decorate($html, [], '/who-we-are', ['/images/mission/Responsibility.jpg' => 'who-we-are.mission_photo']);
+
+    expect($out)->toContain('<img data-sc-slot="who-we-are.mission_photo" src="/images/mission/Responsibility.jpg">')
+        ->toContain('data-sc-i="img:/who-we-are:')
+        ->and(substr_count($out, 'data-sc-i='))->toBe(1)
+        ->and(substr_count($out, 'data-sc-slot='))->toBe(1);
+});
+
+it('saves a line typed over on the page, and the page then shows it', function () {
+    $result = Livewire::actingAs(staff('Admin'))->test('pages::admin.site')->call('saveEdit', '/christianyouth', 'Participants', 'Who is coming')->assertReturned(['ok' => true, 'message' => '']);
+
+    $this->get('/christianyouth')->assertSee('Who is coming')->assertDontSee('>Participants<', false);
+    $this->actingAs(staff('Admin'))->get('/christianyouth?sc-edit=1')->assertSee('data-sc-c="1"', false)->assertSee('data-sc-o="Participants"', false);
+});
+
+it('answers a refusal for a line of a page that is not listed', function () {
+    Livewire::actingAs(staff('Admin'))->test('pages::admin.site')->call('saveEdit', '/not-a-page', 'Participants', 'x')->assertReturned(['ok' => false, 'message' => 'That part of the site cannot be changed from here.']);
+});
+
+it('swaps a picture of a page for that page alone, and a slot picture everywhere it is drawn', function () {
+    $key = null;
+    preg_match('~data-sc-i="(img:/who-we-are:[a-f0-9]{16})" data-sc-s="([^"]+)"~', $this->actingAs(staff('Admin'))->get('/who-we-are?sc-edit=1')->getContent(), $m);
+    [, $key, $src] = $m;
+
+    $page = Livewire::actingAs(staff('Admin'))->test('pages::admin.site')
+        ->set('drop', UploadedFile::fake()->image('a.jpg', 800, 600))
+        ->call('applyImage', '', $key, $src)->assertReturned(['ok' => true, 'message' => '']);
+
+    $stored = DB::table('site_contents')->where('slot', $key)->value('value');
+    expect($stored)->toStartWith('/images/site/');
+    $this->get('/who-we-are')->assertSee($stored, false);
+    $this->get('/home')->assertDontSee($stored, false);
+
+    $page->call('resetEdit', $key);
+    expect(DB::table('site_contents')->where('slot', $key)->exists())->toBeFalse()->and(is_file($this->media.$stored))->toBeFalse();
+
+    $page->set('drop', UploadedFile::fake()->image('b.jpg', 800, 600))->call('applyImage', 'who-we-are.mission_photo', '', '');
+    $this->get('/who-we-are')->assertSee('/images/site/', false);
+})->skip(! extension_loaded('gd'), 'needs the GD extension');
+
+it('will not swap a picture under a key that does not match its address', function () {
+    Livewire::actingAs(staff('Admin'))->test('pages::admin.site')
+        ->set('drop', UploadedFile::fake()->image('a.jpg'))
+        ->call('applyImage', '', 'img:/who-we-are:0123456789abcdef', '/images/who-we-serve/1.jpg')->assertNotFound();
+})->skip(! extension_loaded('gd'), 'needs the GD extension');

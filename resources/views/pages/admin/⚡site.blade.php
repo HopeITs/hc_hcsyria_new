@@ -15,6 +15,7 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithFileUploads;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 /*
  * /admin/site: the pictures, films and wording of the public pages, changed by staff
@@ -25,7 +26,10 @@ use Livewire\WithFileUploads;
  * (ReceivesPictures), a film is checked by its bytes. Slot keys carry a dot, which a
  * Livewire property path cannot, so the form uses "__" in its place.
  *
- * Two modes. "Pictures & films" is the declared slots (config/site_content.php). "Words" is
+ * Three modes. "Visual" (the default) opens the real page full size and staff click the
+ * words to type over them, or a picture to replace it; the editor lives inside the page
+ * (resources/views/site/editor.blade.php, switched on by ?sc-edit=1 for staff) and tells
+ * this component what changed with postMessage, which saves it. "Pictures & films" is the declared slots (config/site_content.php). "Words" is
  * every line of text a visitor reads on the page, found by reading the page itself
  * (PageScan, PageText), so no copy is out of reach however it is written in the code; a
  * line is rewritten, or put back, one at a time. The menu, header and footer, shown on
@@ -42,8 +46,11 @@ new #[Layout('layouts::admin', ['title' => 'Site content'])] class extends Compo
     #[Url(except: 'wide')]
     public string $frame = 'wide';
 
-    #[Url(except: 'media')]
-    public string $mode = 'media';
+    #[Url(except: 'visual')]
+    public string $mode = 'visual';
+
+    /** The picture chosen on the page, while it is being uploaded. */
+    public mixed $drop = null;
 
     #[Url(except: '')]
     public string $search = '';
@@ -66,8 +73,8 @@ new #[Layout('layouts::admin', ['title' => 'Site content'])] class extends Compo
     {
         $this->authorize('admin.'.AdminCapability::ManageSite->value);
 
-        if (! in_array($this->mode, ['media', 'words'], true)) {
-            $this->mode = 'media';
+        if (! in_array($this->mode, ['visual', 'media', 'words'], true)) {
+            $this->mode = 'visual';
         }
 
         if (! array_key_exists($this->page, (array) config('site_content.pages')) && ! ($this->page === 'sitewide' && $this->mode === 'words')) {
@@ -153,6 +160,86 @@ new #[Layout('layouts::admin', ['title' => 'Site content'])] class extends Compo
         app(ManageSiteContent::class)->reset($this->key($name), Auth::user());
         $this->done('site.reset');
         $this->loadTexts();
+    }
+
+    /**
+     * A line typed over on the page itself. Returns whether it was saved; the message is for the page's toast.
+     *
+     * @return array{ok: bool, message: string}
+     */
+    public function saveEdit(string $where, string $original, string $text): array
+    {
+        $this->allow();
+
+        try {
+            app(ManageSiteContent::class)->setLine($where, $original, $text, Auth::user());
+        } catch (AdminActionRefused $refused) {
+            $this->alert($refused->alertKey(), $refused->params, 'error');
+
+            return ['ok' => false, 'message' => __('admin.'.$refused->alertKey(), $refused->params)];
+        }
+
+        $this->stamp = time();
+
+        return ['ok' => true, 'message' => ''];
+    }
+
+    /**
+     * A picture chosen on the page: $slot for one the page draws from a declared slot, or $key and
+     * $src for one of its own pictures. The file is in $drop. Returns whether it was saved.
+     *
+     * @return array{ok: bool, message: string}
+     */
+    public function applyImage(string $slot, string $key, string $src, bool $video = false): array
+    {
+        $this->allow();
+        $action = app(ManageSiteContent::class);
+
+        try {
+            if ($video) {
+                abort_if($slot === '', 404);
+                $this->validate(['drop' => ['required', 'file', 'max:61440']], attributes: ['drop' => 'film']);
+                $action->replaceVideo($slot, $this->drop, Auth::user());
+            } elseif (! $this->acceptPictures('drop')) {
+                return ['ok' => false, 'message' => 'That is not a JPEG, PNG or WebP picture.'];
+            } elseif ($slot !== '') {
+                abort_unless(SiteContent::slot($slot) !== null, 404);
+                $action->replaceImage($slot, $this->drop, Auth::user());
+            } else {
+                // "img:<where>:<fingerprint>": the page the picture is on, and the address it had.
+                abort_unless(preg_match('~^img:(\*|/[A-Za-z0-9/_-]*):[a-f0-9]{16}$~', $key, $m) === 1 && PageText::imageKey($m[1], $src) === $key, 404);
+                $action->replacePageImage($m[1], $src, $this->drop, Auth::user());
+            }
+        } catch (AdminActionRefused $refused) {
+            $this->reset('drop');
+            $this->alert($refused->alertKey(), $refused->params, 'error');
+
+            return ['ok' => false, 'message' => __('admin.'.$refused->alertKey(), $refused->params)];
+        } catch (HttpExceptionInterface $notFound) {
+            throw $notFound;
+        } catch (\RuntimeException|ValidationException $failed) {
+            $this->reset('drop');
+
+            return ['ok' => false, 'message' => $failed instanceof ValidationException ? (string) collect($failed->errors())->flatten()->first() : $failed->getMessage()];
+        }
+
+        $this->reset('drop');
+        $this->done($video ? 'site.video' : 'site.image');
+
+        return ['ok' => true, 'message' => ''];
+    }
+
+    /** Put one thing back to its original from the page: a slot name, or a "text:" / "img:" key. */
+    public function resetEdit(string $key): bool
+    {
+        $this->allow();
+        abort_unless(preg_match('~^(text|img):(\*|/[A-Za-z0-9/_-]*):[a-f0-9]{16}$~', $key) === 1 || SiteContent::slot($key) !== null, 404);
+
+        app(ManageSiteContent::class)->reset($key, Auth::user());
+        $this->stamp = time();
+        $this->alert('site.reset');
+
+        return true;
     }
 
     /** Save what was written for one line of the page. */
@@ -254,6 +341,8 @@ new #[Layout('layouts::admin', ['title' => 'Site content'])] class extends Compo
         $ready = SiteContent::ready();
         $rewrites = $ready ? DB::table('site_contents')->where('slot', 'like', 'text:%')->get(['slot', 'value', 'original']) : collect();
 
+        $this->page = $this->mode === 'words' || $this->page !== 'sitewide' ? $this->page : 'home';
+
         if ($this->page === 'sitewide') {
             $current = ['label' => 'Menu, header and footer', 'url' => '/home', 'icon' => 'menu', 'blurb' => 'The words on every page: the menu, the header and the footer.', 'slots' => []];
         } else {
@@ -270,6 +359,7 @@ new #[Layout('layouts::admin', ['title' => 'Site content'])] class extends Compo
             'changedBy' => collect($pages)->map(fn (array $p, string $id): int => collect($p['slots'])->where('changed', true)->count())->all(),
             'wordsBy' => collect($pages)->map(fn (array $p): int => $count($p['url']))->all() + ['sitewide' => $count('*')],
             'previewUrl' => $current['url'].'?studio='.$this->stamp,
+            'editUrl' => $current['url'].'?sc-edit=1&t='.$this->stamp,
             'ready' => $ready,
             'words' => $ready && $this->mode === 'words' ? $this->words($rewrites) : null,
         ];
@@ -311,8 +401,9 @@ new #[Layout('layouts::admin', ['title' => 'Site content'])] class extends Compo
     <x-admin.page-header title="Site content" subtitle="Change the pictures, films and words of the public pages. Nothing here touches the original: reset anything to bring it back.">
         <x-slot:actions>
             <div class="seg" role="radiogroup" aria-label="What to change">
+                <label><input type="radio" value="visual" wire:model.live="mode"><span>Edit the page</span></label>
                 <label><input type="radio" value="media" wire:model.live="mode"><span>Pictures &amp; films</span></label>
-                <label><input type="radio" value="words" wire:model.live="mode"><span>Words</span></label>
+                <label><input type="radio" value="words" wire:model.live="mode"><span>Words list</span></label>
             </div>
             <a href="{{ $current['url'] }}" target="_blank" rel="noopener" class="btn btn-o"><x-admin.icon name="ext" />Open {{ $current['label'] }}</a>
         </x-slot:actions>
@@ -343,6 +434,25 @@ new #[Layout('layouts::admin', ['title' => 'Site content'])] class extends Compo
         @endif
     </nav>
 
+    @if ($mode === 'visual')
+        <section class="sc-studio" wire:key="studio-{{ $page }}"
+            x-data="siteStudio($wire)" x-on:message.window="onMessage($event)" x-on:site-changed.window="reload()">
+            <div class="bar">
+                <p class="muted" style="margin: 0"><b>{{ $current['label'] }}</b> · click any text on the page to type over it, or any picture to replace it. Every change is saved as you make it.</p>
+                <div class="row-s">
+                    <div class="seg" role="radiogroup" aria-label="Screen size">
+                        <label><input type="radio" value="wide" wire:model.live="frame"><span>Computer</span></label>
+                        <label><input type="radio" value="phone" wire:model.live="frame"><span>Phone</span></label>
+                    </div>
+                    <button type="button" class="btn btn-o s" x-on:click="reload()"><x-admin.icon name="log" class="i16" />Refresh</button>
+                </div>
+            </div>
+            <div class="canvas {{ $frame }}">
+                <div class="load" x-show="loading" x-cloak><x-admin.icon name="spark" />Opening the page…</div>
+                <iframe x-ref="frame" data-url="{{ $current['url'] }}" src="{{ $editUrl }}" title="Editing {{ $current['label'] }}" x-on:load="loaded()"></iframe>
+            </div>
+        </section>
+    @else
     <div class="sc-split">
         <div class="stack" style="min-width: 0">
             @if ($mode === 'words')
@@ -418,5 +528,6 @@ new #[Layout('layouts::admin', ['title' => 'Site content'])] class extends Compo
             @if ($frame === 'phone')<p class="muted" style="margin: 8px 0 0; font-size: 12px">Narrow like a phone. Phones also get their own cover pictures, which show on real phones.</p>@endif
         </aside>
     </div>
+    @endif
 @endunless
 </div>
