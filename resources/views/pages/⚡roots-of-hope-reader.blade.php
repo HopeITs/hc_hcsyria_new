@@ -48,7 +48,9 @@ new #[Layout('layouts::reader', ['title' => 'Roots of Hope'])] class extends Com
             <p class="flipbook__note" x-show="state === 'failed'" x-cloak>
                 The magazine cannot be shown here. <a href="{{ $edition->file_path }}" download>Download the PDF</a> instead.
             </p>
-            <div class="flipbook__stage" x-ref="stage" x-show="state === 'ready'" x-cloak></div>
+            <div class="flipbook__frame" x-ref="frame">
+                <div class="flipbook__stage" x-ref="stage" x-show="state === 'ready'" x-cloak></div>
+            </div>
         </div>
 
         <div class="flipbook__nav" x-show="state === 'ready'" x-cloak>

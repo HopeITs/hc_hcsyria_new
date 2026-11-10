@@ -71,8 +71,10 @@
         min-height: 0;
     }
 
-    .flipbook__stage {
-        margin: 0 auto;
+    /* PageFlip ("stretch") sizes the book by width only, so flipbook.js sets this
+       frame's width to whatever lets the whole book fit the screen. */
+    .flipbook__frame {
+        max-width: 100%;
     }
 
     .flipbook__leaf {
