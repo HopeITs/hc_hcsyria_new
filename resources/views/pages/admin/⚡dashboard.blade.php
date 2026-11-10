@@ -74,7 +74,8 @@ new #[Layout('layouts::admin', ['title' => 'Dashboard'])] class extends Componen
             $sectionTab = $section['tabs'][$tab];
 
             $queues[] = [
-                'title' => $sectionTab === 'all' ? 'Latest '.lcfirst($section['name']) : $section['name'].' '.$when[$sectionTab],
+                'title' => $section['name'],
+                'caption' => $sectionTab === 'all' ? 'Latest added' : ucfirst($when[$sectionTab]),
                 'count' => $section['make']()->counts()[$sectionTab],
                 'rows' => $section['make']()->tab($sectionTab)->paginate(self::SECTION_QUEUE_SIZE)->items(),
                 'section' => $section['route'],
@@ -264,7 +265,7 @@ new #[Layout('layouts::admin', ['title' => 'Dashboard'])] class extends Componen
             <h2 class="sec-h">The other sections</h2>
             <div class="sec-cards">
                 @foreach ($sectionQueues as $section)
-                    <x-admin.section-queue :title="$section['title']" :count="$section['count']" :rows="$section['rows']" :section="$section['section']" :tab="$section['tab']" :icon="$section['icon']" />
+                    <x-admin.section-queue :title="$section['title']" :caption="$section['caption']" :count="$section['count']" :rows="$section['rows']" :section="$section['section']" :tab="$section['tab']" :icon="$section['icon']" />
                 @endforeach
             </div>
         </section>

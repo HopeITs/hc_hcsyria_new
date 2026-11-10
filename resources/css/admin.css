@@ -355,8 +355,21 @@ a.tile:hover,button.tile:hover{transform:translateY(-2px);box-shadow:var(--card-
 .tile .meter{display:block;height:6px;border-radius:3px;background:var(--s-soft);margin-top:12px;overflow:hidden}
 .tile .meter i{display:block;height:100%;border-radius:3px;background:var(--good);transition:width .7s var(--ease)}
 
-.sec-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,19rem),1fr));gap:16px;align-items:stretch}
+.sec-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,16rem),1fr));gap:16px;align-items:stretch}
 .sec-cards .panel{display:flex;flex-direction:column}.sec-cards .panel .foot{margin-top:auto}
+.sq-h{display:flex;align-items:center;gap:12px;padding:14px 16px}
+.sq-ic{flex:none;width:36px;height:36px;border-radius:10px;background:var(--head);color:var(--ink-m);display:grid;place-items:center}
+.sq-t{flex:1;min-width:0}
+.sq-t h3{margin:0;font-size:15px;font-weight:700;color:var(--s-dark);line-height:1.25}.dark .sq-t h3{color:var(--ink)}
+.sq-t p{margin:2px 0 0;font-size:12px;color:var(--ink-m);line-height:1.3}
+.sq-n{flex:none;min-width:32px;text-align:center;font-size:18px;font-weight:700;color:var(--ink-f);font-variant-numeric:tabular-nums}
+.sq-n.on{color:var(--crit)}
+.sq-body{display:flex;flex-direction:column;flex:1}
+.sq-row{display:flex;flex-direction:column;gap:2px;padding:10px 16px;border-top:1px solid var(--line);min-width:0}
+.sq-row:hover{background:var(--ground)}
+.sq-row .nm{font-weight:600;font-size:14px;color:var(--s-dark);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.dark .sq-row .nm{color:var(--ink)}
+.sq-row .mt{font-size:12px;color:var(--ink-m);display:flex;gap:2px 10px;flex-wrap:wrap}
+.sq-empty{display:flex;align-items:center;gap:8px;padding:10px 16px;border-top:1px solid var(--line);font-size:13px;color:var(--ink-m)}
 .q.aged{box-shadow:inset 3px 0 0 var(--warn)}
 .q .age{display:inline-flex;align-items:center;gap:4px;color:var(--warn);font-weight:600}
 .q-more{display:inline-flex;align-items:center;gap:6px;font-weight:600;color:var(--brand-text)}
