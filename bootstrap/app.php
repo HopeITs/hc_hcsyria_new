@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\ApplySiteText;
 use App\Http\Middleware\EnsureAdminAccess;
 use App\Http\Middleware\RedirectToHttps;
 use App\Http\Middleware\SecurityHeaders;
@@ -33,7 +34,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->append(ThrottleRequestsWithoutSession::class);
 
         // `throttle:guest` limits signed-out requests that do carry a session.
-        $middleware->web(append: ['throttle:guest']);
+        $middleware->web(append: ['throttle:guest', ApplySiteText::class]);
 
         $middleware->alias(['admin.access' => EnsureAdminAccess::class]);
     })
