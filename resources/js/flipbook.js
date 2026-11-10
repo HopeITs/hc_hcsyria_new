@@ -47,6 +47,11 @@ export default (src) => ({
                 stage.appendChild(leaf);
             }
 
+            // The stage is display:none until 'ready'; PageFlip measures its
+            // container, so reveal it and let the DOM update before building.
+            this.state = 'ready';
+            await this.$nextTick();
+
             this.book = new PageFlip(stage, {
                 width,
                 height,
@@ -61,8 +66,8 @@ export default (src) => ({
             });
             this.book.loadFromHTML(stage.querySelectorAll('.flipbook__leaf'));
             this.book.on('flip', (event) => { this.page = event.data + 1; });
-            this.state = 'ready';
         } catch (error) {
+            console.error('Flipbook failed to open', error);
             this.state = 'failed';
         }
     },
