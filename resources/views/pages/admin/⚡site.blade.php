@@ -27,6 +27,10 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
  * (ReceivesPictures), a film is checked by its bytes. Slot keys carry a dot, which a
  * Livewire property path cannot, so the form uses "__" in its place.
  *
+ * Who may change what: the words are Admin's and English Checker's (EditSiteWords); pictures,
+ * logos and films are Admin's, Publisher's and Photos Editor's (EditSitePictures). The page
+ * opens for either, shows each person only what they may change, and every save asks again.
+ *
  * Three modes. "Visual" (the default) opens the real page full size and staff click the
  * words to type over them, or a picture to replace it; the editor lives inside the page
  * (resources/views/site/editor.blade.php, switched on by ?sc-edit=1 for staff) and tells
@@ -74,9 +78,7 @@ new #[Layout('layouts::admin', ['title' => 'Site content'])] class extends Compo
     {
         $this->authorize('admin.'.AdminCapability::ManageSite->value);
 
-        if (! in_array($this->mode, ['visual', 'media', 'words'], true)) {
-            $this->mode = 'visual';
-        }
+        $this->mode = $this->allowedMode($this->mode);
 
         if (! array_key_exists($this->page, (array) config('site_content.pages')) && ! ($this->page === 'sitewide' && $this->mode === 'words')) {
             $this->page = 'home';
@@ -98,8 +100,25 @@ new #[Layout('layouts::admin', ['title' => 'Site content'])] class extends Compo
         $this->loadTexts();
     }
 
+    /** The mode, or "visual" when the account may not use it: the list of words is for those who may change words, the list of pictures for those who may change pictures. */
+    private function allowedMode(string $mode): string
+    {
+        return match (true) {
+            $mode === 'words' && $this->may(AdminCapability::EditSiteWords) => 'words',
+            $mode === 'media' && $this->may(AdminCapability::EditSitePictures) => 'media',
+            default => 'visual',
+        };
+    }
+
+    private function may(AdminCapability $capability): bool
+    {
+        return AdminAccessQuery::can(Auth::user(), $capability);
+    }
+
     public function updatedMode(): void
     {
+        $this->mode = $this->allowedMode($this->mode);
+
         if ($this->mode !== 'words' && $this->page === 'sitewide') {
             $this->page = 'home';
         }
@@ -110,7 +129,7 @@ new #[Layout('layouts::admin', ['title' => 'Site content'])] class extends Compo
     /** A file was dropped on a card: it is checked and stored at once. */
     public function updatedUploads(mixed $value, string $name): void
     {
-        $this->allow();
+        $this->allow(AdminCapability::EditSitePictures);
         $key = $this->key($name);
         $slot = SiteContent::slot($key);
 
@@ -142,7 +161,7 @@ new #[Layout('layouts::admin', ['title' => 'Site content'])] class extends Compo
 
     public function saveText(string $name): void
     {
-        $this->allow();
+        $this->allow(AdminCapability::EditSiteWords);
         $key = $this->key($name);
 
         try {
@@ -157,8 +176,10 @@ new #[Layout('layouts::admin', ['title' => 'Site content'])] class extends Compo
 
     public function reset_slot(string $name): void
     {
-        $this->allow();
-        app(ManageSiteContent::class)->reset($this->key($name), Auth::user());
+        $key = $this->key($name);
+        // Putting a paragraph back is a change of words; a picture or film, of pictures.
+        $this->allow(in_array(SiteContent::slot($key)['type'] ?? null, ['text', 'long'], true) ? AdminCapability::EditSiteWords : AdminCapability::EditSitePictures);
+        app(ManageSiteContent::class)->reset($key, Auth::user());
         $this->done('site.reset');
         $this->loadTexts();
     }
@@ -170,7 +191,7 @@ new #[Layout('layouts::admin', ['title' => 'Site content'])] class extends Compo
      */
     public function saveEdit(string $where, string $original, string $text): array
     {
-        $this->allow();
+        $this->allow(AdminCapability::EditSiteWords);
 
         return $this->saved(app(EditSitePage::class)->text($where, $original, $text, Auth::user()), 'site.text');
     }
@@ -183,7 +204,7 @@ new #[Layout('layouts::admin', ['title' => 'Site content'])] class extends Compo
      */
     public function applyImage(string $slot, string $key, string $src, bool $video = false): array
     {
-        $this->allow();
+        $this->allow(AdminCapability::EditSitePictures);
         abort_if($this->drop === null, 422);
 
         $result = app(EditSitePage::class)->file($slot, $key, $src, $video, $this->drop, Auth::user());
@@ -219,7 +240,7 @@ new #[Layout('layouts::admin', ['title' => 'Site content'])] class extends Compo
     /** Save what was written for one line of the page. */
     public function saveLine(string $hash): void
     {
-        $this->allow();
+        $this->allow(AdminCapability::EditSiteWords);
         $line = collect($this->scan() ?? [])->first(fn (array $line): bool => substr(sha1($line['text']), 0, 16) === $hash);
 
         if ($line === null) {
@@ -240,7 +261,7 @@ new #[Layout('layouts::admin', ['title' => 'Site content'])] class extends Compo
 
     public function resetLine(string $hash): void
     {
-        $this->allow();
+        $this->allow(AdminCapability::EditSiteWords);
         abort_unless(preg_match('/^[a-f0-9]{16}$/', $hash) === 1, 404);
 
         app(ManageSiteContent::class)->reset("text:{$this->where()}:$hash", Auth::user());
@@ -251,7 +272,7 @@ new #[Layout('layouts::admin', ['title' => 'Site content'])] class extends Compo
     /** Read the page again, in case its code changed. */
     public function rescan(): void
     {
-        $this->allow();
+        $this->allow(AdminCapability::EditSiteWords);
         PageScan::lines($this->scanUrl(), fresh: true);
         $this->reset('edits');
     }
@@ -303,10 +324,10 @@ new #[Layout('layouts::admin', ['title' => 'Site content'])] class extends Compo
         return $key;
     }
 
-    /** Every change asks again: the buttons are only a convenience. */
-    private function allow(): void
+    /** Every change asks again, for the right it needs: the buttons are only a convenience. */
+    private function allow(AdminCapability $capability = AdminCapability::ManageSite): void
     {
-        abort_unless(AdminAccessQuery::can(Auth::user(), AdminCapability::ManageSite), 403);
+        abort_unless($this->may($capability), 403);
     }
 
     public function with(): array
@@ -323,6 +344,13 @@ new #[Layout('layouts::admin', ['title' => 'Site content'])] class extends Compo
             $current = $pages[$this->page];
         }
 
+        $canWords = $this->may(AdminCapability::EditSiteWords);
+        $canPictures = $this->may(AdminCapability::EditSitePictures);
+        $this->mode = $this->allowedMode($this->mode);
+
+        // The cards of the list: pictures and films for those who may change them, paragraphs for those who may change words.
+        $current['slots'] = array_filter($current['slots'], fn (array $slot): bool => in_array($slot['type'], ['text', 'long'], true) ? $canWords : $canPictures);
+
         $changed = collect($current['slots'])->where('changed', true)->count();
         $count = fn (string $where): int => $rewrites->filter(fn (object $row): bool => str_starts_with($row->slot, "text:$where:"))->count();
 
@@ -335,6 +363,8 @@ new #[Layout('layouts::admin', ['title' => 'Site content'])] class extends Compo
             'previewUrl' => $current['url'].'?studio='.$this->stamp,
             'editUrl' => $current['url'].'?sc-edit=1&t='.$this->stamp,
             'ready' => $ready,
+            'canWords' => $canWords,
+            'canPictures' => $canPictures,
             'words' => $ready && $this->mode === 'words' ? $this->words($rewrites) : null,
         ];
     }
@@ -372,12 +402,17 @@ new #[Layout('layouts::admin', ['title' => 'Site content'])] class extends Compo
 ?>
 
 <div class="stack" x-data="{ drag: null }">
-    <x-admin.page-header title="Site content" subtitle="Change the pictures, films and words of the public pages. Nothing here touches the original: reset anything to bring it back.">
+    <x-admin.page-header title="Site content"
+        :subtitle="match (true) {
+            $canWords && $canPictures => 'Change the pictures, logos, films and words of the public pages. Nothing here touches the original: reset anything to bring it back.',
+            $canWords => 'Change the words of the public pages. Nothing here touches the original: reset anything to bring it back.',
+            default => 'Change the pictures, logos and films of the public pages: replace one, or drop a file onto it. Nothing here touches the original: reset anything to bring it back.',
+        }">
         <x-slot:actions>
             <div class="seg" role="radiogroup" aria-label="What to change">
                 <label><input type="radio" value="visual" wire:model.live="mode"><span>Edit the page</span></label>
-                <label><input type="radio" value="media" wire:model.live="mode"><span>Pictures &amp; films</span></label>
-                <label><input type="radio" value="words" wire:model.live="mode"><span>Words list</span></label>
+                @if ($canPictures)<label><input type="radio" value="media" wire:model.live="mode"><span>Pictures &amp; logos</span></label>@endif
+                @if ($canWords)<label><input type="radio" value="words" wire:model.live="mode"><span>Words list</span></label>@endif
             </div>
             <a href="{{ $current['url'] }}" target="_blank" rel="noopener" class="btn btn-o"><x-admin.icon name="ext" />Open {{ $current['label'] }}</a>
         </x-slot:actions>
@@ -412,7 +447,11 @@ new #[Layout('layouts::admin', ['title' => 'Site content'])] class extends Compo
         <section class="sc-studio" wire:key="studio-{{ $page }}"
             x-data="siteStudio($wire)" x-on:message.window="onMessage($event)" x-on:site-changed.window="reload()">
             <div class="bar">
-                <p class="muted" style="margin: 0"><b>{{ $current['label'] }}</b> · click any text on the page to type over it, or any picture to replace it. Every change is saved as you make it.</p>
+                <p class="muted" style="margin: 0"><b>{{ $current['label'] }}</b> ·
+                    @if ($canWords && $canPictures)click any text on the page to type over it, and click or drop a file on any picture or logo to replace it.
+                    @elseif ($canWords)click any text on the page to type over it.
+                    @else click any picture or logo on the page to replace it, or drop a file onto it.@endif
+                    Every change is saved as you make it.</p>
                 <div class="row-s">
                     <div class="seg" role="radiogroup" aria-label="Screen size">
                         <label><input type="radio" value="wide" wire:model.live="frame"><span>Computer</span></label>
@@ -482,7 +521,7 @@ new #[Layout('layouts::admin', ['title' => 'Site content'])] class extends Compo
                     </article>
                 @endforeach
             </div>
-            @if ($current['slots'] === [])<x-admin.empty-state icon="img" title="No pictures or films here yet">Everything on this page can still be reworded: switch to Words.</x-admin.empty-state>@endif
+            @if ($current['slots'] === [])<x-admin.empty-state icon="img" title="Nothing to change in this list">Switch to “Edit the page” to change what is on this page.</x-admin.empty-state>@endif
             @endif
         </div>
 

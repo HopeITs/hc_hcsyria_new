@@ -28,9 +28,9 @@ function siteEditor(string $role = 'Admin')
     return Livewire::actingAs(staff($role))->test('pages::admin.site');
 }
 
-it('lets Admin, Publisher and Photos Editor open it, and nobody else', function (string $role, bool $may) {
+it('lets Admin, Publisher, Photos Editor and English Checker open it, and nobody else', function (string $role, bool $may) {
     $this->actingAs(staff($role))->get('/admin/site')->assertStatus($may ? 200 : 403);
-})->with([['Admin', true], ['Publisher', true], ['Photos Editor', true], ['English Editor', false], ['Viewer', false]]);
+})->with([['Admin', true], ['Publisher', true], ['Photos Editor', true], ['English Checker', true], ['English Editor', false], ['Viewer', false]]);
 
 it('shows the original until a slot is changed', function () {
     expect(SiteContent::image('home.cover_desktop'))->toBe('/images/home/roots-cover-desktop.jpg')
@@ -182,7 +182,7 @@ it('marks the page up for staff who may change it, and for nobody else', functio
 });
 
 it('tells a picture of a slot from one of the page', function () {
-    $html = '<img src="/images/mission/Responsibility.jpg"><img src="/images/who-we-serve/1.jpg"><img src="/images/ico/eye-icon.png"><img src="/images/news/3/a.jpg"><img src="/images/logos/hc.svg"><img src="/images/home/image-mask.png">';
+    $html = '<img src="/images/mission/Responsibility.jpg"><img src="/images/who-we-serve/1.jpg"><img src="/images/ico/eye-icon.png"><img src="/images/news/3/a.jpg"><img src="/images/home/image-mask.png"><img src="/images/home/quotation.svg">';
     $out = PageText::decorate($html, [], '/who-we-are', ['/images/mission/Responsibility.jpg' => 'who-we-are.mission_photo']);
 
     expect($out)->toContain('<img data-sc-slot="who-we-are.mission_photo" src="/images/mission/Responsibility.jpg">')
@@ -288,4 +288,100 @@ it('keeps the saves for an account that may change the site', function () {
     }
 
     expect(DB::table('site_contents')->count())->toBe(0);
+});
+
+/*
+ * Who may change what: the words are Admin's and English Checker's; pictures, logos and films are Admin's,
+ * Publisher's and Photos Editor's. Each sees only what they may change, and every save asks again.
+ */
+it('gives each role only what it may change on the public page', function (string $role, bool $words, bool $pictures) {
+    $this->actingAs(staff($role));
+    $page = $this->get('/who-we-are?sc-edit=1')->assertOk();
+
+    expect(str_contains($page->getContent(), 'data-sc-t="'))->toBe($words)
+        ->and(str_contains($page->getContent(), 'data-sc-i="'))->toBe($pictures);
+    $this->get('/who-we-are')->assertSee('id="sc-pill"', false);
+})->with([['Admin', true, true], ['English Checker', true, false], ['Publisher', false, true], ['Photos Editor', false, true]]);
+
+it('keeps a publisher to pictures and an English checker to words, on the server too', function () {
+    $words = ['where' => '/christianyouth', 'original' => 'Participants', 'text' => 'Who is coming'];
+
+    $this->actingAs(staff('Publisher'))->postJson('/site-edit/text', $words)->assertForbidden();
+    $this->actingAs(staff('Photos Editor'))->postJson('/site-edit/text', $words)->assertForbidden();
+    $this->actingAs(staff('English Checker'))->postJson('/site-edit/text', $words)->assertOk()->assertJson(['ok' => true]);
+
+    preg_match('~data-sc-i="(img:/who-we-are:[a-f0-9]{16})" data-sc-s="([^"]+)"~', $this->actingAs(staff('Admin'))->get('/who-we-are?sc-edit=1')->getContent(), $m);
+    $picture = ['key' => $m[1], 'src' => $m[2], 'slot' => '', 'video' => '0'];
+
+    if (extension_loaded('gd')) {
+        $this->actingAs(staff('English Checker'))->post('/site-edit/file', $picture + ['file' => UploadedFile::fake()->image('a.jpg')], ['Accept' => 'application/json'])->assertForbidden();
+        $this->actingAs(staff('Publisher'))->post('/site-edit/file', $picture + ['file' => UploadedFile::fake()->image('a.jpg')], ['Accept' => 'application/json'])->assertOk()->assertJson(['ok' => true]);
+    }
+
+    // Putting back follows the same rule: a line is words, a picture is pictures.
+    $this->actingAs(staff('Publisher'))->postJson('/site-edit/reset', ['key' => PageText::textKey('/christianyouth', 'Participants')])->assertForbidden();
+    $this->actingAs(staff('English Checker'))->postJson('/site-edit/reset', ['key' => $m[1]])->assertForbidden();
+    $this->actingAs(staff('English Checker'))->postJson('/site-edit/reset', ['key' => PageText::textKey('/christianyouth', 'Participants')])->assertOk();
+});
+
+it('shows the dashboard to each role only the part it may change', function () {
+    $checker = Livewire::actingAs(staff('English Checker'))->withQueryParams(['mode' => 'media'])->test('pages::admin.site');
+    $checker->assertSet('mode', 'visual')->assertSee('Words list')->assertDontSee('Pictures &amp; logos', false);
+
+    $publisher = Livewire::actingAs(staff('Publisher'))->withQueryParams(['mode' => 'words'])->test('pages::admin.site');
+    $publisher->assertSet('mode', 'visual')->assertSee('Pictures &amp; logos', false)->assertDontSee('Words list');
+
+    // Direct calls are refused whatever the page shows.
+    Livewire::actingAs(staff('Publisher'))->test('pages::admin.site')->call('saveEdit', '/christianyouth', 'Participants', 'x')->assertForbidden();
+    Livewire::actingAs(staff('Publisher'))->test('pages::admin.site')->set('texts.home__leap_text', 'x')->call('saveText', 'home__leap_text')->assertForbidden();
+    Livewire::actingAs(staff('English Checker'))->test('pages::admin.site')->call('applyImage', 'who-we-are.mission_photo', '', '')->assertForbidden();
+
+    expect(DB::table('site_contents')->count())->toBe(0);
+});
+
+it('lets the English checker change words and the publisher pictures from the dashboard', function () {
+    Livewire::actingAs(staff('English Checker'))->test('pages::admin.site')->call('saveEdit', '/christianyouth', 'Participants', 'Who is coming')->assertReturned(['ok' => true, 'message' => '']);
+    expect(SiteContent::textFor('/christianyouth'))->toHaveCount(1);
+
+    if (extension_loaded('gd')) {
+        Livewire::actingAs(staff('Publisher'))->test('pages::admin.site')->set('page', 'who-we-are')->set('uploads.who-we-are__mission_photo', UploadedFile::fake()->image('a.jpg', 600, 400));
+        expect(SiteContent::image('who-we-are.mission_photo'))->toStartWith('/images/site/');
+    }
+});
+
+/*
+ * Logos: a partner's, a funder's, the organisation's own are swapped for the whole site at once, and a vector
+ * original may be replaced by an uploaded picture.
+ */
+it('swaps a logo for every page at once, even when the original is a vector', function () {
+    $logo = '/images/logos/partner-x.svg';
+    $html = '<main><p>Our partners</p><img src="'.$logo.'" alt="Partner"></main>';
+
+    expect(PageText::swappable($logo))->toBeTrue()->and(PageText::swappable('/images/home/quotation.svg'))->toBeFalse();
+
+    $marked = PageText::decorate($html, [], '/who-we-are', []);
+    expect($marked)->toContain('data-sc-i="'.PageText::imageKey('*', $logo).'"');
+
+    $changes = [PageText::imageKey('*', $logo) => '/images/site/new-partner.png'];
+    foreach (['/who-we-are', '/projects/family-to-family', '/christianyouth'] as $page) {
+        expect(PageText::rewrite($html, $changes, $page))->toContain('src="/images/site/new-partner.png"')->not->toContain($logo);
+    }
+});
+
+it('takes a logo from the public page and puts the original back', function () {
+    $logo = '/images/logos/partner-y.svg';
+    $key = PageText::imageKey('*', $logo);
+
+    $this->actingAs(staff('Publisher'));
+    $this->post('/site-edit/file', ['key' => $key, 'src' => $logo, 'slot' => '', 'video' => '0', 'file' => UploadedFile::fake()->image('logo.png', 300, 300)], ['Accept' => 'application/json'])->assertOk()->assertJson(['ok' => true]);
+
+    expect(DB::table('site_contents')->where('slot', $key)->value('value'))->toStartWith('/images/site/');
+    $this->postJson('/site-edit/reset', ['key' => $key])->assertOk();
+    expect(DB::table('site_contents')->where('slot', $key)->exists())->toBeFalse();
+})->skip(! extension_loaded('gd'), 'needs the GD extension');
+
+it('lets a file be dropped on a picture in the editor', function () {
+    $script = $this->actingAs(staff('Publisher'))->get('/who-we-are?sc-edit=1')->getContent();
+
+    expect($script)->toContain("addEventListener('drop'")->toContain('sc-drop')->toContain('Click a picture or logo to replace it, or drop a file onto it');
 });

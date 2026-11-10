@@ -18,8 +18,10 @@ namespace App\Enums;
  *    newsletter, may see the list; only the Admin removes an address.
  *  - Reports (money raised, beneficiaries, CSV exports): Admin and Publisher; funding figures are
  *    sensitive, so other roles see only the work queues.
- *  - Site content (the pictures, film and wording of the public pages, new to the rebuild): Admin, Publisher and
- *    Photos Editor, the roles that already manage what the public sees.
+ *  - Site content (the pictures, logos, films and words of the public pages, new to the rebuild) is split in two:
+ *    the words are Admin's and English Checker's (the people who own the content); the pictures, logos and films are
+ *    Admin's, Publisher's and Photos Editor's (the people who already manage what the public sees). Opening the page
+ *    (ManageSite) is either; what each can then change is the other two.
  *  - Users and the activity log: Admin only (legacy's `admin` middleware).
  *  - View: every role. Legacy gave Publisher and English Checker only a Home
  *    page, so they could not open the project they were asked to review; they
@@ -42,6 +44,8 @@ enum AdminCapability: string
     case ViewLog = 'view-log';
     case ViewReports = 'view-reports';
     case ManageSite = 'manage-site';
+    case EditSiteWords = 'edit-site-words';
+    case EditSitePictures = 'edit-site-pictures';
 
     /** @return list<string> role names, as stored in the `roles` table */
     public function roles(): array
@@ -56,7 +60,9 @@ enum AdminCapability: string
             self::ViewSubscribers => ['Admin', 'Publisher'],
             self::DeleteSubscribers, self::ManageUsers, self::ViewLog => ['Admin'],
             self::ViewReports => ['Admin', 'Publisher'],
-            self::ManageSite => ['Admin', 'Publisher', 'Photos Editor'],
+            self::ManageSite => ['Admin', 'Publisher', 'Photos Editor', 'English Checker'],
+            self::EditSiteWords => ['Admin', 'English Checker'],
+            self::EditSitePictures => ['Admin', 'Publisher', 'Photos Editor'],
         };
     }
 
@@ -77,7 +83,9 @@ enum AdminCapability: string
             self::ManageUsers => 'Manage users and roles',
             self::ViewLog => 'See the activity log',
             self::ViewReports => 'See funding figures and reports',
-            self::ManageSite => 'Change the pictures and words of the public pages',
+            self::ManageSite => 'Open Site content (the pictures and words of the public pages)',
+            self::EditSiteWords => 'Change the words of the public pages',
+            self::EditSitePictures => 'Change the pictures, logos and films of the public pages',
         };
     }
 }

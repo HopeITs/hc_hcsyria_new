@@ -3,12 +3,12 @@
 namespace App\Http\Middleware;
 
 use App\Enums\AdminCapability;
+use App\Queries\AdminAccessQuery;
 use App\Support\Site\PageText;
 use App\Support\Site\SiteContent;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Gate;
 use Symfony\Component\HttpFoundation\Response;
 
 /*
@@ -33,12 +33,15 @@ class ApplySiteText
 
         // Staff who may change the site, on a page that can be changed, are offered the editor. A visitor, or a
         // member who cannot, gets the page exactly as it is.
-        $staff = Auth::check() && SiteContent::editablePage($page) && Gate::allows('admin.'.AdminCapability::ManageSite->value);
+        $user = Auth::user();
+        $words = $user !== null && AdminAccessQuery::can($user, AdminCapability::EditSiteWords);
+        $pictures = $user !== null && AdminAccessQuery::can($user, AdminCapability::EditSitePictures);
+        $staff = ($words || $pictures) && SiteContent::editablePage($page);
         $html = (string) $response->getContent();
 
         if ($staff && $request->boolean('sc-edit')) {
-            $html = PageText::decorate($html, $changes, $page, SiteContent::slotAddresses());
-            $html = $this->before('</body>', $html, view('site.editor', ['endpoint' => url('/site-edit'), 'token' => csrf_token(), 'leave' => url($page)])->render());
+            $html = PageText::decorate($html, $changes, $page, SiteContent::slotAddresses(), $words, $pictures);
+            $html = $this->before('</body>', $html, view('site.editor', ['endpoint' => url('/site-edit'), 'token' => csrf_token(), 'leave' => url($page), 'words' => $words, 'pictures' => $pictures])->render());
 
             return $response->setContent($html)->withHeaders(['Cache-Control' => 'no-store, private']);
         }

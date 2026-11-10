@@ -4,7 +4,12 @@
     outline, in-place typing, and the "replace picture" / "back to the original" bar, and reports each change to
     the dashboard with postMessage. It changes nothing itself: the dashboard saves, then answers.
 --}}
-<script>window.__scConfig = {!! json_encode(['endpoint' => $endpoint, 'token' => $token, 'leave' => $leave], JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP) !!};</script>
+@php($hint = match (true) {
+    $words && $pictures => 'Click any text to type over it · click or drop a file on a picture or logo to replace it',
+    $words => 'Click any text to type over it',
+    default => 'Click a picture or logo to replace it, or drop a file onto it',
+})
+<script>window.__scConfig = {!! json_encode(['endpoint' => $endpoint, 'token' => $token, 'leave' => $leave, 'hint' => $hint], JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP) !!};</script>
 @verbatim
 <style id="sc-style">
     /* Everything must be there to click: no loading screen, nothing waiting to scroll into view. */
@@ -26,11 +31,12 @@
     #sc-done{position:fixed;z-index:2147483002;right:14px;bottom:14px;padding:11px 16px;border-radius:999px;background:#1d7a4c;color:#fff!important;font:700 13px/1 system-ui,sans-serif;text-decoration:none!important;box-shadow:0 4px 14px rgb(0 0 0/.3)}
     #sc-toast{position:fixed;z-index:2147483002;right:14px;top:14px;padding:9px 13px;border-radius:10px;background:#1d7a4c;color:#fff;font:600 12.5px/1 system-ui,sans-serif;display:none}
     #sc-toast.bad{background:#be1f24}
+    .sc-drop{outline:3px solid #be1f24!important;outline-offset:2px;filter:brightness(.8)}
     .sc-busy{opacity:.5!important;outline:2px dashed #9a6412}
 </style>
 <div id="sc-box"></div>
 <div id="sc-bar"></div>
-<div id="sc-hint">Click any text to type over it · click a picture to replace it</div>
+<div id="sc-hint"></div>
 <div id="sc-toast"></div>
 <script id="sc-script">
 (function () {
@@ -59,21 +65,23 @@
         if (m.type === 'text') request('/text', {where: m.where, original: m.original, text: m.text}).then(finish);
         else if (m.type === 'reset') request('/reset', {key: m.key}).then(function (r) { if (r.ok) location.reload(); else finish(r); });
         else if (m.type === 'image') {
+            var send = function (file) {
+                var form = new FormData();
+                form.append('file', file); form.append('slot', m.slot); form.append('key', m.key); form.append('src', m.src); form.append('video', m.video ? '1' : '0');
+                toast(m.video ? 'Uploading the film…' : 'Uploading…');
+                request('/file', form).then(function (r) { if (r.ok) location.reload(); else finish(r); });
+            };
+            if (m.file) return send(m.file);
             var input = document.createElement('input');
             input.type = 'file'; input.accept = m.video ? 'video/mp4' : 'image/jpeg,image/png,image/webp';
             input.addEventListener('cancel', function () { finish({ok: false, message: ''}); });
-            input.addEventListener('change', function () {
-                if (!input.files[0]) return finish({ok: false, message: ''});
-                var form = new FormData();
-                form.append('file', input.files[0]); form.append('slot', m.slot); form.append('key', m.key); form.append('src', m.src); form.append('video', m.video ? '1' : '0');
-                toast(m.video ? 'Uploading the film…' : 'Uploading…');
-                request('/file', form).then(function (r) { if (r.ok) location.reload(); else finish(r); });
-            });
+            input.addEventListener('change', function () { if (!input.files[0]) return finish({ok: false, message: ''}); send(input.files[0]); });
             input.click();
         }
     }
     function toast(text, bad) { toastEl.textContent = text; toastEl.className = bad ? 'bad' : ''; toastEl.style.display = 'block'; clearTimeout(toast.t); toast.t = setTimeout(function () { toastEl.style.display = 'none'; }, 2200); }
-    setTimeout(function () { hintEl.style.opacity = '0'; }, 6000);
+    hintEl.textContent = cfg.hint || '';
+    setTimeout(function () { hintEl.style.opacity = '0'; }, 7000);
 
     // A video's <source> carries the slot; the video is what gets clicked.
     document.querySelectorAll('source[data-sc-slot]').forEach(function (s) { if (s.parentElement) s.parentElement.setAttribute('data-sc-slot', s.getAttribute('data-sc-slot')); });
@@ -161,11 +169,41 @@
     }, true);
 
     // Pictures: the dashboard opens the file chooser and uploads.
-    function pick(el) {
+    function pick(el, file) {
         var id = ++seq; pending[id] = el; el.classList.add('sc-busy');
         post({type: 'image', id: id, slot: el.getAttribute('data-sc-slot') || '', key: el.getAttribute('data-sc-i') || '', video: el.tagName === 'VIDEO',
-              src: el.getAttribute('data-sc-s') || ''});
+              src: el.getAttribute('data-sc-s') || '', file: file || null});
     }
+
+    // Drag and drop: a file dropped on a picture, a logo or the film replaces it.
+    var dropOn = null;
+    function pictureAt(x, y) {
+        var els = document.elementsFromPoint(x, y);
+        for (var i = 0; i < els.length; i++) { if (els[i].matches && els[i].matches('img[data-sc-slot],img[data-sc-i],video[data-sc-slot]')) return els[i]; }
+        return null;
+    }
+    function hasFile(e) { return e.dataTransfer && Array.prototype.indexOf.call(e.dataTransfer.types || [], 'Files') !== -1; }
+    function clearDrop() { if (dropOn) dropOn.classList.remove('sc-drop'); dropOn = null; }
+    ['dragenter', 'dragover'].forEach(function (name) {
+        document.addEventListener(name, function (e) {
+            if (!hasFile(e)) return;
+            e.preventDefault();
+            var t = pictureAt(e.clientX, e.clientY);
+            if (t !== dropOn) { clearDrop(); dropOn = t; if (t) t.classList.add('sc-drop'); }
+            e.dataTransfer.dropEffect = t ? 'copy' : 'none';
+        }, true);
+    });
+    document.addEventListener('dragleave', function (e) { if (!e.relatedTarget) clearDrop(); }, true);
+    document.addEventListener('drop', function (e) {
+        if (!hasFile(e)) return;
+        e.preventDefault(); e.stopPropagation();
+        var t = pictureAt(e.clientX, e.clientY), file = e.dataTransfer.files[0];
+        clearDrop();
+        if (!t) { toast('Drop the file onto a picture or a logo', true); return; }
+        var video = t.tagName === 'VIDEO';
+        if (!file || (video ? file.type !== 'video/mp4' : !/^image\/(jpeg|png|webp)$/.test(file.type))) { toast(video ? 'That needs an MP4 film' : 'That needs a JPEG, PNG or WebP picture', true); return; }
+        pick(t, file);
+    }, true);
     function reset(el) {
         var id = ++seq; pending[id] = el;
         post({type: 'reset', id: id, key: el.getAttribute('data-sc-slot') || el.getAttribute('data-sc-i') || el.getAttribute('data-sc-t')});
