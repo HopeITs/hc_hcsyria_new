@@ -19,7 +19,7 @@ class ApplySiteText
     {
         $response = $next($request);
 
-        if (! $request->isMethod('GET') || $response->getStatusCode() !== 200 || SiteContent::$scanning
+        if (! $request->isMethod('GET') || $response->getStatusCode() !== 200 || SiteContent::$scanning || $request->hasHeader('X-Site-Scan')
             || ! str_contains((string) $response->headers->get('Content-Type'), 'text/html')
             || $request->is('admin', 'admin/*', 'livewire*', 'livewire-*/*')) {
             return $response;

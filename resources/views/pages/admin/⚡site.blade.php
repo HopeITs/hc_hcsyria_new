@@ -279,7 +279,7 @@ new #[Layout('layouts::admin', ['title' => 'Site content'])] class extends Compo
      * The lines of the page with what was rewritten, and the rewrites whose line left the page.
      *
      * @param  \Illuminate\Support\Collection<int, object>  $rewrites
-     * @return array{rows: list<array<string, mixed>>, gone: list<array<string, mixed>>, failed: bool, shown: int}
+     * @return array{rows: list<array<string, mixed>>, gone: list<array<string, mixed>>, failed: bool, error: ?string, shown: int}
      */
     private function words($rewrites): array
     {
@@ -302,7 +302,7 @@ new #[Layout('layouts::admin', ['title' => 'Site content'])] class extends Compo
         $gone = $mine->reject(fn (object $row, string $hash): bool => in_array($hash, $seen, true))
             ->map(fn (object $row, string $hash): array => ['hash' => $hash, 'original' => (string) $row->original, 'value' => $row->value])->values()->all();
 
-        return ['rows' => $shown, 'gone' => $gone, 'failed' => $lines === null, 'shown' => count($rows)];
+        return ['rows' => $shown, 'gone' => $gone, 'failed' => $lines === null, 'error' => PageScan::$error, 'shown' => count($rows)];
     }
 };
 ?>
