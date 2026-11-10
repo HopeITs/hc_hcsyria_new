@@ -228,3 +228,64 @@ it('will not swap a picture under a key that does not match its address', functi
         ->set('drop', UploadedFile::fake()->image('a.jpg'))
         ->call('applyImage', '', 'img:/who-we-are:0123456789abcdef', '/images/who-we-serve/1.jpg')->assertNotFound();
 })->skip(! extension_loaded('gd'), 'needs the GD extension');
+
+/*
+ * The same editor on the public site itself, for a signed-in account that may change it.
+ */
+it('offers the editor on a public page only to an account that may change the site', function () {
+    $this->actingAs(staff('Admin'))->get('/who-we-are')->assertOk()->assertSee('id="sc-pill"', false)->assertSee('/who-we-are?sc-edit=1', false);
+    $this->actingAs(staff('Publisher'))->get('/who-we-are')->assertSee('id="sc-pill"', false);
+
+    foreach ([null, 'Viewer', 'English Editor'] as $role) {
+        $this->app['auth']->forgetGuards();
+        $visitor = $role === null ? $this : $this->actingAs(staff($role));
+        $visitor->get('/who-we-are')->assertOk()->assertDontSee('sc-pill', false);
+    }
+
+    // A page the editor does not cover has no button, even for Admin.
+    $this->actingAs(staff('Admin'))->get('/projects/rehabilitation')->assertDontSee('sc-pill', false);
+});
+
+it('runs the editor on the public page with its own way of saving', function () {
+    $page = $this->actingAs(staff('Admin'))->get('/christianyouth?sc-edit=1')->assertOk();
+    $page->assertSee('window.__scConfig', false)->assertSee(url('/site-edit'), false)->assertDontSee('id="sc-pill"', false);
+
+    $this->app['auth']->forgetGuards();
+    $this->get('/christianyouth?sc-edit=1')->assertDontSee('__scConfig', false);
+});
+
+it('saves, swaps and puts back from the public page', function () {
+    $admin = staff('Admin');
+    $this->actingAs($admin)->postJson('/site-edit/text', ['where' => '/christianyouth', 'original' => 'Participants', 'text' => 'Who is coming'])->assertOk()->assertJson(['ok' => true]);
+    $this->get('/christianyouth')->assertSee('Who is coming');
+
+    $key = PageText::textKey('/christianyouth', 'Participants');
+    $this->postJson('/site-edit/reset', ['key' => $key])->assertOk()->assertJson(['ok' => true]);
+    $this->get('/christianyouth')->assertSee('Participants');
+
+    $this->postJson('/site-edit/text', ['where' => '/nope', 'original' => 'Participants', 'text' => 'x'])->assertJson(['ok' => false]);
+    $this->postJson('/site-edit/reset', ['key' => 'text:/christianyouth:nothex'])->assertNotFound();
+});
+
+it('swaps a picture from the public page', function () {
+    $this->actingAs(staff('Admin'));
+    preg_match('~data-sc-i="(img:/who-we-are:[a-f0-9]{16})" data-sc-s="([^"]+)"~', $this->get('/who-we-are?sc-edit=1')->getContent(), $m);
+
+    $this->post('/site-edit/file', ['key' => $m[1], 'src' => $m[2], 'slot' => '', 'video' => '0', 'file' => UploadedFile::fake()->image('a.jpg', 600, 400)], ['Accept' => 'application/json'])
+        ->assertOk()->assertJson(['ok' => true]);
+
+    expect(DB::table('site_contents')->where('slot', $m[1])->value('value'))->toStartWith('/images/site/');
+
+    $this->post('/site-edit/file', ['key' => $m[1], 'src' => $m[2], 'slot' => '', 'file' => UploadedFile::fake()->createWithContent('x.jpg', '<?php echo 1;')], ['Accept' => 'application/json'])
+        ->assertJson(['ok' => false]);
+})->skip(! extension_loaded('gd'), 'needs the GD extension');
+
+it('keeps the saves for an account that may change the site', function () {
+    $this->postJson('/site-edit/text', ['where' => '/christianyouth', 'original' => 'Participants', 'text' => 'x'])->assertUnauthorized();
+
+    foreach (['Viewer', 'English Editor'] as $role) {
+        $this->actingAs(staff($role))->postJson('/site-edit/text', ['where' => '/christianyouth', 'original' => 'Participants', 'text' => 'x'])->assertForbidden();
+    }
+
+    expect(DB::table('site_contents')->count())->toBe(0);
+});

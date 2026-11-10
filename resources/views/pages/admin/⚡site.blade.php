@@ -1,5 +1,6 @@
 <?php
 
+use App\Actions\Admin\EditSitePage;
 use App\Actions\Admin\ManageSiteContent;
 use App\Enums\AdminCapability;
 use App\Exceptions\AdminActionRefused;
@@ -163,7 +164,7 @@ new #[Layout('layouts::admin', ['title' => 'Site content'])] class extends Compo
     }
 
     /**
-     * A line typed over on the page itself. Returns whether it was saved; the message is for the page's toast.
+     * A line typed over on the page itself. The message is for the page's notice.
      *
      * @return array{ok: bool, message: string}
      */
@@ -171,75 +172,48 @@ new #[Layout('layouts::admin', ['title' => 'Site content'])] class extends Compo
     {
         $this->allow();
 
-        try {
-            app(ManageSiteContent::class)->setLine($where, $original, $text, Auth::user());
-        } catch (AdminActionRefused $refused) {
-            $this->alert($refused->alertKey(), $refused->params, 'error');
-
-            return ['ok' => false, 'message' => __('admin.'.$refused->alertKey(), $refused->params)];
-        }
-
-        $this->stamp = time();
-
-        return ['ok' => true, 'message' => ''];
+        return $this->saved(app(EditSitePage::class)->text($where, $original, $text, Auth::user()), 'site.text');
     }
 
     /**
-     * A picture chosen on the page: $slot for one the page draws from a declared slot, or $key and
-     * $src for one of its own pictures. The file is in $drop. Returns whether it was saved.
+     * A picture or film chosen on the page (the file is in $drop): $slot for one drawn from a declared
+     * slot, otherwise $key and $src for one of the page's own pictures.
      *
      * @return array{ok: bool, message: string}
      */
     public function applyImage(string $slot, string $key, string $src, bool $video = false): array
     {
         $this->allow();
-        $action = app(ManageSiteContent::class);
+        abort_if($this->drop === null, 422);
 
-        try {
-            if ($video) {
-                abort_if($slot === '', 404);
-                $this->validate(['drop' => ['required', 'file', 'max:61440']], attributes: ['drop' => 'film']);
-                $action->replaceVideo($slot, $this->drop, Auth::user());
-            } elseif (! $this->acceptPictures('drop')) {
-                return ['ok' => false, 'message' => 'That is not a JPEG, PNG or WebP picture.'];
-            } elseif ($slot !== '') {
-                abort_unless(SiteContent::slot($slot) !== null, 404);
-                $action->replaceImage($slot, $this->drop, Auth::user());
-            } else {
-                // "img:<where>:<fingerprint>": the page the picture is on, and the address it had.
-                abort_unless(preg_match('~^img:(\*|/[A-Za-z0-9/_-]*):[a-f0-9]{16}$~', $key, $m) === 1 && PageText::imageKey($m[1], $src) === $key, 404);
-                $action->replacePageImage($m[1], $src, $this->drop, Auth::user());
-            }
-        } catch (AdminActionRefused $refused) {
-            $this->reset('drop');
-            $this->alert($refused->alertKey(), $refused->params, 'error');
-
-            return ['ok' => false, 'message' => __('admin.'.$refused->alertKey(), $refused->params)];
-        } catch (HttpExceptionInterface $notFound) {
-            throw $notFound;
-        } catch (\RuntimeException|ValidationException $failed) {
-            $this->reset('drop');
-
-            return ['ok' => false, 'message' => $failed instanceof ValidationException ? (string) collect($failed->errors())->flatten()->first() : $failed->getMessage()];
-        }
-
+        $result = app(EditSitePage::class)->file($slot, $key, $src, $video, $this->drop, Auth::user());
         $this->reset('drop');
-        $this->done($video ? 'site.video' : 'site.image');
 
-        return ['ok' => true, 'message' => ''];
+        return $this->saved($result, $video ? 'site.video' : 'site.image');
     }
 
     /** Put one thing back to its original from the page: a slot name, or a "text:" / "img:" key. */
     public function resetEdit(string $key): bool
     {
         $this->allow();
-        abort_unless(preg_match('~^(text|img):(\*|/[A-Za-z0-9/_-]*):[a-f0-9]{16}$~', $key) === 1 || SiteContent::slot($key) !== null, 404);
 
-        app(ManageSiteContent::class)->reset($key, Auth::user());
-        $this->stamp = time();
-        $this->alert('site.reset');
+        return $this->saved(app(EditSitePage::class)->reset($key, Auth::user()), 'site.reset')['ok'];
+    }
 
-        return true;
+    /**
+     * @param  array{ok: bool, message: string}  $result
+     * @return array{ok: bool, message: string}
+     */
+    private function saved(array $result, string $alert): array
+    {
+        if ($result['ok']) {
+            $this->stamp = time();
+            $this->alert($alert);
+        } else {
+            $this->dispatch('admin-alert', type: 'error', message: $result['message'], undo: null);
+        }
+
+        return $result;
     }
 
     /** Save what was written for one line of the page. */

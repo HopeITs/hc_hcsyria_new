@@ -113,6 +113,18 @@ final class SiteContent
         return collect($found)->filter(fn (array $keys): bool => count($keys) === 1)->map(fn (array $keys): string => $keys[0])->all();
     }
 
+    /** True for a public page the editor can change (one of config/site_content.php's pages). */
+    public static function editablePage(string $path): bool
+    {
+        foreach ((array) config('site_content.pages') as $page) {
+            if ($page['url'] === $path) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     /** False until the site_contents table (with its original column) exists: the dashboard says so instead of failing. */
     public static function ready(): bool
     {

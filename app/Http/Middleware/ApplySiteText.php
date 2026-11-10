@@ -7,6 +7,7 @@ use App\Support\Site\PageText;
 use App\Support\Site\SiteContent;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -30,19 +31,39 @@ class ApplySiteText
         $page = '/'.trim($request->path(), '/');
         $changes = SiteContent::textFor($page);
 
-        // The visual editor: staff who may change the site get the page marked up, with the editor inside it.
-        if ($request->boolean('sc-edit') && Gate::allows('admin.'.AdminCapability::ManageSite->value)) {
-            $html = PageText::decorate((string) $response->getContent(), $changes, $page, SiteContent::slotAddresses());
-            $editor = view('site.editor')->render();
-            $html = str_contains($html, '</body>') ? str_replace('</body>', $editor.'</body>', $html) : $html.$editor;
+        // Staff who may change the site, on a page that can be changed, are offered the editor. A visitor, or a
+        // member who cannot, gets the page exactly as it is.
+        $staff = Auth::check() && SiteContent::editablePage($page) && Gate::allows('admin.'.AdminCapability::ManageSite->value);
+        $html = (string) $response->getContent();
+
+        if ($staff && $request->boolean('sc-edit')) {
+            $html = PageText::decorate($html, $changes, $page, SiteContent::slotAddresses());
+            $html = $this->before('</body>', $html, view('site.editor', ['endpoint' => url('/site-edit'), 'token' => csrf_token(), 'leave' => url($page)])->render());
 
             return $response->setContent($html)->withHeaders(['Cache-Control' => 'no-store, private']);
         }
 
         if ($changes !== []) {
-            $response->setContent(PageText::rewrite((string) $response->getContent(), $changes, $page));
+            $html = PageText::rewrite($html, $changes, $page);
+        }
+
+        if ($staff) {
+            $html = $this->before('</body>', $html, view('site.edit-pill', ['href' => url($page).'?sc-edit=1'])->render());
+            $response->headers->set('Cache-Control', 'no-store, private');
+        }
+
+        if ($staff || $changes !== []) {
+            $response->setContent($html);
         }
 
         return $response;
+    }
+
+    /** Put markup before the last $tag, or at the end if there is none. */
+    private function before(string $tag, string $html, string $markup): string
+    {
+        $at = strripos($html, $tag);
+
+        return $at === false ? $html.$markup : substr($html, 0, $at).$markup.substr($html, $at);
     }
 }
