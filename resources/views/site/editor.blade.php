@@ -4,6 +4,7 @@
     outline, in-place typing, and the "replace picture" / "back to the original" bar, and reports each change to
     the dashboard with postMessage. It changes nothing itself: the dashboard saves, then answers.
 --}}
+<script>window.__scConfig = {!! json_encode(['endpoint' => $endpoint, 'token' => $token, 'leave' => $leave], JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP) !!};</script>
 @verbatim
 <style id="sc-style">
     /* Everything must be there to click: no loading screen, nothing waiting to scroll into view. */
@@ -22,6 +23,7 @@
     #sc-bar button.back{background:#fff;color:#444;border:1px solid #ccc}
     #sc-bar button:hover{filter:brightness(1.1)}
     #sc-hint{position:fixed;z-index:2147483002;left:50%;bottom:14px;transform:translateX(-50%);padding:8px 14px;border-radius:999px;background:rgb(21 22 24/.86);color:#fff;font:500 12.5px/1 system-ui,sans-serif;pointer-events:none;opacity:1;transition:opacity .6s}
+    #sc-done{position:fixed;z-index:2147483002;right:14px;bottom:14px;padding:11px 16px;border-radius:999px;background:#1d7a4c;color:#fff!important;font:700 13px/1 system-ui,sans-serif;text-decoration:none!important;box-shadow:0 4px 14px rgb(0 0 0/.3)}
     #sc-toast{position:fixed;z-index:2147483002;right:14px;top:14px;padding:9px 13px;border-radius:10px;background:#1d7a4c;color:#fff;font:600 12.5px/1 system-ui,sans-serif;display:none}
     #sc-toast.bad{background:#be1f24}
     .sc-busy{opacity:.5!important;outline:2px dashed #9a6412}
@@ -40,7 +42,36 @@
     var toastEl = document.getElementById('sc-toast'), hintEl = document.getElementById('sc-hint');
     var current = null, editing = null, hideTimer = null, pending = {}, seq = 0, mouse = {x: 0, y: 0};
 
-    function post(message) { parentWin.postMessage(Object.assign({sc: 1}, message), origin); }
+    var cfg = window.__scConfig || {}, framed = parentWin !== window;
+
+    // Inside the dashboard the dashboard saves; on the public site itself this page saves, over HTTP.
+    function post(message) { if (framed) parentWin.postMessage(Object.assign({sc: 1}, message), origin); else local(message); }
+
+    function request(path, body) {
+        var headers = {'Accept': 'application/json', 'X-CSRF-TOKEN': cfg.token, 'X-Requested-With': 'XMLHttpRequest'};
+        if (!(body instanceof FormData)) { headers['Content-Type'] = 'application/json'; body = JSON.stringify(body); }
+        return fetch(cfg.endpoint + path, {method: 'POST', headers: headers, body: body, credentials: 'same-origin'})
+            .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { return r.ok ? j : {ok: false, message: j.message || (r.status === 419 ? 'This page has expired: reload it.' : r.status === 403 ? 'Your role cannot change the site.' : 'Not saved.')}; }); })
+            .catch(function () { return {ok: false, message: 'Could not reach the server.'}; });
+    }
+    function local(m) {
+        var finish = function (result) { finished(m.id, result); };
+        if (m.type === 'text') request('/text', {where: m.where, original: m.original, text: m.text}).then(finish);
+        else if (m.type === 'reset') request('/reset', {key: m.key}).then(function (r) { if (r.ok) location.reload(); else finish(r); });
+        else if (m.type === 'image') {
+            var input = document.createElement('input');
+            input.type = 'file'; input.accept = m.video ? 'video/mp4' : 'image/jpeg,image/png,image/webp';
+            input.addEventListener('cancel', function () { finish({ok: false, message: ''}); });
+            input.addEventListener('change', function () {
+                if (!input.files[0]) return finish({ok: false, message: ''});
+                var form = new FormData();
+                form.append('file', input.files[0]); form.append('slot', m.slot); form.append('key', m.key); form.append('src', m.src); form.append('video', m.video ? '1' : '0');
+                toast(m.video ? 'Uploading the film…' : 'Uploading…');
+                request('/file', form).then(function (r) { if (r.ok) location.reload(); else finish(r); });
+            });
+            input.click();
+        }
+    }
     function toast(text, bad) { toastEl.textContent = text; toastEl.className = bad ? 'bad' : ''; toastEl.style.display = 'block'; clearTimeout(toast.t); toast.t = setTimeout(function () { toastEl.style.display = 'none'; }, 2200); }
     setTimeout(function () { hintEl.style.opacity = '0'; }, 6000);
 
@@ -62,8 +93,8 @@
         var isText = el.hasAttribute('data-sc-t'), changed = el.hasAttribute('data-sc-c');
         bar.innerHTML = '';
         if (!isText) bar.appendChild(button('Replace picture', function () { pick(el); }));
+        if (isText) bar.appendChild(button('✎ Edit text', function () { edit(el); }));
         if (changed) bar.appendChild(button('↺ Back to the original', function () { reset(el); }, 'back'));
-        if (isText && !changed) { bar.style.display = 'none'; return; }
         bar.style.display = 'flex';
         var top = Math.max(6, r.top - 38), left = Math.min(Math.max(6, r.left), window.innerWidth - bar.offsetWidth - 6);
         bar.style.top = top + 'px'; bar.style.left = left + 'px';
@@ -140,20 +171,29 @@
         post({type: 'reset', id: id, key: el.getAttribute('data-sc-slot') || el.getAttribute('data-sc-i') || el.getAttribute('data-sc-t')});
     }
 
-    // The dashboard's answers.
-    window.addEventListener('message', function (e) {
-        if (e.origin !== origin || !e.data || e.data.sc !== 1 || e.data.type !== 'done') return;
-        var el = pending[e.data.id]; delete pending[e.data.id];
+    // The answer, from the dashboard or from the server.
+    function finished(id, result) {
+        var el = pending[id]; delete pending[id];
         if (!el) return;
         el.classList.remove('sc-busy');
-        if (!e.data.ok) { if (el.hasAttribute('data-sc-t')) el.textContent = el.__before; if (e.data.message) toast(e.data.message, true); return; }
+        if (!result.ok) { if (el.hasAttribute('data-sc-t')) el.textContent = el.__before; if (result.message) toast(result.message, true); return; }
         if (el.hasAttribute('data-sc-t')) {
             el.setAttribute('data-sc-c', '1');
-            if (e.data.original) el.textContent = e.data.original, el.removeAttribute('data-sc-c');
             el.setAttribute('data-sc-saved', ''); setTimeout(function () { el.removeAttribute('data-sc-saved'); }, 1000);
             toast('Saved');
         }
+    }
+    window.addEventListener('message', function (e) {
+        if (e.origin !== origin || !e.data || e.data.sc !== 1 || e.data.type !== 'done') return;
+        finished(e.data.id, {ok: e.data.ok, message: e.data.message});
     });
+
+    // On the public site there is no dashboard around the page: a way out of editing.
+    if (!framed) {
+        var done = document.createElement('a');
+        done.id = 'sc-done'; done.href = cfg.leave || location.pathname; done.textContent = '✓ Done editing';
+        document.body.appendChild(done);
+    }
 })();
 </script>
 @endverbatim

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ServeMedia;
+use App\Http\Controllers\SiteEditController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -61,6 +62,13 @@ Route::livewire('/projects/{type}/{id}-{slug}', 'pages::initiative')
 // A category's activities: social activities, rehabilitation, relief, earthquake response.
 // After every programme page above, which this would otherwise swallow.
 Route::livewire('/projects/{type}', 'pages::project-category')->name('public.initiatives.type');
+
+// The visual editor's saves, from the public pages themselves, for a signed-in account that may change the site.
+Route::middleware(['auth', 'throttle:120,1'])->prefix('site-edit')->name('site-edit.')->group(function (): void {
+    Route::post('/text', [SiteEditController::class, 'text'])->name('text');
+    Route::post('/file', [SiteEditController::class, 'file'])->name('file');
+    Route::post('/reset', [SiteEditController::class, 'reset'])->name('reset');
+});
 
 // Images, files and video, from MEDIA_ROOT, at the URLs the legacy site used.
 Route::get('/{area}/{path}', ServeMedia::class)
