@@ -1,7 +1,7 @@
 @props(['title', 'count' => null, 'subtitle' => null, 'crumbs' => []])
 
 {{-- The top of every admin page: breadcrumbs, the title with its count, a line under it, and the page's buttons. --}}
-<header class="ph-head">
+<header {{ $attributes->class('ph-head') }}>
     <div>
         @if ($crumbs !== [])
             <nav class="crumbs" aria-label="Breadcrumb">
