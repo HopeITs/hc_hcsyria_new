@@ -34,6 +34,14 @@ return [
         '~image-mask~i',
     ],
 
+    /*
+     * Logos (partners, funders, the organisation's own): swapped for the whole site at once rather than for one page,
+     * and an original that is a vector (SVG) may be replaced by an uploaded picture.
+     */
+    'logo_images' => [
+        '~^/images/(logos|donors|partners)/~i',
+    ],
+
     'pages' => [
         'home' => [
             'label' => 'Home',

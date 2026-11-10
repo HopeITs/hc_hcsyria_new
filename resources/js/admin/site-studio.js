@@ -45,7 +45,9 @@ export default function siteStudio($wire) {
             }
         },
 
+        // A file dropped on the page arrives with the message; otherwise ask for one here.
         choose(d) {
+            if (d.file) return this.send(d, d.file);
             const input = document.createElement('input');
             input.type = 'file';
             input.accept = d.video ? 'video/mp4' : 'image/jpeg,image/png,image/webp';
@@ -53,13 +55,17 @@ export default function siteStudio($wire) {
             input.addEventListener('change', () => {
                 const file = input.files[0];
                 if (!file) return this.answer(d.id, { ok: false });
-                $wire.upload('drop', file, async () => {
-                    const result = await $wire.applyImage(d.slot, d.key, d.src, d.video);
-                    this.answer(d.id, result);
-                    if (result.ok) this.reload();
-                }, () => this.answer(d.id, { ok: false, message: 'The upload failed.' }));
+                this.send(d, file);
             });
             input.click();
+        },
+
+        send(d, file) {
+            $wire.upload('drop', file, async () => {
+                const result = await $wire.applyImage(d.slot, d.key, d.src, d.video);
+                this.answer(d.id, result);
+                if (result.ok) this.reload();
+            }, () => this.answer(d.id, { ok: false, message: 'The upload failed.' }));
         },
     };
 }

@@ -59,7 +59,7 @@ final class PageText
             $html,
             fn (string $text, bool $wide): ?string => $changes[self::textKey($wide ? '*' : $page, $text)] ?? null,
             function (string $src, bool $wide, string $tag) use ($changes, $page): ?string {
-                $new = $changes[self::imageKey($wide ? '*' : $page, $src)] ?? null;
+                $new = $changes[self::imageKey(self::scope($src, $wide, $page), $src)] ?? null;
 
                 return $new === null ? null : self::withSrc($new, $tag);
             },
@@ -75,20 +75,30 @@ final class PageText
      *
      * @param  array<string, string>  $changes
      * @param  array<string, string>  $slots  address => slot key
+     * @param  bool  $words  mark the text up (an account that may change the words)
+     * @param  bool  $pictures  mark the pictures up (an account that may change pictures and logos)
      */
-    public static function decorate(string $html, array $changes, string $page, array $slots): string
+    public static function decorate(string $html, array $changes, string $page, array $slots, bool $words = true, bool $pictures = true): string
     {
         $e = fn (string $value): string => htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 
         return self::walk(
             $html,
-            function (string $text, bool $wide) use ($changes, $page, $e): string {
+            function (string $text, bool $wide) use ($changes, $page, $e, $words): ?string {
+                if (! $words) {
+                    return null;
+                }
+
                 $key = self::textKey($wide ? '*' : $page, $text);
                 $now = $changes[$key] ?? $text;
 
                 return '<span data-sc-t="'.$e($key).'" data-sc-o="'.$e($text).'" data-sc-w="'.($wide ? '*' : $e($page)).'"'.(isset($changes[$key]) ? ' data-sc-c="1"' : '').'>'.$e($now).'</span>';
             },
-            function (string $src, bool $wide, string $tag) use ($changes, $page, $slots, $e): ?string {
+            function (string $src, bool $wide, string $tag) use ($changes, $page, $slots, $e, $pictures): ?string {
+                if (! $pictures) {
+                    return null;
+                }
+
                 if (isset($slots[$src])) {
                     return self::tagged($tag, 'data-sc-slot="'.$e($slots[$src]).'"');
                 }
@@ -97,7 +107,7 @@ final class PageText
                     return null;
                 }
 
-                $key = self::imageKey($wide ? '*' : $page, $src);
+                $key = self::imageKey(self::scope($src, $wide, $page), $src);
                 $now = $changes[$key] ?? null;
                 $tag = $now === null ? $tag : self::withSrc($now, $tag);
 
@@ -125,14 +135,35 @@ final class PageText
         return self::textKey($where, $text);
     }
 
+    /** True for a logo: a partner's, a funder's, the organisation's own. Swapped for the whole site at once. */
+    public static function isLogo(string $src): bool
+    {
+        foreach ((array) config('site_content.logo_images', []) as $pattern) {
+            if (preg_match($pattern, $src) === 1) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     /**
      * True for a picture that is part of the page's own design and so may be swapped: a static file of
      * the site, not one of the pictures staff already manage elsewhere (projects, news, successes,
-     * initiatives' galleries), not an icon or a mask, and not a vector (a photo cannot stand in for it).
+     * initiatives' galleries), not an icon or a mask. A logo may be swapped even when the original is a
+     * vector; any other vector cannot be stood in for by a photo.
      */
     public static function swappable(string $src): bool
     {
-        if (! str_starts_with($src, '/images/') || preg_match('~\.(jpe?g|png|webp)$~i', $src) !== 1) {
+        if (! str_starts_with($src, '/images/')) {
+            return false;
+        }
+
+        if (self::isLogo($src)) {
+            return preg_match('~\.(jpe?g|png|webp|svg)$~i', $src) === 1;
+        }
+
+        if (preg_match('~\.(jpe?g|png|webp)$~i', $src) !== 1) {
             return false;
         }
 
@@ -143,6 +174,12 @@ final class PageText
         }
 
         return true;
+    }
+
+    /** Where a swapped picture applies: the whole site for a logo or anything in the menu, header or footer, otherwise its page. */
+    private static function scope(string $src, bool $wide, string $page): string
+    {
+        return $wide || self::isLogo($src) ? '*' : $page;
     }
 
     /**
